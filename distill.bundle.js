@@ -2146,7 +2146,7 @@ function _arrayWithHoles(r) { if (Array.isArray(r)) return r; }
   function bylineTemplate(frontMatter) {
     return "\n    <div class=\"byline grid\">\n      <div>\n          <h3>Authors</h3>\n          <div>\n              ".concat(frontMatter.authors.map(function (author, i) {
       return "\n              <span class=\"author\">\n        ".concat(author.personalURL ? "\n          <a class=\"name\" href=\"".concat(author.personalURL, "\">").concat(author.name) + (i + 1 < frontMatter.authors.length ? "," : "") + "</a>" : "\n          <span class=\"name\">".concat(author.name) + (i + 1 < frontMatter.authors.length ? "," : "") + "</span>", "\n      </span>\n              ");
-    }).join(''), "\n          </div>\n      </div>\n      <div >\n          <h3>Affiliation</h3>\n          <div><a href=\"https://huggingface.co/\">Hugging Face</a>\n          </div>\n      </div>\n      <div >\n          <h3>Published</h3>\n          <div>Feb 19, 2025</div>\n      </div>\n    </div>\n    <div class=\"side pdf-download\">\n      <a href=\"https://huggingface.co/spaces/nanotron/ultrascale-playbook/resolve/main/The_Ultra-Scale_Playbook_Training_LLMs_on_GPU_Clusters.pdf\">Download PDF\n      <br>\n      <img style=\"width: 32px;\" src=\"../assets/images/256px-PDF.png\" alt=\"PDF\"></a>\n      \n    </div>\n");
+    }).join(''), "\n          </div>\n      </div>\n      <div >\n          <h3>Affiliation</h3>\n          <div><a href=\"https://huggingface.co/\">Hugging Face</a>\n          </div>\n      </div>\n      <div >\n          <h3>Published</h3>\n          <div>Feb 19, 2025</div>\n      </div>\n    </div>\n    </a>\n      \n    </div>\n");
   }
   var Byline = /*#__PURE__*/function (_HTMLElement4) {
     function Byline() {
