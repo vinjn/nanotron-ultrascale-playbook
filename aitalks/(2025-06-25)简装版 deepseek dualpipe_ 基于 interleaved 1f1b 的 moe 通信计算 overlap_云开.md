@@ -6,36 +6,6 @@
 
 **Link:** https://zhuanlan.zhihu.com/p/25995403567
 
-​
-
-目录
-
-收起
-
-基于 interleaved 1f1b 的 moe 通信计算overlap
-
-背景
-
-moe ep alltoall 通信与计算 overlap 相关工作
-
-1, micro batch 内 overlap
-
-2, micro batch 间 overlap
-
-基于 1f1b 的 moe 通信计算overlap
-
-1f1b
-
-interleaved 1f1b
-
-1f1b overlapped schedule
-
-总结
-
-一点抛砖引玉的思考
-
-[朱然：小红书大模型AI Infra团队介绍&招聘信息127 赞同 · 23 评论](https://zhuanlan.zhihu.com/p/29101694086) 文章
-
 ## 基于 interleaved 1f1b 的 moe 通信计算overlap
 
 ### 背景

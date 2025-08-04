@@ -6,52 +6,6 @@
 
 **Link:** https://zhuanlan.zhihu.com/p/1928161639397586106
 
-​
-
-目录
-
-收起
-
-预备知识
-
-NVSHMEM
-
-对称显存(Symmetric Buffer)
-
-ibgda 异步通信
-
-cuda 概念
-
-pinned-memory(锁页内存)
-
-cuda IPC
-
-nvshmem apis
-
-barrier\_block
-
-线程锁
-
-汇编指令
-
-buffer\_ptrs
-
-rdma\_buffer
-
-rdma\_recv\_num\_tokens\_mixed
-
-rdma\_channel\_buffer
-
-nvl\_buffer layout
-
-rs\_wr\_buffer\_ptr vs ws\_rr\_buffer\_pt
-
-nvl\_channel\_x
-
-总结
-
-参考
-
 ## 预备知识
 
 一个牛逼的工程化工作，本质上是搭建复杂系统能力。本着去理解复杂系统，先整理下初读 [DeepEP](https://zhida.zhihu.com/search?content_id=260334674&content_type=Article&match_order=1&q=DeepEP&zhida_source=entity) 源码里一堆概念。
@@ -251,7 +205,7 @@ release_lock(rdma_send_channel_lock + lane_id);  //   解锁（离开临界区�
 
 ### **汇编指令**
 
-  
+
 DeepEP 大量使用了cuda 底层汇编指令，如下:
 
 **\_\_1. Memory Fence Instructions\_\_**  
@@ -272,18 +226,18 @@ e.g. cp.async.bulk.global.shared::cta.bulk\_group.L2::cache\_hint, cp.async.bulk
 
 **\_\_7. Utility Functions\_\_**  
 Higher-level abstractions built on assembly primitives.  
-  
+
 1\. Memory Operations  
 \- \`ld\_nc\_global\`: Non-caching load with template specialization for various types (int8, int, float, int2, int4)  
 \- \`st\_na\_global\`: Cache-bypassing store with template specialization  
 \- \`broadcast\`: Warp-level broadcast of any datatype using \`\_\_shfl\_sync\`  
 \- \`warp\_reduce\_sum\`: Warp-level integer sum reduction  
 \- \`half\_warp\_reduce\_max\`: Half-warp floating point max reduction  
-  
+
 2\. Synchronization  
 \- \`barrier\_block\`: Inter-block synchronization using pairwise signaling  
 \- \`acquire\_lock\`/\`release\_lock\`: Locking primitives using \`atomic\_cas\_cta\_acquire\` and \`atomic\_exch\_cta\_release\`  
-  
+
 3\. FP8 Utilities  
 \- \`calculate\_fp8\_scales\`: Computes scaling factors for FP8 conversion  
 \- \`extract\_required\_scale\_format\`: Extracts scale in specific FP8 format

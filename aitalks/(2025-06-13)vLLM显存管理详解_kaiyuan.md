@@ -6,19 +6,7 @@
 
 **Link:** https://zhuanlan.zhihu.com/p/1916529253169734444
 
-​
 
-目录
-
-收起
-
-1 显存的分配
-
-2 显存占比分析
-
-3 KV Cache 的管理逻辑
-
-4 显存优化/降低方式
 
 当前 GPU 硬件设备的物理显存大小远不能满足模型发展需求，如何使用好显存成为模型运算中的关键问题。在 vLLM 框架中同样涉及显存分配与使用问题，虽然框架本身关注重点是 [KV Cache](https://zhida.zhihu.com/search?content_id=258995512&content_type=Article&match_order=1&q=KV+Cache&zhida_source=entity) 分配管理，但整个显存是如何分配的、局部的显存该如何降低？也值得了解，本文主要就显存管理问题展开分析。
 

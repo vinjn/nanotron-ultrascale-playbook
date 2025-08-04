@@ -6,55 +6,7 @@
 
 **Link:** https://zhuanlan.zhihu.com/p/1915175143908574406
 
-​
 
-目录
-
-收起
-
-项目概述
-
-主要组件和类
-
-Buffer 类（Python 接口）:
-
-EventOverlap 类:
-
-C++ Buffer 类（C++ 实现）:
-
-Config 类:
-
-LowLatencyBuffer 和 LowLatencyLayout 类:
-
-Buffer 模板类 (kernel 级别):
-
-AsymBuffer 模板类 (kernel 级别):
-
-SymBuffer 模板类 (kernel 级别):
-
-核心功能
-
-Dispatch 操作:
-
-Combine 操作:
-
-通信管理:
-
-事件管理和同步:
-
-关键特性
-
-高性能通信:
-
-内存管理优化:
-
-灵活配置:
-
-Python 和 C++ 混合实现:
-
-UML 类图
-
-参考资料
 
 [deepseek-ai/DeepEP: DeepEP: an efficient expert-parallel communication library](https://link.zhihu.com/?target=https%3A//github.com/deepseek-ai/DeepEP/tree/main)
 
@@ -72,7 +24,7 @@ UML 类图
 
 没有找到在知乎文章中上传svg格式内容的方法，屏幕截图上传的话分辨率太低。
 
-所以把svg文件上传到了百度网盘 [DeepEP\_project.svg](https://link.zhihu.com/?target=https%3A//pan.baidu.com/s/17lhFzauehvimYUZkJlUDRsJzNBdO9lawZx0G%3D%3D%3Flinksource%3Dzhihu%26_at_%3D1749436452493)。可以下载到本地之后用浏览器打开查看。
+xxxxxxxxxx def chunked_prefill_example():    """    假设：    - 请求有2048个prompt tokens    - block_size = 16    - long_prefill_token_threshold = 512    - 前512个tokens已缓存    """        # 第一步调度：    request.num_tokens = 2048    request.num_computed_tokens = 0        # 检查前缀缓存    computed_blocks, num_computed_tokens = kv_cache_manager.get_computed_blocks(request)    # 假设返回：computed_blocks = 32个blocks, num_computed_tokens = 512        # 计算本次调度的tokens    num_new_tokens = min(        request.num_tokens - num_computed_tokens,  # 2048 - 512 = 1536        long_prefill_token_threshold              # 512    )    # 结果：num_new_tokens = 512        # 分配KV cache slots    new_blocks = kv_cache_manager.allocate_slots(        request,         num_new_tokens + num_external_tokens,  # 512 + 0        computed_blocks,                       # 32个已缓存的blocks    )        # 更新状态    request.num_computed_tokens = num_computed_tokens  # 512    request.status = RequestStatus.RUNNING        # 调度完成后更新    request.num_computed_tokens += num_new_tokens  # 512 + 512 = 1024        # 第二步调度（下一个iteration）：    # request.num_computed_tokens = 1024    # num_new_tokens = min(2048 - 1024, 512) = 512    # 继续处理下一个chunk...python
 
 ## 项目概述
 

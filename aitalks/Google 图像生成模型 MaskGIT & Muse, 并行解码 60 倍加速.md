@@ -4,7 +4,7 @@
 
 ---
 
-一、背景
+## 一、背景
 
 这里我们继续介绍 Google Research 的两个图像生成工作，MaskGIT 和 Muse，它们都基于 VQ-GAN，并且 Muse 是在 MaskGIT 的基础上发展而来，一作和二作也相同，因此我们放在一起介绍。
 

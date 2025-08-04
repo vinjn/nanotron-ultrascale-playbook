@@ -6,31 +6,7 @@
 
 **Link:** https://zhuanlan.zhihu.com/p/30076930810
 
-​
 
-目录
-
-收起
-
-一、Ampere硬件特性
-
-1.1 从全局内存到共享内存：cp.async
-
-1.2 从共享内存到寄存器：ldmatrix
-
-1.3 TensorCore的MMA指令：m16n8k16
-
-二、HGEMM优化要点
-
-2.1 并行与分块
-
-2.2 解决共享内存中的Bank冲突
-
-2.3 Block swizzle
-
-2.4 Pipeline优化
-
-三、总结
 
 本篇文章用来介绍[Ampere架构](https://zhida.zhihu.com/search?content_id=255037662&content_type=Article&match_order=1&q=Ampere%E6%9E%B6%E6%9E%84&zhida_source=entity)以及针对Ampere架构的HGEMM优化。主要分为两部分，第一部分介绍一下Ampere架构的相关特性。第二部分介绍一下HGEMM优化的一些要点。
 

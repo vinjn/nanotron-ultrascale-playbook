@@ -6,24 +6,6 @@
 
 **Link:** https://zhuanlan.zhihu.com/p/1931058499212796205
 
-​
-
-目录
-
-收起
-
-背景
-
-megatron energon
-
-目录结构
-
-各模块设计与主要功能
-
-模块间依赖关系
-
-总结
-
 本文是我阅读 [megatron energon](https://zhida.zhihu.com/search?content_id=260691882&content_type=Article&match_order=1&q=megatron+energon&zhida_source=entity) 代码后的一点总结，希望对读者阅读代码或更好地使用这个库有所帮助。本文不深入代码细节， 只浅析代码的整体结构与关键设计。
 
 ## 背景

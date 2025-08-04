@@ -4,7 +4,7 @@
 
 ---
 
-一、背景
+## 一、背景
 
 最近在看腾讯最新混元大模型的 Paper 时（[2411.02265] Hunyuan-Large: An Open-Source MoE Model with 52 Billion Activated Parameters by Tencent [1]），看到了如下关于计算 Budget 的公式
 

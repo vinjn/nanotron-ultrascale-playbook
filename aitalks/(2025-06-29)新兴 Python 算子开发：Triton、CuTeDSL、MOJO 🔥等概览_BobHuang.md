@@ -6,54 +6,6 @@
 
 **Link:** https://zhuanlan.zhihu.com/p/1919816304271028292
 
-​
-
-目录
-
-收起
-
-一、triton-lang/triton 15.9k
-
-1、介绍
-
-2、扩展相关
-
-3、生态相关
-
-二、pytorch-labs/helion 0.16k
-
-三、NVIDIA/cutlass(CuTeDSL) 7.7k
-
-四、tile-ai/tilelang 1.3k
-
-五、apache/tvm 12.4k
-
-六、modular/modular(MOJO) 24.3k
-
-七、halide/Halide 6.1k
-
-八、Tiramisu-Compiler/tiraisu 0.94k
-
-九、NVIDIA的cuTile
-
-十、pytorch-labs/tritonbench性能对比
-
-1、flash\_attention
-
-2、gemm
-
-3、fp8gemm
-
-4、int4\_gemm
-
-5、layer\_norm
-
-6、softmax
-
-7、Triton launch\_latency
-
-附录
-
 **6.23更** 关注性能的朋友有福了，朋友为我推荐了[pytorch-labs/tritonbench](https://link.zhihu.com/?target=https%3A//github.com/pytorch-labs/tritonbench)这个项目，我加更在最后做下Triton、tk、tilelang的flash attention性能对比，顺便做了些gemm等Triton bench。
 
 我最近3个月都在研究Python AI 算子 DSL，在此记录下我的一些想法。目前还在学习中，若理解有偏差，烦请指正。

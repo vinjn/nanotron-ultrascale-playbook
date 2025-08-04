@@ -4,7 +4,7 @@
 
 ---
 
-一、背景
+## 一、背景
 
 Continuous PreTraining（持续预训练）、SFT（Supervised Fine-Tuning，监督微调）和 RAG（Retrieval-Augmented Generation，检索增强生成）是增强 LLM 在特定领域表现的主要方法，然而它们又有所不同，Continuous PreTraining 通常更关注于增强模型的基础能力，往往需要大规模训练，而 SFT 和 RAG 的代价要小得多。我们之前已经介绍过 SFT 和 RAG 相关内容，这里借着 NVIDIA 最近的一篇论文简单介绍 Continuous PreTraining。
 

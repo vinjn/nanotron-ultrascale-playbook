@@ -6,26 +6,6 @@
 
 **Link:** https://zhuanlan.zhihu.com/p/1889243870430201414
 
-​
-
-目录
-
-收起
-
-1 vLLM PD分离方案现状
-
-2 设计需要考虑的问题
-
-3 现有/可行方案的分析讨论
-
-3.1 Connector-Base 方案
-
-3.2 英伟达Dynamo方案
-
-3.3 Mooncake集成方案
-
-3.4 SGLang方案
-
 在LLM推理计算中Prefill和[Decode](https://zhida.zhihu.com/search?content_id=255722900&content_type=Article&match_order=1&q=Decode&zhida_source=entity)两个阶段的计算/显存/带宽需求不一样，通常Prefill是算力密集，Decode是访存密集。一些场景中P和D两者分开计算可提升性能。[vLLM](https://zhida.zhihu.com/search?content_id=255722900&content_type=Article&match_order=1&q=vLLM&zhida_source=entity)是一种主流的推理框架，本文主要围绕其PD分离场景做讨论。
 
 PD分离方法出现的简单推演:

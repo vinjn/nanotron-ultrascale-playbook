@@ -6,22 +6,6 @@
 
 **Link:** https://zhuanlan.zhihu.com/p/1927317160889386326
 
-​
-
-目录
-
-收起
-
-负载均衡的场景
-
-vLLM DPLB现状
-
-方案讨论
-
-基于请求数量的方案
-
-基于资源控制的方案
-
 在推理的[数据并行](https://zhida.zhihu.com/search?content_id=260249264&content_type=Article&match_order=1&q=%E6%95%B0%E6%8D%AE%E5%B9%B6%E8%A1%8C&zhida_source=entity)(Data parallel)策略应用中，不同并行引擎之间的负载可能会存在差异，如何保证各个引擎之间的动态[负载均衡](https://zhida.zhihu.com/search?content_id=260249264&content_type=Article&match_order=1&q=%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1&zhida_source=entity)？需要设计一种机制保证分发到实例上的推理请求尽量均衡，从而提升整个模块的吞吐/效率。**DPLB(Data parallel Load Balancing)**作为推理框架内部的一种策略目前在主流框架中已有相关应用，本文以vLLM框架现状进行DPLB的分析与方案讨论。
 
 ## 负载均衡的场景

@@ -4,7 +4,7 @@
 
 ---
 
-一、背景
+## 一、背景
 
 这里我们继续介绍 Google Research 的两个文本生成图像模型，ViT-VQGAN 和 Parti，Parti 是基于 ViT-VQGAN 的，并且一作和大部分其他作者都相同，因此我们放在一起介绍。需要说明的是，这两个工作都没有采用 Diffusion 模型。
 

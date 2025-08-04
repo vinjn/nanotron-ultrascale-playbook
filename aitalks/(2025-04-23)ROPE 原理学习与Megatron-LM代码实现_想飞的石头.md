@@ -6,44 +6,6 @@
 
 **Link:** https://zhuanlan.zhihu.com/p/1895076081607889981
 
-​
-
-目录
-
-收起
-
-基础知识
-
-基础概念
-
-绝对位置编码
-
-二维旋转位置编码
-
-扩展到多维
-
-高效计算
-
-远程衰减
-
-关键公式推导
-
-RotaryEmbedding实现
-
-Sinusoidal位置编码方案
-
-get\_freqs\_non\_repeated
-
-rotary\_interleaved
-
-Context Parallel支持
-
-GPTModel如何使用
-
-总结
-
-参考文献
-
 [ROPE](https://zhida.zhihu.com/search?content_id=256379964&content_type=Article&match_order=1&q=ROPE&zhida_source=entity)是LLM中关于Pos Embedding的一个关键工作，之前的学习中都是不明所以。最近稍微空闲，也加上深夜失眠，不想刷短视频，所以重现整理一波，学习过程中发现[十分钟读懂旋转编码（RoPE）](https://www.zhihu.com/tardis/zm/art/647109286)写得清晰易懂，遂在基础知识部分引用其数学原理，感谢作者分享；第二个部分是[Megatron-LM](https://zhida.zhihu.com/search?content_id=256379964&content_type=Article&match_order=1&q=Megatron-LM&zhida_source=entity)中关于RotaryEmbedding，通过解读相关代码来解释Megatron-LM中涉及到RotaryEmbedding部分的实现。
 
 * * *

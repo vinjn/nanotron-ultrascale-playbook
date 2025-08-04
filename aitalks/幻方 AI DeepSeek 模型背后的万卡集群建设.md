@@ -4,7 +4,7 @@
 
 ---
 
-一、背景
+## 一、背景
 
 幻方 AI 团队发布了一系列 DeepSeek 大模型，比如 DeepSeek-V2、DeepSeek-Math、DeepSeek-Coder 等。在 DeepSeek V2 中提出的 MLA（Multi-head Latent Attention）也广受好评。此外，DeepSeek V2 在强大性能的情况下还将 API 定价降低到 GPT-4 的百分之一，被称为“价格屠夫”，也由此引发大模型 API 的价格战。
 

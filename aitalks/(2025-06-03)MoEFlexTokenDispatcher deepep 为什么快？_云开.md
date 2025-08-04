@@ -1,4 +1,4 @@
-# 一点浅见：deepep 为什么快？
+# MoEFlexTokenDispatcher deepep 为什么快？
 
 **Author:** 云开
 
@@ -12,7 +12,7 @@
 
 最近 [megatron](https://zhida.zhihu.com/search?content_id=254796055&content_type=Article&match_order=1&q=megatron&zhida_source=entity)整合了deepep， 新增加了一个 MoEFlexTokenDispatcher。本文梳理 [MoEAlltoAllTokenDispatcher](https://zhida.zhihu.com/search?content_id=254796055&content_type=Article&match_order=1&q=MoEAlltoAllTokenDispatcher&zhida_source=entity) 与 MoEFlexTokenDispatcher 的实现， 并在此基础上分析 MoEFlexTokenDispatcher 比 MoEAlltoAllTokenDispatcher快的原因。
 
-### MoEAlltoAllTokenDispatcher
+# MoEAlltoAllTokenDispatcher
 
 moe layer 的逻辑大体是， input -> token\_permutation -> experts mlp -> token\_unpermutation -> output
 
@@ -67,11 +67,11 @@ megatron alltoall dispatcher 代码实现比较简洁，但是可能存在一个
 
 这个通信冗余的问题在 ep 不跨机的时候可能不会有什么大问题（[H100 nvlink](https://zhida.zhihu.com/search?content_id=254796055&content_type=Article&match_order=1&q=H100+nvlink&zhida_source=entity) 900G 带宽），但是如果ep 跨机了，通信成为瓶颈的时候，这会成为一个问题。
 
-### MoEFlexTokenDispatcher
+# MoEFlexTokenDispatcher
 
 MoEFlexTokenDispatcher 整合了 deepep。上面按照我们的分析，MoEAlltoAllTokenDispatcher 存在通信冗余， deepep 恰恰消除了通信的冗余。 对 deepep 机间机内通信 overlap, warp 特化等 deepseek technical report 已经讲到的点，这里就不展开了。这里只讲通信冗余消除这个点。
 
-### token\_permutation
+## token\_permutation
 
 MoEAlltoAllTokenDispatcher 的 token\_permutation 可以拆分为2个步骤。
 
@@ -83,7 +83,7 @@ MoEAlltoAllTokenDispatcher 的 token\_permutation 可以拆分为2个步骤。
 
 dispatch 之后的 token, 按 local expert permute
 
-### token\_unpermutation
+## token\_unpermutation
 
 unpermute 大体上是permute的逆向流程，同样可以拆分为2个步骤。
 
@@ -95,13 +95,13 @@ get\_permuted\_hidden\_states\_by\_experts 的逆操作。
 
 dispatch 的逆操作， 是对 deepep fused\_combine 的封装。
 
-### deepep
+## deepep
 
 MoEFlexTokenDispatcher 是对 deepep 的封装，under the hood is where all the magic happens!
 
 接下来展开分析 deepep。deepep里 与 token\_permutation/token\_unpermutation 对等的术语是 dispatch / combine。 以下内容是不求甚解地看deepep代码后的抽象理解，不保证和代码细节严格一致， 如有错漏，欢迎指正。
 
-### dispatch
+## dispatch
 
 dispatch 分为 3 个阶段。
 
@@ -115,7 +115,7 @@ dispatch 分为 3 个阶段。
 
   
 
-### combine
+## combine
 
 combine 大体是 dispatch 的逆过程。 也分为3 个阶段。
 

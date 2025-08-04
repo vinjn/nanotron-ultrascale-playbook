@@ -6,54 +6,6 @@
 
 **Link:** https://zhuanlan.zhihu.com/p/1917559316807923245
 
-​
-
-目录
-
-收起
-
-1\. 背景
-
-2\. 详细设计
-
-2.1 整体流程
-
-2.2 Proxy/Router（Demo）
-
-2.3 KVCache传输方式
-
-2.4 基于ZMQ和NCCL进行点对点通信
-
-2.5 NCCL组的布局
-
-2.6 显存buffer与Tensor内存池
-
-3\. 复现
-
-3.1 安装vLLM
-
-3.2 运行xPyD
-
-3.3 单次请求
-
-3.4 压测
-
-3.5 关闭
-
-4\. 压测数据
-
-4.1 测试场景1：Meta-Llama-3.1-8B-Instruct/A800/1K-200
-
-4.2 测试场景2：Meta-Llama-3.1-8B-Instruct/A800/1K-1K
-
-5\. 实验：NCCL组占用显存Buffer大小
-
-5.1 实验环境
-
-5.2 实验结论
-
-5.3 实验代码
-
 一种基于点对点NCCL通信动态缩放的xPyD的原生实现，部分受到Dynamo的启发。
 
 PR: [https://github.com/vllm-project/vllm/pull/18242](https://link.zhihu.com/?target=https%3A//github.com/vllm-project/vllm/pull/18242)

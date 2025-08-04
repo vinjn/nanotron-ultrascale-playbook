@@ -6,32 +6,6 @@
 
 **Link:** https://zhuanlan.zhihu.com/p/1932137763840458794
 
-​
-
-目录
-
-收起
-
-A1. 主要贡献
-
-A2. 背景知识与设计原则
-
-II. NCCL OVERVIEW
-
-A3. 方法细节
-
-III. COMMUNICATION PROTOCOLS
-
-IV. DATA-TRANSFER METHODS AND TRANSPORT LAYER
-
-V. NCCL COLLECTIVE ALGORITHMS
-
-A4. 实验环境
-
-A5. 实验结果
-
-方法细节中的引用汇总
-
 看到一篇介绍NCCL的文章，觉得很不错，用 LLM 详细记录了一下核心内容（也是开始LLM辅助阅读的一个初步尝试）。
 
 * * *

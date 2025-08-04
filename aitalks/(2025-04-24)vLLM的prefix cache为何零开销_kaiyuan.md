@@ -6,22 +6,6 @@
 
 **Link:** https://zhuanlan.zhihu.com/p/1896927732027335111
 
-​
-
-目录
-
-收起
-
-问题背景介绍
-
-内容分析
-
-1 vLLM的cache结构优化
-
-2 基本操作优化
-
-3 代码效率提升
-
 在vLLM的新版本中有个零开销的前置缓存(Zero-Overhead Prefix Caching)特性，其中零开销是指使用[prefix cache](https://zhida.zhihu.com/search?content_id=256606980&content_type=Article&match_order=1&q=prefix+cache&zhida_source=entity)和全量计算两种情况下，即使prefix命中率为0，它们的性能也近乎相等。为什么可以做到零开销？这需要分析该特性的具体实现，本文就这个问题展开讨论。
 
 ## 问题背景介绍

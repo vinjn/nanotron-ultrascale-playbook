@@ -4,7 +4,7 @@
 
 ---
 
-一、背景
+## 一、背景
 
 之前的文章中我们详细介绍了大规模分布式训练中的数据并行（Data Parallelism）以及相关技术，比如梯度下降、Adam 优化器，以及集合通信中的 AllReduce 操作等。本文中我们继续介绍分布式训练中的张量并行（Tensor Parallelism，TP），包括 AlexNet、Google、Facebook、NVIDIA 以及 Colossal-AI 的一系列 Tensor Parallelism 方案。涉及 1D TP，2D 和 3D TP，也包含行切分和列切分等。
 

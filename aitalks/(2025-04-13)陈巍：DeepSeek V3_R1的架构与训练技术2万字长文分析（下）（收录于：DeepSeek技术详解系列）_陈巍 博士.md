@@ -6,50 +6,6 @@
 
 **Link:** https://zhuanlan.zhihu.com/p/21755758234
 
-​
-
-目录
-
-收起
-
-4 V3的训练流程
-
-4.1 V3的基础预训练
-
-4.2 V3长文扩展训练
-
-4.3 V3的后训练/精调
-
-4.3.1 V3的有监督精调（SFT）
-
-4.3.2 V3的强化学习
-
-5 R1的训练流程
-
-5.1 无SFT的R1-Zero训练
-
-5.2 DeepSeek-R1的训练流程
-
-5.2.1 冷启动（Cold Start）：CoT SFT
-
-5.2.2 面向推理的强化学习
-
-5.2.3 拒绝采样与SFT
-
-5.2.4 面向全场景的强化学习与对齐
-
-5.3 从MoE回归Dense（蒸馏SFT）
-
-5.4 更大显存容量显得尤为重要？
-
-6 结语
-
-6.1 DeepSeek的关键贡献
-
-6.2 R1的出现是国运级的贡献吗？
-
-6.3 对于国产AI芯片的启示
-
 “打破[CUDA](https://zhida.zhihu.com/search?content_id=253373233&content_type=Article&match_order=1&q=CUDA&zhida_source=entity)垄断”？“挖了[NVLink](https://zhida.zhihu.com/search?content_id=253373233&content_type=Article&match_order=1&q=NVLink&zhida_source=entity)的墙角”？“引发[英伟达](https://zhida.zhihu.com/search?content_id=253373233&content_type=Article&match_order=1&q=%E8%8B%B1%E4%BC%9F%E8%BE%BE&zhida_source=entity)市值大跌”？“证明大模型算力建设浪费”？“算力霸权转移”？“国运级的创新”？这些说法**是否属实？**
 
 本文是从V3到R1的架构创新与误传的万字长文分析的下篇。下面我们继续分析V3与R1的训练和蒸馏，分层解读DeepSeek的创新。

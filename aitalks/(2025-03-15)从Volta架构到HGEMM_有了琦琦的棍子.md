@@ -6,37 +6,7 @@
 
 **Link:** https://zhuanlan.zhihu.com/p/30058413999
 
-​
 
-目录
-
-收起
-
-一、Volta架构的硬件特性
-
-1.1. L1与SMEM合体
-
-1.2. FP32 INT32指令并行
-
-1.3. 独立线程调度
-
-1.4. Reg Bank问题
-
-1.5. 指令编码问题
-
-1.6. TensorCore
-
-二、从TensorCore到HGEMM
-
-2.1. 从MMA到WMMA
-
-2.2. 可能的硬件结构
-
-2.3. 在HGEMM中调用TC
-
-2.4. 关于SMEM Bank冲突的处理
-
-三、总结
 
 本篇文章用来介绍[Volta架构](https://zhida.zhihu.com/search?content_id=255033935&content_type=Article&match_order=1&q=Volta%E6%9E%B6%E6%9E%84&zhida_source=entity)以及针对Volta架构的[HGEMM](https://zhida.zhihu.com/search?content_id=255033935&content_type=Article&match_order=1&q=HGEMM&zhida_source=entity)优化。主要分为两部分，第一部分介绍一下Volta架构的相关特性。第二部分介绍一下HGEMM优化的一些要点。
 
@@ -126,7 +96,7 @@ fp32的数据类型如下：
 ### 2.2. 可能的硬件结构
 
 前面介绍完MMA和WMMA之后，我们来看看Volta这一代TC上可能的硬件架构是怎么样。我对更底层的硬件细节不是那么熟悉，这部分的内容主要是参考《通用图形处理器设计-GPGPU编程模型与架构原理》那本书和《Modeling Deep Learning Accelerator Enabled GPUs》那篇论文。  
-  
+
 将一个QP，也就是8个线程，继续进行细分，4个线程为一组，称之为threadgroup。然后按照ABC矩阵都是行排列，16x16x16的WMMA中数据与threadgroup的对应关系如下：
 
 ![](images/v2-b9d9b37cedc28674103741da5907fb63_1440w_bb542228f8b1.jpg)

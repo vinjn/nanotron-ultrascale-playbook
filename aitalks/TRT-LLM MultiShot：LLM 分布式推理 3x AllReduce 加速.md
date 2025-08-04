@@ -4,7 +4,7 @@
 
 ---
 
-一、背景
+## 一、背景
 
 最近工作比较忙，看的 Paper 比较少，简单介绍两个对 LLM 分布式推理场景中 AllReduce 的优化，虽然其有各自的局限性，但也可以带来一定的启发。本文中我们首先会详细介绍分布式场景中非常常见的 AllReduce 操作以及其在 LLM 中的应用场景，然后会分别介绍 TensorRT-LLM 中基于 NVSwitch 的 MultiCatst 能力实现的优化和 Recogni 提出的基于量化压缩实现的 AllReduce 加速方案。
 

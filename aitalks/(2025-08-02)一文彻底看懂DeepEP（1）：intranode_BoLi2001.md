@@ -6,30 +6,6 @@
 
 **Link:** https://zhuanlan.zhihu.com/p/1935094821804040824
 
-​
-
-目录
-
-收起
-
-buffer构造
-
-同步通信handle
-
-sync（用handle创建通信组）
-
-nvshmem通信组初始化
-
-get\_dispatch\_layout
-
-dispatch
-
-notify\_dispatch
-
-dispatch
-
-combine
-
 系列文章：
 
 [一文彻底看懂DeepEP（1）：intranode](https://zhuanlan.zhihu.com/p/1935094821804040824)
@@ -867,7 +843,6 @@ if (is_sender) {
 
 -   dispatch时除了传递数据，还需要传递src\_idx、topk\_idx、weights和scale，所以也要给它们分配对应的大小的缓冲区。  
     
-
 -   src\_idx是被dispatch的token在原rank的token序列中的idx，**在 combine 阶段，系统会依据该索引将分散到多个 experts（如 topk=8 时分配到 8 个 experts）的同一 token（src\_idx 相同）的处理结果进行归约（reduce）获得最终的 token**。由于一个token只有一个src\_idx，所以src\_idx的buffer的大小为num\_channels \* num\_ranks \* num\_recv\_buffer\_tokens（没有hidden维度）
 -   由于一个token由topk\_num个topk\_idx，所以topk\_idx的buffer大小为num\_channels \* num\_ranks \* num\_recv\_buffer\_tokens \* num\_topk（实际上每个token的topk\_idx是全局的expert id，在rank内有效的expert id数量小于num\_topk，但是这里为了简化情况还是分配了num\_topk大小的缓冲区）
 -   同理，topk\_weights的buffer大小也为num\_channels \* num\_ranks \* num\_recv\_buffer\_tokens \* num\_topk

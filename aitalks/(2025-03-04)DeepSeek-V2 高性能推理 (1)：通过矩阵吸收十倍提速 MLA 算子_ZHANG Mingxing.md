@@ -6,32 +6,6 @@
 
 **Link:** https://zhuanlan.zhihu.com/p/700214123
 
-​
-
-目录
-
-收起
-
-TL;DR
-
-MLA 开源实现分析
-
-Q向量
-
-KV向量
-
-MHA
-
-优化实现
-
-吸收
-
-吸收
-
-实验结果
-
-后续优化
-
 > 作者：
 > 
 > [@陈劭源](//www.zhihu.com/people/183b6f9a35e28fab6f29e1ff6683ace0)
@@ -255,5 +229,5 @@ u   = einsum('hdD,bhqd->bqD', W_o, o)     # (6)
 
 ## 后续优化
 
-  
+
 目前上述的代码实现是基于矩阵乘法实现的，因此在计算过程中会需要完整的算出来 attention score 矩阵。如需进一步优化，可以考虑类似[FlashAttention](https://zhida.zhihu.com/search?content_id=243733609&content_type=Article&match_order=1&q=FlashAttention&zhida_source=entity)的做法，即一次性读入整个KV-pair进行计算。由于MLA的K和V是共享同一个压缩表示（实际上，上述优化过的MLA实现非常类似于满足 $K=V$ 的MQA），这样可以进一步减少显存读取，提高计算强度。

@@ -4,7 +4,7 @@
 
 ---
 
-一、背景
+## 一、背景
 
 最近又看到了一些 LLM 推理优化的一些综述文章，比如 [2404.14294] A Survey on Efficient Inference for Large Language Models，作者从数据层、模型层和系统层等多方面详细介绍了各种高效 LLM 推理的技术。这些技术中，很多已经在常见的 LLM 推理框架中广泛使用，比如 Continuous Batching，PagedAttention，FlashAttention，FlashDecoding 以及各种量化技术；也包含一些较少使用的技术，比如稀疏化，Prompt 压缩等。
 

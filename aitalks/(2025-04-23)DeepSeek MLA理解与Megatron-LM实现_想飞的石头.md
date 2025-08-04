@@ -6,32 +6,6 @@
 
 **Link:** https://zhuanlan.zhihu.com/p/1896152940420510152
 
-​
-
-目录
-
-收起
-
-基本原理
-
-LLM模型推理
-
-减少KVcache
-
-MLA
-
-总结
-
-Megatron MLA代码理解
-
-MLA代码入口
-
-核心逻辑：get\_query\_key\_value\_tensors
-
-总结
-
-参考文章：
-
 本文原理讲解部分主要参考：
 
 [![](images/v2-2bd007a42e5e2dddc080e20e228c3989_61a4bab582a5.png)姜富春：deepseek技术解读(1)-彻底理解MLA（Multi-Head Latent Attention）2582 赞同 · 141 评论](https://zhuanlan.zhihu.com/p/16730036197) 文章
@@ -60,9 +34,9 @@ $$[q_{t,1}; q_{t,2}; \ldots; q_{t,n_h}] = q_t, \tag{1}  $$
 $$[k_{t,1}; k_{t,2}; \ldots; k_{t,n}] = k_t,  \tag{2} $$
 
 $$[v_{t,1}; v_{t,2}; \ldots; v_{t,n}] = v_t, \tag{3}$$
- 
+
 $$o_{t,i} = \sum_{j=1}^{t} Softmax_{j}\left(\frac{q_{t,i}^{T} k_{j,i}}{\sqrt{d_h}}\right)v_{j,i} \tag{4} $$
- 
+
 $$u_{t} = W^{O} [o_{t,1}; o_{t,2}; \ldots; o_{t,n_h}] \tag{5}$$
  公式中的符号：$t$表示计算序列中第$t$个token；$q,k,v,o$中的两个下标，前一个表示token位置，后一个表示对应的Head下标。
 
@@ -104,21 +78,21 @@ $$c_t^Q = W^{DQ}h_{t}, \tag{6} $$
 $$[q_{t,1}^C, q_{t,2}^C, \ldots, q_{t,n_h}^C] = q_t^C = W^{UQ}c_t^{Q} \tag{7} $$
 
 $$[q_{t,1}^R, q_{t,2}^R, \ldots, q_{t,n_h}^R] = q_t^R = RoPE(W^{QR} c_t^{Q}) \tag{8}$$
- 
+
 $$q_{t,i} = [q_{t,i}^c; q_{t,i}^R] \tag{9} $$
 
 $$\boxed{c_{t}^{KV}} = W^{DKV}h_t \tag{10}$$
- 
+
 $$[k_{t,1}^c, k_{t,2}^c, \ldots, k_{t,n_h}^c] = k_t^c = W^{UK} c_{t}^{KV} \tag{11}$$
- 
+
 $$\boxed{k_t^R} = RoPE(W^{K,R} h_t) \tag{12}$$
- 
+
 $$k_{t,i} = [k_{t,i}^C; k_t^R], \tag{13}$$
- 
+
 $$[v_{t,1}^c, v_{t,2}^c, \ldots, v_{t,n_h}^c] = v_t^c = W^{UV} c_{t}^{KV}, \tag{14}$$
- 
+
 $$o_{t,i} = \sum_{j=1}^{t} Softmax_{j}\left(\frac{q_{t,i}^T k_{j,i}}{\sqrt{d_h + d_h^R}}\right) v_{j,i}^c, \tag{15}$$
- 
+
 $$u_t = W^{O} [o_{t,1}; o_{t,2}; \ldots; o_{t,n_h}], \tag{16}$$
 在DeepSeekV2的论文当中提到， 每个Transformer层，仅缓存上述带框的向量：$c_t^{KV}$和$k_t^R$，其大小分别为：
 

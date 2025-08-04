@@ -6,27 +6,7 @@
 
 **Link:** https://zhuanlan.zhihu.com/p/18565423596
 
-​
 
-目录
-
-收起
-
-0\. 引言
-
-1.简述MoE的发展历程
-
-2.DeepSeek的工作
-
-2.1. DeepSeek-moe(V1)
-
-2.2. DeepSeek V2 MoE升级
-
-2.3. DeepSeek V3 MoE升级
-
-3\. 总结
-
-4\. 参考文献
 
 ## 0\. 引言
 
@@ -40,7 +20,7 @@
 
 图1、Adaptive Mixtures of Local Experts 框图
 
-  
+
 **MoE(Mixture of Experts)是一种网络层结构， 网络层主要包括三部分：**
 
 -   **专家网络(Expert Network)**：是一个前馈网络，逻辑上一个专家网络擅长处理一类专项的子任务，所有专家都接受相同的输入，来做特定计算处理，产出不同的输出

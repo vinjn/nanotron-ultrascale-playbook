@@ -6,26 +6,6 @@
 
 **Link:** https://zhuanlan.zhihu.com/p/1900957007575511876
 
-​
-
-目录
-
-收起
-
-1 调度器运行逻辑
-
-1.1 调度器主要结构
-
-1.2 调度的整体流程图
-
-2 不同版本对比
-
-3 优先级调度
-
-3.1 当前情况
-
-3.2 V1实现方式讨论
-
 vLLM的调度器（[scheduler](https://zhida.zhihu.com/search?content_id=257202184&content_type=Article&match_order=1&q=scheduler&zhida_source=entity)）会根据系统资源和请求情况组织每次推理需要计算的数据。调度器的处理流程随着框架的升级出现了较大改动，本文以**V0.8.4版本**为基础分析一下调度器处理流程。其次，当前的scheduler里面没有指定优先级调度逻辑，该如何实现？本文也会就此进行讨论。
 
 ## 1 调度器运行逻辑

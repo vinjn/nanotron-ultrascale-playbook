@@ -55,7 +55,7 @@ inline bool operator==(const TypeMeta& lhs, const TypeMeta& rhs) noexcept {
 }
 ```
 
-  
+
 ScalarType是一个枚举，每一种类型对应着一个数字，这个数字用int8\_t表示，这里只展示部分类型表示
 
 ```text

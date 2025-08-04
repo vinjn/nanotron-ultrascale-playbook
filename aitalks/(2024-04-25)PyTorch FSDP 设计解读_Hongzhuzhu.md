@@ -6,36 +6,6 @@
 
 **Link:** https://zhuanlan.zhihu.com/p/694288870
 
-​
-
-目录
-
-收起
-
-FSDP 背景
-
-What is FSDP?
-
-FSDP vs. DeepSpeed ZeRO-DP
-
-How FSDP works
-
-FSDP design
-
-初始化 （Initialization）
-
-运行期（Runtime）
-
-分片策略（Wrapping Policy）
-
-计算和通信重叠（Computation and communication Overlapping）
-
-混合精度（Mixed Precision）
-
-总结：FSDP vs. DeepSpeed ZeRO-DP
-
-References
-
 这个topic 已经酝酿已久了。现在网上关于PyTorch FSDP design的介绍并不是很多，很多知识只能从PyTorch的源码和开发记录中获得。最近一段时间学习之后很有收获，这里想整体梳理一下，提供给大家一个参考，欢迎更多的小伙伴参与讨论。
 
 注意本文主要探讨FSDP的设计方案，不涉及更多的源码解读，建议大家可以结合源码一起理解。如有错误之处，欢迎批评指正。

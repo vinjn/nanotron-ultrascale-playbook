@@ -6,22 +6,6 @@
 
 **Link:** https://zhuanlan.zhihu.com/p/1935487076796695140
 
-​
-
-目录
-
-收起
-
-背景
-
-LD/ST和TMA简单介绍
-
-测试实现
-
-其他
-
-参考文献
-
 ## 背景
 
 最近，DeepEP项目代码在支持TMA（Tensor Memory Accelerator）的[Hopper架构](https://zhida.zhihu.com/search?content_id=261200467&content_type=Article&match_order=1&q=Hopper%E6%9E%B6%E6%9E%84&zhida_source=entity)下，将原有的机内LD/ST数据传输方式替换为TMA，通过搜索近一两个月的'TMA'相关commits可见这一变更。

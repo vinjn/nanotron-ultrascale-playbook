@@ -4,7 +4,7 @@
 
 ---
 
-一、背景
+## 一、背景
 
 之前的文章中我们详细介绍了大规模分布式训练中的数据并行（Data Parallelism，DP）、张量并行（Tensor Parallelism，TP）和流水线并行（Pipeline Parallelism，PP）。这篇文章中我们继续介绍 MoE 中经常使用的专家并行（Expert Parallelism，EP），以及 EP 中涉及的相关 All2All 操作和优化手段等。
 

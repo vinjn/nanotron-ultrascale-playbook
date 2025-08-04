@@ -4,7 +4,7 @@
 
 ---
 
-一、背景
+## 一、背景
 
 最近两年图像生成领域受到广泛关注，尤其是 Stable Diffusion 模型的开源，以及 DALL-E 系列模型的不断迭代更是将这一领域带到了新的高度。我们决定从头开始，逐步了解这些模型的演化过程，以便更好地理解 Stable Diffusion 以及 DALL-E 3 等最新的图像生成模型。在之前文章中，我们逐步回顾了 VAE 系列生成模型和 Diffusion 系列模型，针对 Diffusion 系列模型我们也按照 OpanAI 模型，Google 模型以及 Stable Diffusion 系列模型分别做了具体介绍。
 

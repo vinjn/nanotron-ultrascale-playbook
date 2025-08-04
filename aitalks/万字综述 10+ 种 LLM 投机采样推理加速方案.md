@@ -4,31 +4,6 @@
 
 ---
 
-一、背景
-二、自回归解码（Autoregressive Decoding）
-
-三、并行解码（Parallel Decoding）
-
-四、投机解码（Speculative Decoding）
-
-五、SpecInfer
-
-六、Medusa
-
-七、REST（基于检索）
-
-八、前向解码（Lookahead Decoding）
-
-九、EAGLE（基于特征）
-
-十、阿里 Lookahead（针对 RAG 等）
-
-十一、其他优化方案
-
-十二、总结
-
-十三、参考链接
-
 ## 一、背景
 
 我们之前对投机解码（Speculative Decoding）方案做过比较多的介绍，从 Parallel Decoding 到 Google 的 Speculative Decoding，再有 SpecInfer、Medusa、Lookahead Decoding，以及最近阿里的 Lookahead。最近看到也有一篇关于 Speculative Decoding 的综述文章 [2401.07851] Unlocking Efficiency in Large Language Model Inference: A Comprehensive Survey of Speculative Decoding，如下图Figure 3 所示：

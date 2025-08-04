@@ -6,36 +6,6 @@
 
 **Link:** https://zhuanlan.zhihu.com/p/644133265
 
-​
-
-目录
-
-收起
-
-FSDP 的前生今世
-
-ZeRO 系列简介
-
-FSDP - ZeRO3?
-
-单卡 fp16 + fp32
-
-DDP 训练
-
-FSDP 训练
-
-FSDP 分片策略
-
-FSDP 试错的血与泪
-
-替换 submodule 的风险
-
-多参数组的优化器
-
-FSDP 的接口稳定性
-
-总结
-
 ChatGPT 掀起的大模型训练浪潮让不少同学都对训练大模型跃跃欲试，在找训练 baseline 的时候肯定发现大模型训练的 codebase 更倾向于用 [DeepSpeed](https://link.zhihu.com/?target=https%3A//www.deepspeed.ai/)（**[MMEngine v0.8.0](https://link.zhihu.com/?target=https%3A//github.com/open-mmlab/mmengine)** 也已经支持拉，一键切换，肥肠方便！） 、[ColossalAI](https://zhida.zhihu.com/search?content_id=231271490&content_type=Article&match_order=1&q=ColossalAI&zhida_source=entity) (MMEngine 下个版本也会支持！) 等大模型训练框架，而鲜有问津 PyTorch 原生的 [FSDP](https://link.zhihu.com/?target=https%3A//pytorch.org/blog/introducing-pytorch-fully-sharded-data-parallel-api/) (FullyShardedDataParallel)。这到底是为啥嘞？是 FSDP 不够节省显存？训练速度太慢？还是说不好用？请耐心看完这篇文章，相信一定会有所收获。
 
 ## FSDP 的前生今世
@@ -53,12 +23,12 @@ FSDP 的实现借鉴了 [FairScale](https://link.zhihu.com/?target=https%3A//fai
 模型训练的时候，显存占用大体可以分成三部分，即激活值、**模型权重、模型梯度和优化器状态**。对于视觉模型而言，显存占比最大的是激活值，因此使用混合精度训练能够大幅度的降低激活值的显存占用（fp16）。然而对于大语言模型或者多模态模型而言，优化后三者的显存占用则显得更重要。
 
 以 PyTorch 为例，当你使用 DistributedDataParallel 时，其实会在每个进程为模型参数、模型梯度、优化器状态分配内存，并在训练过程中同步地更新这些数据。这样的做法虽然能够通过数据并行以达到加速训练的目的，但是它在显存分配上的策略，显然是非常糟糕的。既然每个进行的参数都是一样的，为什么每个进程还需要保存完整的参数呢？所以 ZeRO 就主张每个进程只保存参数的一部分，用到的时候再 all gather 到各个进程。ZeRO 有三个阶段的优化策略，即：  
-  
+
 ZeRO1：只把优化器状态进行分片  
 ZeRO2：对优化器状态 + 梯度进行分片  
 ZeRO3：对优化器状态 + 梯度 + 模型参数进行分片  
-  
-  
+
+
 以 7.5 B （φ）参数量的模型为例，先简单计算一下模型参数、模型梯度、优化器状态的显存占用情况：
 
 **fp32 训练：**  
@@ -117,14 +87,14 @@ def test_fp16():
         print(f'memory allocated: {memory / 1e9:.3f}G')
 ```
 
-  
+
 跑过代码后发现，显存占用如下：  
 fp32: **12.035G**  
 fp16: **14.035G**
 
 啥？amp 显存占用还多了 2G？这是咋算的？这里就不得不提到 amp 的实现方式了。PyTorch 的 amp 不会改变模型权重的类型，即仍然以 fp32 存储，而选择在**[白名单](https://link.zhihu.com/?target=https%3A//pytorch.org/docs/stable/amp.html%23cuda-ops-that-can-autocast-to-float16)**算子的 forward backward 前后，把 fp32 的 weights 转换成 fp16，以计算出 fp16 的激活值和 fp16 的梯度，其中 fp16 的梯度还会进一步转换成 fp32，以保证参数更新的精度。但是既然权重和梯度仍然保留 fp32，优化器状态也理应保持不变，那为啥还多了 2G？原因在于 forward 和 backward 这份 fp16 的权重被缓存了，**这部分实现在 amp 的 C++ 代码里**。缓存的 fp16 梯度，就是多出来 2G 的源头。
 
-  
+
 要想节省这部分参数，需要给 autocast 传入 `cache_enabled=False`，
 
 ```python
@@ -169,7 +139,7 @@ def _test_ddp_fp16():
             print(f'memory allocated: {memory / 1e9:.3f}G')
 ```
 
-  
+
 然而结果是：  
 **16.036G**  
 
@@ -215,7 +185,7 @@ def _test_fsdp_fp16():
 
 ![](images/v2-f230bd1da7c35441fa2126cd87846199_1440w_165e64d484b5.jpg)
 
-  
+
 以官方实现的 `_module_wrap_policy` 为例，其中关键参数 module\_classes 用于说明哪个类型的 submodule 应该被 wrap 成 child fsdp module
 
 ```python
@@ -253,7 +223,7 @@ def _module_wrap_policy(
     return isinstance(module, tuple(module_classes))
 ```
 
-  
+
 在上一章中我们将其指定成 `nn.Linear`，也就是说每个 nn.Linear 都会被 wrap 成 child fsdp module。  
 所有的 fsdp module 在 forward 过程中都会触发参数的 unshard (all gather) 和 shard。
 
@@ -277,16 +247,16 @@ def _module_wrap_policy(
 
 ![](images/v2-5a3782a914840d4eda1d1205f1ab1f47_1440w_d78c5d2f43b2.jpg)
 
-  
+
 root fsdp module 在 forward 阶段，会直接 gather 所有的参数，也就意味着无法做到 ZeRO-stage3 中，通过对参数分片来实现节省显存。但是 ZeRO1 和 ZeRO2 里对梯度和优化器状态的分片，还是可以做到的。理由是 forward 阶段仍然会注册 post-backward-hook，因此 gradient reduce-scatter 的逻辑仍然会起作用。构建 Optimizer 时，传入的是 root fsdp module 的 parameters，因此优化器会直接更新分片后的参数、记录分片后参数的状态，因此优化器状态的分片的优化也是有效的。
 
 auto\_wrap\_policy 需要遵循一定的接口规范即接受以下几个参数：
 
-  
+
 **module：**递归遍历 submodule 时，访问到的 module  
 **recurse：**判断一个 submodule 为 child fsdp module 后，是否再进一步递归判断该 submodule 的 submodule 需要被 wrap 成 child fsdp module  
 **nonwrapped\_numel：**这个参数的的含义是当前模块，不需要被分片的参数的参数量。什么是不需要被分片的参数呢？一般来说包含两部分，即**已经被分片的参数**和**用户指定的需要被忽略的参数（ignored\_params）**。基于这个参数可以实现 size-based wrap policy，例如官方实现的 `[size_based_auto_wrap_policy](https://link.zhihu.com/?target=https%3A//github.com/pytorch/pytorch/blob/6871cf6e1e97fb11f484b1674ce4a6c2ff8175ff/torch/distributed/fsdp/wrap.py%23L288)` 。  
-  
+
 FSDP 把 `auto_wrap_policy` 这个参数的配置权交给用户，扩展性固然是提升了，但是也无形的增加了 FSDP 的学习成本，比如 `auto_wrap_policy` 会起什么作用，它的几个入参的含义又是什么，刚使用 FSDP 的用户难免会为此感到一头雾水。
 
 然而如果 FSDP 的使用成本仅限于此，我相信大家还是愿意去学习和使用的，然而一些隐性的约定和一些奇奇怪怪的报错，就非常劝退了。
@@ -306,7 +276,7 @@ except AttributeError:
     return getattr(self._fsdp_wrapped_module, name)
 ```
 
-  
+
 这样对于没有定义的属性，它就会从 submodule 里去找。然而这样做仍然会有风险。  
 
 1.  如果你访问的属性恰巧和 child fsdp module 本身的属性重名，就出现拿错属性的情况
@@ -355,7 +325,7 @@ class B:
         return losses
 ```
 
-  
+
 假如 class A 中的 `self.head` 类型为 class B，且被 wrap 成了 child fsdp module。那么在执行 self.head.loss 的时候，会通过 FSDP 的 \_\_getattr\_\_ 方法直接找到 class B 的 loss，此时的局部变量 self 已经是 class B 实例而并非 FSDP，因此在执行 `self(feats)` 时不会进入 FSDP 的 forward 触发参数 all gather，进一步引发错误。
 
 ###   
@@ -387,7 +357,7 @@ optimizer = SGD(param_groups, lr=0.1)
         print(list(fsdp_model.parameters()))
 ```
 
-  
+
 此时每个 rank 只会打印出一个参数：
 
 ```python
@@ -398,12 +368,12 @@ Parameter(FlatParameter([-4.6519e-05, -6.2861e-03,  3.9519e-03,  ..., -3.2763e-0
 
 因此在 PyTorch 2.0 之前，一旦使用了 FSDP，就很难对每个参数设置不同的学习率了，因为 fsdp wrap 之后多个参数会合并成一个参数。之后的 gradient 分片、参数更新也都是基于 flatten tensor 去实现的。  
 由于参数更新也是基于 flatten tensor 实现的，因此 FSDP 要求，每个 fsdp module 下的参数，dtype 和 requires\_grad 属性都应该统一，否则无法 concat 成一个大的 flatten tensor。  
-  
+
 PyTorch 2.0 为 FSDP 添加了 use\_orig\_params 参数，开启这个参数的情况下，FSDP wrap 的过程中不会删除原有的参数，而会让原有参数的内存指向 flatten params 的某个区域。这是一个很棒的更新，在不引入额外显存消耗的情况下，让用户仍然能够访问到分片之前的参数，并为其设置不同的优化器超参。引入这个参数后，按理说 ，fsdp module 下所有参数 requires\_grad 属性统一的限制应该也解除了，但不幸的是，PyTorch 2.0 并没有调整这部分逻辑，不过在主分支上已经修复了这个问题，相信即将到来的 PyTorch 2.1 能够解决这个痛点。
 
 ### FSDP 的接口稳定性
 
-  
+
 尽管说早在 PyTorch 1.11，FSDP 就已经是一个 beta 版本的特性了，然而时至今日，FSDP 模块仍然处于高速迭代的状态。FSDP 的开发者也于 2023 年 2 月发起了一个 [discussion](https://link.zhihu.com/?target=https%3A//dev-discuss.pytorch.org/t/rethinking-pytorch-fully-sharded-data-parallel-fsdp-from-first-principles/1019)，介绍了一些设计理念，以及内部的重构。  
 除此之外，FSDP 的外部接口更新的也比较快，打开 PyTorch FSDP 的 api 文档，你会发现不少接口都贴上了 deprecated 标签。不过总的来说，新接口确实比老接口要易用、灵活很多，[MMEngine](https://link.zhihu.com/?target=https%3A//github.com/open-mmlab/mmengine) 这次集成 FSDP，也都是基于新接口去开发的。
 
@@ -416,7 +386,7 @@ FSDP 在易用性方面，上手成本比较高，用户需要理解 FSDP wrap m
 
 PyTorch 2.0 通过 use\_ori\_params 参数大大提升了 FSDP 的易用性，但是对 requires\_grad 属性统一的限制仍然存在。要解决这个问题可以坐等 PyTorch 2.1 更新，并指定 `use_orig_params=True`。但如果想要临时解决的话需要在 `auto_wrap_policy` 做一些改动，由于是基于 FSDP 内部的协议做的修改，可能不是很稳定，在这就不做赘述。
 
-  
+
 总的来说，FSDP 在易用性方面确实差强人意，但是在灵活性方面，留给了用户更大的操作空间，不过相信随着 PyTorch 的不断迭代，相信 FSDP 也会逐渐变得和 DDP 一样好用。MMEngine 也会紧跟 FSDP 更新的动向，在保持灵活性的基础上，尽可能的降低大家的使用门槛，总结出一套简单、易配置的最佳实践。
 
 如果大家感兴趣的话，可以多多催更，有机会的话我们可以进一步聊一聊 FSDP 的设计理念，flatten params 的构建逻辑，参数切片的规则，以及 FSDP 中梯度计算和梯度同步的并行方式。交流一下如何与 FSDP 抛出的 error 大战三百回合（希望 PyTorch 更新后可以少打几回合）。

@@ -4,7 +4,7 @@
 
 ---
 
-一、背景
+## 一、背景
 
 我们在之前的文中（ [LLM 推理的 Attention 计算和 KV Cache 优化：PagedAttention、vAttention 等](http://mp.weixin.qq.com/s?__biz=Mzk0ODU3MjcxNA==&mid=2247487454&idx=1&sn=3ab7c30d46e4df4fd751dcdbd655375e&chksm=c364c89bf413418d3a871416fec66fddbcd630de4b7f0d90f1c06633c61f515775b36e33e699&scene=21#wechat_redirect)）提到 vAttention 通过修改 GPU 内核 Driver 来分配更细粒度的 Physical Chunk，比如 64KB、128KB 和 256KB，而不局限于 2MB，以此可以减少 LLM 推理场景中显存的浪费。作者在其中也提到了使用更小的 Physical Chunk 会导致 Memory 分配的速度下降，如下图 Table 7 所示。然而，作者并没有介绍使用更小的 Physical Chunk 是否会导致内存访问效率的降低，比如 TLB（Translation Lookaside Buffer）Miss 的增加。
 

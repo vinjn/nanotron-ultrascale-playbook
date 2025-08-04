@@ -6,27 +6,9 @@
 
 **Link:** https://zhuanlan.zhihu.com/p/1896490149577200132
 
-​
-
-目录
-
-收起
-
-MOE结构概述
-
-MOE计算代码
-
-初始化函数定义
-
-前向计算逻辑
-
-损失函数
-
 其实在[DeepSeek](https://zhida.zhihu.com/search?content_id=256556603&content_type=Article&match_order=1&q=DeepSeek&zhida_source=entity)\-R1爆火之前，DeepSeek V2在我们行业就已经妇孺皆知了，它独特的[MOE结构](https://zhida.zhihu.com/search?content_id=256556603&content_type=Article&match_order=1&q=MOE%E7%BB%93%E6%9E%84&zhida_source=entity)值得研究一下。这篇文章是基于
 
-[@ZOMI酱](//www.zhihu.com/people/2d773e9a6d7e77c80963c080f19a1607)
-
-的2个视频写的，这2个视频讲的很好，建议大家都学习一下：《MOE终于迎来可视化解读！傻瓜都能看懂MoE核心原理！》和《使用昇腾NPU手撕MoE单机版代码！没想到如此简单！》。
+[@ZOMI酱](//www.zhihu.com/people/2d773e9a6d7e77c80963c080f19a1607) 的2个视频写的，这2个视频讲的很好，建议大家都学习一下：《MOE终于迎来可视化解读！傻瓜都能看懂MoE核心原理！》和《使用昇腾NPU手撕MoE单机版代码！没想到如此简单！》。
 
 这篇文章是把我自己的理解梳理一下，加强自己的理解和记忆。
 

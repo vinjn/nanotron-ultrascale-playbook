@@ -4,7 +4,7 @@
 
 ---
 
-一、背景
+## 一、背景
 
 这里我们继续介绍 Stable Diffusion 相关的三个图像生成工作，Latent Diffusion Model（LDM）、SDXL 和 SDXL-Turbo。这三个工作的主要作者基本相同，早期是在 CompVis 和 Runway 等发表，后两个主要由 Stability AI 发表。
 

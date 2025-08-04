@@ -6,28 +6,6 @@
 
 **Link:** https://zhuanlan.zhihu.com/p/706341870
 
-​
-
-目录
-
-收起
-
-常用原语
-
-DP
-
-TP
-
-ColumnLinear
-
-RowLinear
-
-Zero3
-
-forward
-
-backward
-
 ## 常用原语
 
 [all\_gather](https://zhida.zhihu.com/search?content_id=245095857&content_type=Article&match_order=1&q=all_gather&zhida_source=entity)：收集所有数据块并分发到所有rank上。

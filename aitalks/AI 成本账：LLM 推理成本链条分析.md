@@ -4,7 +4,7 @@
 
 ---
 
-**## 一、背景
+## 一、背景 
 
 最近看到 SemiAnalysis 团队制作了一个《AI Token Factory Economics Stack》的图片（来自 SemiAnalysis (@SemiAnalysis_) / X [1]），深入分析了 LLM 推理成本链条中各个参与者的成本与利润情况，涵盖从硬件资本支出（Neocloud）、推理服务提供商（Inference Providers）到终端应用层（Applications）的全栈视角，并且以 H200 GPU 为例，进行定量分析。
 

@@ -6,22 +6,6 @@
 
 **Link:** https://zhuanlan.zhihu.com/p/1935108598784058926
 
-​
-
-目录
-
-收起
-
-buffer初始化
-
-dispatch
-
-send阶段
-
-recv阶段
-
-combine
-
 系列文章：
 
 [一文彻底看懂DeepEP（1）：intranode](https://zhuanlan.zhihu.com/p/1935094821804040824)

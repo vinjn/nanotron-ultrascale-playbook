@@ -6,49 +6,7 @@
 
 **Link:** https://zhuanlan.zhihu.com/p/30427909948
 
-​
 
-目录
-
-收起
-
-一、Hopper硬件特性及编程范式
-
-1.1 WGMMA
-
-1.2 TMA
-
-1.3 Thread Block Clusters与DSMEM
-
-1.4 Warp-Specialization
-
-二、HGEMM优化
-
-2.1 Kernel 1: HGEMM的朴素实现
-
-2.2 Kernel 2: 使用Tensor Core指令
-
-2.3 Kernel3：处理更大尺寸的输出分块
-
-2.4 Kernel4：掩盖访存延迟
-
-2.5 Kernel5：增大分块尺寸
-
-2.6 Kernel6：掩盖写回延迟
-
-2.7 Kernel7：更快的barriers
-
-2.8 Kernel8：Thread Block Clusters
-
-2.9 Kernel9：一些细微的优化
-
-2.10 Kernel10：异步写回
-
-2.11 Kernel11：Hilbert曲线
-
-2.12 小结
-
-三、总结
 
 本篇文章用来介绍[Hopper架构](https://zhida.zhihu.com/search?content_id=255107853&content_type=Article&match_order=1&q=Hopper%E6%9E%B6%E6%9E%84&zhida_source=entity)以及针对Hopper架构的HGEMM优化。主要分为两部分，第一部分介绍一下Hopper架构的相关特性以及在编程范式上的一些更改。第二部分介绍一下在Hopper架构上做HGEMM优化的一些要点。
 

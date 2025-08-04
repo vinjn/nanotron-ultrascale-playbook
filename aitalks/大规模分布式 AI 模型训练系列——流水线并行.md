@@ -4,7 +4,7 @@
 
 ---
 
-一、背景
+## 一、背景
 
 之前的文章中我们详细介绍了大规模分布式训练中的数据并行（Data Parallelism）和张量并行（Tensor Parallelism）。本文中我们继续介绍另一种非常常见的并行方案——流水线并行（Pipeline Parallelism）。
 

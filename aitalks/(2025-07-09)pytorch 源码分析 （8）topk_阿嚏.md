@@ -917,7 +917,7 @@ after inclusive_sum_by_key
 
 换句话说，也就是处理同一组数据的block之间进行前缀和计算。
 
-我们举个例子，我现在有数据（2，12），每一组数也就是12个数，通过4个block计算，也就是总共8个block，那么这个key就是
+xxxxxxxxxx m=8192, n=8192, k=8192, alpha=0.5, beta=0.56.6601 ms, 80.6101 gbps, 165.089 tflopstext
 
 \[0，0，0，0，1，1，1，1\]
 

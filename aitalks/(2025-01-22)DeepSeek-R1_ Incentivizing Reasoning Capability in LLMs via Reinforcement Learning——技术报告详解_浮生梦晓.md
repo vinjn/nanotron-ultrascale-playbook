@@ -6,40 +6,6 @@
 
 **Link:** https://zhuanlan.zhihu.com/p/19787422168
 
-​
-
-目录
-
-收起
-
-摘要部分
-
-1\. 介绍
-
-1.1本文贡献
-
-1.2 评估结果的总结
-
-2\. 技术方法
-
-2.1 总览
-
-2.2 DeepSeek-R1-Zero: 直接对Base模型进行强化学习训练
-
-2.3 DeepSeek-R1：强化学习和冷启动
-
-2.4 蒸馏：将推理能力蒸馏到小模型中
-
-3\. 实验
-
-4.讨论
-
-4.1 蒸馏和强化学习
-
-4.2 不成功的尝试
-
-5.总结
-
 论文（技术报告）地址：
 
 [https://github.com/deepseek-ai/DeepSeek-R1/blob/main/DeepSeek\_R1.pdf​github.com/deepseek-ai/DeepSeek-R1/blob/main/DeepSeek\_R1.pdf](https://link.zhihu.com/?target=https%3A//github.com/deepseek-ai/DeepSeek-R1/blob/main/DeepSeek_R1.pdf)
@@ -101,7 +67,7 @@ GRPO原论文：
 
 [](https://link.zhihu.com/?target=https%3A//arxiv.org/pdf/2402.03300)
 
-  
+
 **GRPO（Group Relative Policy OPtimization）**
 
 ![](images/v2-8d920a9ef23124f60316eabe69aa9484_1440w_4756b529335f.jpg)

@@ -6,28 +6,6 @@
 
 **Link:** https://zhuanlan.zhihu.com/p/1909265969823580330
 
-​
-
-目录
-
-收起
-
-DP并行方案现状
-
-整体概览
-
-Engine core的DP适配
-
-Busy loop逻辑
-
-Wave概念的引入
-
-方案演进分析
-
-多API Server 方案
-
-Ray方案
-
 SGLang方案(参考)：python/sglang/srt/managers/data\_parallel\_controller.py
 
 [vLLM](https://zhida.zhihu.com/search?content_id=258102667&content_type=Article&match_order=1&q=vLLM&zhida_source=entity)框架的[数据并行](https://zhida.zhihu.com/search?content_id=258102667&content_type=Article&match_order=1&q=%E6%95%B0%E6%8D%AE%E5%B9%B6%E8%A1%8C&zhida_source=entity)（DP, Data Parallel）特性在V1版本中已支持多机运行，其在负载均衡、流量瓶颈、数据采集等方面的设计如何？下一步的迭代方案方向？本文将对vLLM DP特性的实现及相关问题进行分析和讨论。

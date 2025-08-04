@@ -6,21 +6,7 @@
 
 **Link:** https://zhuanlan.zhihu.com/p/17781075074
 
-​
 
-目录
-
-收起
-
-一、网络结构
-
-二、关键函数
-
-三、代码注释
-
-四、DeepSeek V3和llama3 训练成本的比较
-
-参考文献：
 
 [GitHub - deepseek-ai/DeepSeek-V3](https://link.zhihu.com/?target=https%3A//github.com/deepseek-ai/DeepSeek-V3)
 

@@ -6,20 +6,6 @@
 
 **Link:** https://zhuanlan.zhihu.com/p/1901176363198711291
 
-​
-
-目录
-
-收起
-
-Qwen3模型
-
-Qwen3 MoE
-
-Qwen3 MoE模型架构要点
-
-Qwen3 MoE的优势
-
 [QWen3](https://zhida.zhihu.com/search?content_id=257218115&content_type=Article&match_order=1&q=QWen3&zhida_source=entity)系列大模型发布后，引起广泛关注。具体参考：
 
 [北方的郎：喜大普奔，阿里云发布Qwen3系列大型：思深，行速，迈向AGI与ASI新里程碑](https://zhuanlan.zhihu.com/p/1900457158849569252)

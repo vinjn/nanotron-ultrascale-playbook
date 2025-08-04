@@ -4,7 +4,7 @@
 
 ---
 
-**## 一、背景
+## 一、背景
 
 在此前的内容中，笔者曾介绍过 DeepSeek 的 DeepEP、字节跳动的 Flux 和 Tilelink 等系统，这些系统在底层通信实现中均依赖于 NVIDIA 的 NVSHMEM 库。事实上，字节跳动后续的诸如 Comet、Triton-distributed，以及其他针对细粒度计算与通信重叠（Overlap）优化的工作，也都广泛使用了 NVSHMEM。
 
