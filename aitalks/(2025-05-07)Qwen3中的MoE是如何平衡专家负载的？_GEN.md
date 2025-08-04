@@ -8,7 +8,7 @@
 
 近年来，[混合专家](https://zhida.zhihu.com/search?content_id=257474847&content_type=Article&match_order=1&q=%E6%B7%B7%E5%90%88%E4%B8%93%E5%AE%B6&zhida_source=entity)（Mixture of Experts, MoE）架构因其在扩展模型容量的同时保持计算效率的潜力，在大型语言模型领域受到了广泛关注。[Qwen3](https://zhida.zhihu.com/search?content_id=257474847&content_type=Article&match_order=1&q=Qwen3&zhida_source=entity)系列模型也采用了MoE架构，通过稀疏激活特定的“专家”网络来处理不同的输入。然而，MoE模型的一个核心挑战在于如何确保各个专家之间的负载均衡，避免某些专家过载而另一些专家空闲。本文将基于Qwen3的开源代码，深入分析其[负载均衡损失函数](https://zhida.zhihu.com/search?content_id=257474847&content_type=Article&match_order=1&q=%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0&zhida_source=entity)（load\_balancing\_loss\_func）的设计与实现。
 
-![](https://pica.zhimg.com/v2-b537981fe4b1b95f82832743327196d8_1440w.jpg)
+![](images/v2-b537981fe4b1b95f82832743327196d8_1440w_88dfa19b45d1.jpg)
 
 ## MoE与负载均衡的重要性
 
@@ -20,13 +20,13 @@
 
 3.模型性能下降：专家未能充分特化，模型整体性能可能受损。
 
-![](https://pica.zhimg.com/v2-467d51a40873a77a88aa96b66e0a9ebe_1440w.jpg)
+![](images/v2-467d51a40873a77a88aa96b66e0a9ebe_1440w_db36b957bae6.jpg)
 
 因此，引入一个辅助的负载均衡损失函数至关重要，它能够惩罚不均衡的路由行为，鼓励token在专家间均匀分布。
 
 Qwen3中的负载均衡机制借鉴了[Switch Transformer](https://zhida.zhihu.com/search?content_id=257474847&content_type=Article&match_order=1&q=Switch+Transformer&zhida_source=entity)论文\[1\]中的公式（4）至（6）：
 
-![](https://pica.zhimg.com/v2-2d1002a5072983d865c28eddc7a44554_1440w.jpg)
+![](images/v2-2d1002a5072983d865c28eddc7a44554_1440w_86a4b1751ad3.jpg)
 
 辅助损失函数的目标是使每个专家的token分配比例和路由概率尽可能均匀。
 
