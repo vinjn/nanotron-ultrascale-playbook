@@ -34,7 +34,7 @@ MLA代码入口
 
 本文原理讲解部分主要参考：
 
-[![](https://picx.zhimg.com/v2-2bd007a42e5e2dddc080e20e228c3989.png?source=7e7ef6e2&needBackground=1)姜富春：deepseek技术解读(1)-彻底理解MLA（Multi-Head Latent Attention）2582 赞同 · 141 评论](https://zhuanlan.zhihu.com/p/16730036197) 文章
+[![](images/v2-2bd007a42e5e2dddc080e20e228c3989_61a4bab582a5.png)姜富春：deepseek技术解读(1)-彻底理解MLA（Multi-Head Latent Attention）2582 赞同 · 141 评论](https://zhuanlan.zhihu.com/p/16730036197) 文章
 
 [缓存与效果的极限拉扯：从MHA、MQA、GQA到MLA - 科学空间|Scientific Spaces​spaces.ac.cn/archives/10091](https://link.zhihu.com/?target=https%3A//spaces.ac.cn/archives/10091)
 
@@ -77,7 +77,7 @@ $$u_{t} = W^{O} [o_{t,1}; o_{t,2}; \ldots; o_{t,n_h}] \tag{5}$$
 
 通过修改模型结构减少kv数量， 主要有MQA和GQA，如下图：
 
-![](https://pic1.zhimg.com/v2-5ebbdc728d464dd0fd68ad5550c6df6e_1440w.jpg)
+![](images/v2-5ebbdc728d464dd0fd68ad5550c6df6e_1440w_3435a6aa678b.jpg)
 
 MHA、MQA、GQA示意图
 
@@ -1109,7 +1109,7 @@ core_attn_out = self.core_attention(
             )
 ```
 
-![](https://pic2.zhimg.com/v2-29421668073db69800c8581cb2b0ea73_1440w.jpg)
+![](images/v2-29421668073db69800c8581cb2b0ea73_1440w_85c36d1ef734.jpg)
 
 Attention计算代码如下，作者看时忽略其他配置， 主干比较容易理解，这里就不详细解释了：
 

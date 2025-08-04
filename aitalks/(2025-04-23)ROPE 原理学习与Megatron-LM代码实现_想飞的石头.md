@@ -649,7 +649,7 @@ def apply_rotary_pos_emb(
 
 仅看散算子实现在此处开始复数化，如下调用\_apply\_rotary\_pos\_emb\_bshd源码，核心代码段：
 
-![](https://pic3.zhimg.com/v2-fc19464bc9e629d60fb7d10e19d6b540_1440w.jpg)
+![](images/v2-fc19464bc9e629d60fb7d10e19d6b540_1440w_05b36669db97.jpg)
 
 ```python3
 def _apply_rotary_pos_emb_bshd(

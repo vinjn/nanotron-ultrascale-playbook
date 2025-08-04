@@ -8,7 +8,7 @@
 
 ## **[DeepSeek开源Day2：DeepEP 原理，NVSHMEM实现All2All通信！](https://link.zhihu.com/?target=https%3A//www.youtube.com/watch%3Fv%3D5CZ07C5p5MU)**
 
-![](https://pic3.zhimg.com/v2-75aa3d3828ce60a246a9ddcf5a73c0f2_1440w.jpg)
+![](images/v2-75aa3d3828ce60a246a9ddcf5a73c0f2_1440w_d1abc6c9ddf6.jpg)
 
 ## 硬件与架构
 

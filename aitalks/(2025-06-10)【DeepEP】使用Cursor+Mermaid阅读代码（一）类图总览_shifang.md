@@ -58,7 +58,7 @@ UML 类图
 
 [deepseek-ai/DeepEP: DeepEP: an efficient expert-parallel communication library](https://link.zhihu.com/?target=https%3A//github.com/deepseek-ai/DeepEP/tree/main)
 
-![](https://picx.zhimg.com/v2-052ac312db86fd1a5398ebb976882e53_1440w.jpg)
+![](images/v2-052ac312db86fd1a5398ebb976882e53_1440w_6cbf9585b38a.jpg)
 
   
 
