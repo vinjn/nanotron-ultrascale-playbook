@@ -647,18 +647,7 @@
 
         <p>Now let’s get a larger workstation with a couple of GPUs and start investigating our first scaling technique, called <em><strong>data parallelism</strong></em> - which, as we'll see, is just a parallel version of gradient accumulation.</p>
 
-        <h2>Data Parallelism</h2>
-
-        <div class="audio-container">
-            <audio controls>
-                <source src="../assets/audio/Data Parallelism and ZeRO_ Scaling Model Training.wav" type="audio/wav">
-                Your browser does not support the audio element.
-              </audio>
-              <div class="figure-legend">
-              <p>To add a podcast feeling to your reading experience, feel free to listen to the NotebookLM hosts discussing the following sections of this book as you're reading along.</p>
-            </div>
-            </div>
-              
+        <h2>Data Parallelism</h2>      
     
         <p>The idea behind data parallelism (DP) is to replicate the model on several GPUs (we call the replicas “model instances”) and run forward and backward passes on different micro-batches of data in parallel on each GPU - hence the name <em>data parallelism</em>. You've probably already seen data parallelism in simple training examples, but we'll dive quite a bit deeper in this section, so stay tuned even if you know the general approach.</p>
 
@@ -988,18 +977,6 @@
         <p>What? How is this even possible?! Let's explore this seemingly magical approach together. 🙂</p>
         
         <h2>Tensor Parallelism</h2>
-
-        <div class="audio-container">
-            <audio controls>
-                <source src="../assets/audio/Tensor, Sequence, and Context Parallelism for Distributed Training.wav" type="audio/wav">
-                Your browser does not support the audio element.
-              </audio>
-              <div class="figure-legend">
-              <p>To add a podcast feeling to your reading experience, feel free to listen to the NotebookLM hosts discussing the following sections of this book as you're reading along.</p>
-            </div>
-            </div>
-              
-    
 
         <p>So, we've sharded the model’s parameters, gradients, and optimizer states with ZeRO, but we hit a limit once activation memory overtakes our memory budget. Welcome tensor parallelism (TP), a method that shards weights, gradients, and optimizer states as well as activations - and without the need to gather them all prior to the computation. Seems like a dream! Let’s first have a look at how TP works with simple matrix multiplication (matmul) operations.</p>
 
@@ -1434,16 +1411,6 @@
         <p>However, we still know that TP doesn't scale well across nodes, so what can we do if the model weights don't easily fit on one node? Pipeline parallelism - our fourth degree of parallelism - to the rescue!</p>
 
         <h2>Pipeline Parallelism</h2>
-
-        <div class="audio-container">
-            <audio controls>
-                <source src="../assets/audio/5D Parallelism_ Scaling Deep Learning Model Training Strategies.wav" type="audio/wav">
-                Your browser does not support the audio element.
-              </audio>
-              <div class="figure-legend">
-              <p>To add a podcast feeling to your reading experience, feel free to listen to the NotebookLM hosts discussing the following sections of this book as you're reading along.</p>
-            </div>
-            </div>
               
         <p>In the <a target="_self" href="#tensor-parallelism">"Tensor Parallelism"</a> section, we saw that trying to scale tensor parallelism past the number of GPUs on a single node - typically 4 or 8 - forces us to use lower-bandwidth network communication, which can significantly impair performance. We can see the effects of this inter-node communication clearly in the all-reduce operation when we benchmark it on our cluster across several nodes (each node here has 8 GPUs):</p>
 
@@ -2064,15 +2031,6 @@
         
         <h2>Diving into the GPUs – Fusing, Threading, and Mixing</h2>
 
-        <div class="audio-container">
-            <audio controls>
-                <source src="../assets/audio/GPU Deep Dive_ Optimizing Model Performance and Memory Efficiency.wav" type="audio/wav">
-                Your browser does not support the audio element.
-              </audio>
-              <div class="figure-legend">
-              <p>To add a podcast feeling to your reading experience, feel free to listen to the NotebookLM hosts discussing the following sections of this book as you're reading along.</p>
-            </div>
-            </div>
               
         <p>Up to now, our discussion has been focused on the high-level organization of our model operations. We’ve moved computations around on various accelerators, taking into account general memory constraints and high-level scheduling of the compute units.</p>
 
