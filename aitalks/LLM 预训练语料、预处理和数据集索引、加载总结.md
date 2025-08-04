@@ -8,7 +8,7 @@
 
 LLM 的模型参数量很大，其模型效果也需要巨大的语料库支撑，LLM 预训练需要的 Token 数已经从早期的 300B Token 逐渐增加到 1.4T，甚至进一步扩展到 3T 以上。本文中我们具体介绍 LLM 预训练语料库的来源，构建语料库的预处理过程以及 LLM 预训练的 Dataset 存储、混合、加载方式。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgw4vryJ18uicrImtQ0R24negMLbRkJt8b7zWkG4iaXyPVLVeKrDZUsic2vaJlMH4L6xzy8icE1ib1f3aQ/640?wx_fmt=png&from=appmsg&randomid=be8a9ncc)
+![Image](images/640_acc689f7b685.png)
 
 ## 二、常见语料库
 
@@ -20,7 +20,7 @@ CommonCrawl 是一个免费、开放的网络爬虫数据集，旨在提供大�
 
 CommonCrawl 数据集非常大，并且在不断地更新中，具体可参考 Common Crawl - Overview，其中最新的 CC-MAIN-2023-50 共包含 3.35B 个网页，压缩后的数据超过 130TB。具体如下图所示：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgw4vryJ18uicrImtQ0R24nerj1hhVKQYLNEzM1POXHBqY0NAvlCazmicq7ljUwwJRGhEXxZM4mZWZA/640?wx_fmt=png&from=appmsg&randomid=0ill9tmk)
+![Image](images/640_13a59c2258db.png)
 
 由于 CommonCrawl 数据集过于庞大，并且包含很多噪声，处理的成本很高，因此也有其他研究者提供了相应处理过的子集，比如 C4（Colossal Clean Crawled Corpus），可以参考 GitHub - google-research/text-to-text-transfer-transformer。
 
@@ -28,7 +28,7 @@ CommonCrawl 数据集非常大，并且在不断地更新中，具体可参考 C
 
 Wikipedia 是一个由全球志愿者维护的在线百科全书项目。其包含多种语言，涉及的领域也非常广，并且质量非常高。比如如下图所示，“Large language model” 页面有 29 种语言，并且分了各个部分进行介绍：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgw4vryJ18uicrImtQ0R24neweUYon3XtVY3SJSQZoFcvZSjTvas5onPX9RxboIf2daoZQOMKuW4icg/640?wx_fmt=png&from=appmsg&randomid=eykxi5av)
+![Image](images/640_57f59769217d.png)
 
 ### 2.3 Books
 
@@ -61,13 +61,13 @@ Stack Exchange （https://stackexchange.com/）是一个高质量问答网站，
 
 如下图 Fig. 7 （来自 [2303.18223] A Survey of Large Language Models）所示，常见的数据处理包含质量过滤（Quality Filtering）、去重（De-deplication）、隐私擦除（Privacy Reduction）、Tokenization、数据混合等：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgw4vryJ18uicrImtQ0R24neeERW07wMciaUoAWFJDQQBUzAfMSN9Uvvj4Ak9qpXo62XrebobPHJpLg/640?wx_fmt=png&from=appmsg&randomid=etxa9494)
+![Image](images/640_32fc7fedab0f.png)
 
 ### 3.2 LLaMA-1
 
 LLaMA 是 Meta 发布的 LLM，如下图所示为 LLaMA-1 中预训练语料的来源、混合比例等统计信息，经 Tokenizer （采用 BPE 算法）后生成 1.4T Token：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgw4vryJ18uicrImtQ0R24nerMTDNib4JBALHMVNENqe70taFic5PvFkgRWHbV8n2fVUgNQFm2wEyRGA/640?wx_fmt=png&from=appmsg&randomid=2xh9782o)
+![Image](images/640_ffc014333f08.png)
 
 针对不同的数据采用了不同的预处理策略：
 
@@ -94,23 +94,23 @@ RefinedWeb 是阿布扎比的 TII 基于 CommonCrawl 构建的语料库，其数
 - Fuzzy deduplication：作者在文档级别采用了 MinHash 来删除相似的文档。
 - Exact deduplication：作者在序列级别采用精确字符串匹配的方式进一步对文档进行去重，可以删除特定的内容，比如特定的免责声明或通知等。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgw4vryJ18uicrImtQ0R24nen2Rjib1jC1QQyy0kQI5Zswiao1GtHRPQY2mzqtkOxE9iaDt07T6XVtlAg/640?wx_fmt=png&from=appmsg&randomid=hs4si4td)
+![Image](images/640_a20212b244ca.png)
 
 ### 3.4 Baichuan 2
 
 Baichuan 2 是百川发布的 LLM，其构建了中英语料数据集，预训练语料同样包含网页、书籍、论文和代码。大致的数据分布如下图 Figure 1 所示（图片来自 [2309.10305] Baichuan 2: Open Large-scale Language Models）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgw4vryJ18uicrImtQ0R24nexNBHv7Dk4aFPGK0TWTsIOic6FfESIcSdFzEPNujFZVpIibZzNBoXSlXw/640?wx_fmt=png&from=appmsg&randomid=smft5bxh)
+![Image](images/640_a89f707abc38.png)
 
 对于数据处理，作者聚焦在数据频率和质量上，数据频率主要依赖聚类和去重。关于数据去重和聚类，Baichuan 2 采用基于 LSH 特征和稠密 Embedding 特征的方案。根据聚类，可以对单个文档、段落和句子进行重复数据删除以及打分，然后这些分数也可以用于预训练中的数据采样。
 
 其整个数据预处理过程及各阶段清理的数据占比如下图 Figure 2 所示，其中灰色部分为删除的数据比例：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgw4vryJ18uicrImtQ0R24nemCyqVhGCqoP01wGicDPVPhaImJ6ml2Suc6ozfWlibibJOwtgPF4zx5IfA/640?wx_fmt=png&from=appmsg&randomid=8qnuuzfs)
+![Image](images/640_84702651675e.png)
 
 Baichuan 2 的 Tokenizer 同样采用 BPE（来自 SentencePiece），Tokenizer 后包含 2.6T Token，如下图 Table 2 所示为 Baichuan 2 与其他模型的词表大小及压缩率比较：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgw4vryJ18uicrImtQ0R24ne6cEBibJLjxkOlLtX9ia0vhocwtWQ4fzAIUzSXaNz3KODp9hWolbzVsxA/640?wx_fmt=png&from=appmsg&randomid=89lkkkbk)
+![Image](images/640_8cda48a12dbb.png)
 
 ### 3.5 Qwen
 
@@ -139,11 +139,11 @@ Skywork 的数据处理和其他模型类似，包含几个部分：
 
 其 Tokenizer 同样采用 BPE，词表分布如下图 Table 2 所示：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgw4vryJ18uicrImtQ0R24neTsYtefekibJHcnNJiaMdkDHgd6p1WATcIclibFOMKBKNUuAhQtbQEQ6Tg/640?wx_fmt=png&from=appmsg&randomid=s7uf1rho)
+![Image](images/640_208fff6de9d2.png)
 
 Skywork-13B 模型的预训练语料包含 3.2T Token，从 SkyPile 采样而来，其预训练分为两个阶段，第一阶段使用 2T Token，分布如下图 Table 1 所示，第二阶段采样剩下的 1.2T Token：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgw4vryJ18uicrImtQ0R24nexlnT4T4VAHibL1yaCr64Omib1zGUNicDsNvu4RwgiabnldCHia0sPAuibBicw/640?wx_fmt=png&from=appmsg&randomid=ij9k1sew)
+![Image](images/640_f8021fa8ad7c.png)
 
 ### 3.7 DeepSeek
 
@@ -192,7 +192,7 @@ Skywork-13B 模型的预训练语料包含 3.2T Token，从 SkyPile 采样而来
 - Buffer: 存储 Bin 中 Document 的起始位置和大小
 - Bin：存储实际的 Document，比如根据 points[m] 和 sizes[m] 即可以从 Bin 中获得 Document m。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgw4vryJ18uicrImtQ0R24nePyuU8iaQQD5SDqKf812atIWibJ3FM7TMiaMcBIlIfFeqheJfWWn966EQA/640?wx_fmt=png&from=appmsg&randomid=09opm7va)
+![Image](images/640_29b94bd27bfd.png)
 
 需要说明的是，每个 Document 都已经 Token 化，并且已经添加过起始 Token <s> 和终止 Token </s>。
 
@@ -205,7 +205,7 @@ Skywork-13B 模型的预训练语料包含 3.2T Token，从 SkyPile 采样而来
 - _num_tokens：根据 Dataset 中每个 Document 的 size 累积即可获得当前 Dataset 总的 Tokens 数目。
 - _num_epochs：根据需要采样的 num_samples，序列长度（seq_length），每个 Epoch 总的 Tokens 数目（tokens_per_epoch）即可以计算获得数据需要过几个 Epoch。需要说明的是，倒数第二行的（total_tokens - 1）是因为 Sample 中的 Token 个数会比 seq_length 多 1 个，但是多的这一个又会作为下一个 Sample 的起始 Token，因此总共需要的 Tokens 数目为 num_samples * seq_length + 1。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgw4vryJ18uicrImtQ0R24nekFjzgr6elz4TD5KzLjqa6hicpMmyicmDIIyM3mKoFHOhZia6nk8dOGthQ/640?wx_fmt=png&from=appmsg&randomid=ew3a04ss)
+![Image](images/640_14cefb5c0ede.png)
 
 此外，Dataset 还需要有一定的 Shuffle 操作，总的来说有两个 Shuffle：
 
@@ -222,7 +222,7 @@ Skywork-13B 模型的预训练语料包含 3.2T Token，从 SkyPile 采样而来
 - sample_idx 的第 5 个位置的 idx 对应终止的 Document 索引的位置，也就是绿色箭头指向的 doc_idx 中的 0，而 offset 为 3，则表明要从 Document 0 的第 3 个 Token 终止，但是每个 Sample 中在结束位置需要有一个额外的 Token，因此实际是从第 4 个 Token 终止。
 - sample：根据上述的起始 Document idx 和 offset 以及终止 Document idx 和 offset 即可以获取到最终的 Sample，其中最后一个 * Token 也会被下一个 Sample 复用。因为 GPT 训练的目的是让每一个位置预测下一个位置的 Token，因此 input 和 target 正好交错 1 个 Token，这也是为什么 Sample 中的 Token 数目要比 seq_length 多 1。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgw4vryJ18uicrImtQ0R24neIiarOXj1nFf60sUUXC0AaSPQ0uD0qhUZUDYMicGqxqnG0MFracHDPRKw/640?wx_fmt=png&from=appmsg&randomid=kbfiqx41)
+![Image](images/640_0a11bed0186c.png)
 
 如下图所示为 GPTDataset 中获取一个 Sample 的示例：
 
@@ -230,11 +230,11 @@ Skywork-13B 模型的预训练语料包含 3.2T Token，从 SkyPile 采样而来
 - 然后，从 sample_idx 中获取第一个和最后一个 Document 的 idx 的位置和 offset
 - 最后，根据 idx 的起始和终止位置可以获得当前 Sample 由哪些 Document 组成，当然，其中的第一个和最后一个 Document 还需要根据 offset 截断。需要说明的是，有些 Document 比较长，因此有可能存在一个 Sample 来自同一个 Document，也就是 doc_index_f 等于 doc_iindex_l。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgw4vryJ18uicrImtQ0R24ne3cJRILYvAdp1CQwM5Q5e1NZT0QdMZMLc4eNdC9HDqxKsk7rlicvreWw/640?wx_fmt=png&from=appmsg&randomid=wh8rc9ji)
+![Image](images/640_0912109d09c7.png)
 
 如下所示，如果第一步不取 shuffle_idx，也就是直接打印真实的第 0,1,2 个 Sample，可以看出 Sample 的长度为 4097（seq_length==4096），并且每个 Sample 中的最后一个和下一个 Sample 的第一个重叠，比如 1670 和 10870。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgw4vryJ18uicrImtQ0R24nehyicXZzn16siaictia4C2fIFpn9YXLx4n9tICcVkUsia9KmfxfjMBticVs2A/640?wx_fmt=png&from=appmsg&randomid=uzocckg6)
+![Image](images/640_d5f547ab6331.png)
 
 如下图所示为构建 doc_idx 的过程，可以看出其最后一个 Epoch 进行了特殊处理，这是因为根据 num_sample 算出来的 Epoch 很可能不是整数，也就是必然有些 Document 重复多，有些重复少，但需要尽可能地保证所有 Document 的采样概率相同。
 
@@ -244,11 +244,11 @@ Skywork-13B 模型的预训练语料包含 3.2T Token，从 SkyPile 采样而来
 - 如果最后一个 Epoch 独立 Shuffle，比如 [2, 0, 3, 3, 1, 0 ,2, 1, 0, 3, 2, 1]，此时截断后为 [2, 0, 3, 3, 1, 0 ,2, 1, 0, 3]，可以保证采样次数最多差 1。
 - 目前还不确定为什么不每个 Epoch 都独立 shuffle 拼接后再截断。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgw4vryJ18uicrImtQ0R24neCR7ic0iblapqFw7oE6kCtsmPib5fokG8b2Xrs3xYoXpHicnJYH0EwD7Hfg/640?wx_fmt=png&from=appmsg&randomid=7xqpvo54)
+![Image](images/640_bc9812276734.png)
 
 实际上获得的 doc_idx 并没有经过截断，还是完整的 Epoch，因此在 shuffle_idx（也就是 shuffle Samples）时也需要特殊处理最后一个 Epoch：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgw4vryJ18uicrImtQ0R24neKTKO4Nv0T7otarmECicX9BtU0SpEGLB7oL6FpWOhBRI6kicN63KJ1GAw/640?wx_fmt=png&from=appmsg&randomid=bl76dhmi)
+![Image](images/640_cd8b4a0cc0f9.png)
 
 ### 4.3 GPT Dataset Blending
 
@@ -280,7 +280,7 @@ LLM 在训练数据集中往往包含多个子数据集，实际训练的时候�
 
 具体代码位于 https://github.com/bigscience-workshop/Megatron-DeepSpeed/blob/main/megatron/data/helpers.cpp#L36-L97，如下所示：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgw4vryJ18uicrImtQ0R24neiboS1DiasmIsMT41t4LHKdbcFQuXfbWibTDzXdYlAA2R9sU9PSr1oQrZg/640?wx_fmt=png&from=appmsg&randomid=8zw5b6mu)
+![Image](images/640_5ffdb830e998.png)
 
 此外，原始 Megatron-DeepSpeed 中的 dataset_index 存储的是 uint8 类型，也就是最多只能有 256 个 Dataset，但是实际上当前 LLM 预训练的 Dataset 可能很多，比如有 1000 多个，此时有两种方案：
 
@@ -291,7 +291,7 @@ LLM 在训练数据集中往往包含多个子数据集，实际训练的时候�
 
 如下图所示，BlendableDataset 为实际 LLM 预训练使用的 Dataset，其在初始化阶段完成索引构建（可以 Cache），训练中直接遍历相应的 Sample 即可（返回数据包含子数据集索引及在子数据集中的位置索引）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgw4vryJ18uicrImtQ0R24neUKBRjIbcyA1J7oqhavZUTutOM2xsXSibsVD6nZqTummL0zj802bPQUQ/640?wx_fmt=png&from=appmsg&randomid=shfv1nwv)
+![Image](images/640_5ac64435ab0a.png)
 
 ## 五、参考链接
 

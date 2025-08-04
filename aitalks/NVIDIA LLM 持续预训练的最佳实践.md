@@ -32,19 +32,19 @@ PS：论文中大量使用 GB，QB，QA blend 等缩写，并且有很多种混�
 
 持续学习经常出现灾难性遗忘（Catastrophic Forgetting）问题，也已经有很多工作在尝试解决这个问题，并取得了不错的结果。在 [2205.13452] Continual evaluation for lifelong learning: Identifying the stability gap 中，作者发现很多基于经验回放，约束回放以及知识蒸馏或者参数正则化的 SOTA 方法仍然会存在显著的遗忘，并且观察到遗忘是短暂的，然后会逐渐恢复，作者将这种现象称为 Stability Gap。如下图 Figure 1 所示，其中的 Gap 点涉及到训练任务的切换，会出现在 Task 1 上 Accuracy 下降的问题：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaSicO7ibJwtiaCf5gb30YTJntIibmqXz9lGVKaclHaWveQtm42QNZWjvUx0B6IIwibVHzbJa5EMOhZaNg/640?wx_fmt=png&from=appmsg&randomid=c6r0aln4)
+![Image](images/640_919d11c1d0c4.png)
 
 ### 3.2 微调 Warmup
 
 在 [2308.04014] Continual Pre-Training of Large Language Models: How to (re)warm your model? 中，作者在进行下游任务微调时，同样观察到 Stability Gap 现象。此外，作者实验表明，通过 Warmup 到更高的 Max Learning Rate 可以帮助模型适应新数据集，而较小的 Max Learning Rate 可以保持对旧数据集的性能。当然，作者是在比较小的模型验证（410M），需要在更大的模型、不同的数据分布上验证结论是否成立。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaSicO7ibJwtiaCf5gb30YTJntKibgic5C2XCjPdicJwebpAJygIwNDibFKUibibiaa7T8UvfTjfGaXHujMMqgw/640?wx_fmt=png&from=appmsg&randomid=grhs96s5)
+![Image](images/640_c96a1057f8a3.png)
 
 ### 3.3 MoE 初始化
 
 昆仑万维在 [2406.06563] Skywork-MoE: A Deep Dive into Training Techniques for Mixture-of-Experts Language Models 的训练中，从预训练模型扩展到 MoE 模型的过程中也出现了类似的情况（PS：不过作者在论文中并没有进行相关解释）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaSicO7ibJwtiaCf5gb30YTJnt2wIGHEibjkVcPymMXsUCsXKqBfVH7iayzlodb78zsQEgdia3tic65JI57g/640?wx_fmt=png&from=appmsg&randomid=njhd3edk)
+![Image](images/640_6b187eab4553.png)
 
 ### 3.4 扩展序列长度
 
@@ -73,7 +73,7 @@ Meta 在 LLaMA 3 的技术报告 [2407.21783] The Llama 3 Herd of Models 中提�
 
 如下图 Table 1 所示，预训练数据主要包含“English”、“Multilingual” 和 “Source Code”三类，总共 8T Token。其 “Multilingual” 数据包含 53 种语言，“Source Code” 数据包含 43 种编程语言：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaSicO7ibJwtiaCf5gb30YTJntXpzetpNuQdibtlpBbGbicJkuYPyIFibRibcTPaEXalfZmg5MARRVc66cWQ/640?wx_fmt=png&from=appmsg&randomid=egvmbpp8)
+![Image](images/640_d4e5673f74a1.png)
 
 ### 4.3 预训练配置
 
@@ -83,11 +83,11 @@ Meta 在 LLaMA 3 的技术报告 [2407.21783] The Llama 3 Herd of Models 中提�
 
 如下图 Table 12 所示，STEM 相关的推理能力比较有限，相关指标比较低：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaSicO7ibJwtiaCf5gb30YTJntCcI8jjcSJaezoaDMibQzzjyNPXD8iaB8UngNIhBNvwNIVNia3YJ9hAvFQ/640?wx_fmt=png&from=appmsg&randomid=gmqaq3i3)
+![Image](images/640_f9fbe5c4092f.png)
 
 如下图 Table 3 所示为平均精度，也就是 Baseline：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaSicO7ibJwtiaCf5gb30YTJntbRLB2XXPJq9AiaCMh9zlht1U1IWMxmwK0c2xEDI815rw3trbCIdP0HQ/640?wx_fmt=png&from=appmsg&randomid=ah126omf)
+![Image](images/640_9aedb8382bee.png)
 
 ## 五、实验
 
@@ -95,7 +95,7 @@ Meta 在 LLaMA 3 的技术报告 [2407.21783] The Llama 3 Herd of Models 中提�
 
 如下图 Table 2 所示，Continuous Training 使用到的数据通常与预训练使用数据一致，作者额外新增了一些 QA 数据，总共 2.8B Token：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaSicO7ibJwtiaCf5gb30YTJntbge6Thrj7zetqU791Lj2BENO0icukYfzq1s7aiaKpTauf03vNYjv4SkQ/640?wx_fmt=png&from=appmsg&randomid=xlp40i2d)
+![Image](images/640_a522a80c1c73.png)
 
 文中的所有 Continuous Training 都使用 300B Token。
 
@@ -109,7 +109,7 @@ Meta 在 LLaMA 3 的技术报告 [2407.21783] The Llama 3 Herd of Models 中提�
 - QA：在整个 Continuous Training 阶段使用 Pretraining + QA 混合数据。
 - Pretraining(250B)、QA(50B)：开始时使用 Pretraining 数据集，然后在训练后期切换到 Pretraining + QA 混合数据集。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaSicO7ibJwtiaCf5gb30YTJntibGCWdZgnia8ojYaG7lIwC5z32hUEym4txhE4qBHbe8wlBoRQx3CWyhw/640?wx_fmt=png&from=appmsg&randomid=dctc0l6x)
+![Image](images/640_74c006d045db.png)
 
 实验结果显示，最后一种策略（即在训练后期引入 QA 数据集）在 Continuous Training 中取得了最大的改进。也就说，应该在 Continuous Training 的起始阶段使用尽可能接近预训练分布的数据，然后在后续阶段引入新数据。其中，Pretraining + QA 混合数据中 QA 数据集的占比都是 10%。
 
@@ -124,11 +124,11 @@ Meta 在 LLaMA 3 的技术报告 [2407.21783] The Llama 3 Herd of Models 中提�
 - No Web：没有 Web 数据
 - UW Non Web w/High Quality Web：增加非 Web 数据以及高质量 Web 数据的权重
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaSicO7ibJwtiaCf5gb30YTJntFeicC8YUlc0IRFQ3byGVeY2ib4kP6GF6lfCrvGPFj0DdrckEEQkTovOQ/640?wx_fmt=png&from=appmsg&randomid=5di0rge1)
+![Image](images/640_ec8fc271c5fe.png)
 
 如下图 Table 13 所示，虽然 UW Non Web w/High Quality Web 不是最优的，但是在各个子任务上都有提升，比较均衡，因此作者将其作为 GB 的混合方案：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaSicO7ibJwtiaCf5gb30YTJntqch68Jj5ziabiawib9KmLgEKj8FLdz3kbrZUofbKn8vwVoBkGuODMaCicg/640?wx_fmt=png&from=appmsg&randomid=cfp3fqgu)
+![Image](images/640_feb168374545.png)
 
 #### 5.2.3 QA Blend 消融实验
 
@@ -138,47 +138,47 @@ Meta 在 LLaMA 3 的技术报告 [2407.21783] The Llama 3 Herd of Models 中提�
 - QA 2：增加 STEM 和 World Knowledge 的比例
 - QA 3：增加 STEM 和 Chat 的比例
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaSicO7ibJwtiaCf5gb30YTJntR13Xczh1ZXhsL7batRZpfFd7vlMouk0gX8eU07NrK9LF1T0xapyXTQ/640?wx_fmt=png&from=appmsg&randomid=58g9c46d)
+![Image](images/640_a42d23098cd3.png)
 
 如下图 Table 6 所示，QA 3 的方式获得最高的精度：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaSicO7ibJwtiaCf5gb30YTJntlWqr9sXcRoiaxYHKhKZm7nlzV9LQ2qgmYJQkB8iac74ia05FG6FGbVYyg/640?wx_fmt=png&from=appmsg&randomid=9sqm94sw)
+![Image](images/640_de70e97f8254.png)
 
 #### 5.2.4 QB 消融实验
 
 基于以上实验，作者进一步验证了结合 GB 和 QB 的实验。其中的 QB 阶段直接采用 GB 阶段 UW Non Web w/High Quality Web 的混合方案，并且训练 250B Token。然后在 QB 阶段采用不同的数据混合方案，通过调优，最终可将模型平均精度从 48.9 提升到 55.4，提升 13%：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaSicO7ibJwtiaCf5gb30YTJntpPghPPibYnw55RJJarPenNC2r1FRnaY6yTcItnKWib7YA8c1VHFMERFA/640?wx_fmt=png&from=appmsg&randomid=fk6s95t8)
+![Image](images/640_04a64f94c9f1.png)
 
 如下图 Figure 4 所示为上图 Table 7 中 QB 阶段的不同数据分布，其中 1.5e 表示 QA 数据训练 1.5 个 Epoch，3.5e 表示训练 3.5 个 Epoch：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaSicO7ibJwtiaCf5gb30YTJntoteC8U24HLLWBrCkbP7okM0ibsVuMM0XOsah3vymgEslOHCXiaBHZPEQ/640?wx_fmt=png&from=appmsg&randomid=1m2wq1xo)
+![Image](images/640_72b23c055545.png)
 
 ### 5.3 学习率调度(Learning Rate Schedule)
 
 如下图 Figure 3 和 Figure 5 所示，作者进一步探索了不同的 Learning Rate Schedule 的影响，分为 Min LR 以及 Warmup 的影响：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaSicO7ibJwtiaCf5gb30YTJntp2dFlgI4pBo1Z0jr3ytk2GwWyL8LHZqP8iaMicfgAsoLAul3kALTZyfQ/640?wx_fmt=png&from=appmsg&randomid=vmo1xe7p)
+![Image](images/640_ac91398f1718.png)
 
 如下图 Table 8 所示，最终 Decay 到预训练 Min Learning Rate（4.5e-5）的 1/100=4.5e-7 时效果最优：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaSicO7ibJwtiaCf5gb30YTJntqX0LjllaksVEWTojicGqViaKLnMWa91EkIpiaoCFjMmal0dGORswRpO3g/640?wx_fmt=png&from=appmsg&randomid=9il5p9cj)
+![Image](images/640_d2405b66b39f.png)
 
 ### 5.4 数据分布切换(Switch of Data Distributions)
 
 之前的实验中，GB 和 QB 的切换发生在 250B Token 的时候，那么是否有更优的切换点呢？作者同样做了一系列消融实验。如下图 Figure 5 所示，分别在 Learning Rate 下降到 1/2，1/5，1/10 和 1/50 时进行切换：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaSicO7ibJwtiaCf5gb30YTJntA5NAnz4cU0qw7KuoicAOJ3giaX4URehibMFqiaxWib3A8kmY5hGZzex6OaQ/640?wx_fmt=png&from=appmsg&randomid=b8qst7k1)
+![Image](images/640_7444f09557b2.png)
 
 如下图 Table 9 所示可以看出，当 Learning Rate 下降到 1/5 时进行切换效果最优：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaSicO7ibJwtiaCf5gb30YTJnt8V47tLXMQTztbnV5z1PTt6cksF5HWRpp1O7tHOpBFjOak7ibgQ28OBQ/640?wx_fmt=png&from=appmsg&randomid=c29j1ozf)
+![Image](images/640_4caa8494c041.png)
 
 ### 5.5 数据量
 
 如下图 Table 10 所示，作者同样验证了 Continuous Training 数据量的影响，可以看出，1T Token 相比 300B Token 有一定提升，但是提升也不是特别明显：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaSicO7ibJwtiaCf5gb30YTJnttVRpP8GBgS3y3ME33HZexMMCiczicMuadBSBGqCOjicxLgdqwPgYPLcdw/640?wx_fmt=png&from=appmsg&randomid=701g1r0t)
+![Image](images/640_004acd8e9f0a.png)
 
 ## 六、参考链接
 

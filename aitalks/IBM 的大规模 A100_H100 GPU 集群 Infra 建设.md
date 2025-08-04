@@ -46,11 +46,11 @@ Vela 是一个具备水平扩展能力的数据中心系统，采用双层 Spine
 - 每节点配备 1.5TB 内存 和 4 块 3.2TB NVMe。
 - 为支持分布式训练，计算节点包含 4 个 100Gbps NIC，通过双层 Spine-Leaf CLOS 互联。（PS：其实下图中展示的每个 PCIe Switch 对应一个 2x100 Gbps 的 NIC 和两个 GPU。相当于总共 4 个 2x100 Gbps 的 NIC）
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaw8lyqvmB0AuV4Q6mOJoGWdNlnGY3IYUzWM1Og43rtRomKS36HtpGpGoD055oghASQG7QN2bdm9g/640?wx_fmt=png&from=appmsg&randomid=q16eduim)
+![Image](images/640_e8ac251c995c.png)
 
 如下图所示为 A100 机型经常采用的 ConnectX-6 NIC，可以提供单个 200Gbps Port 或者 2 个 100 Gbps Port。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaw8lyqvmB0AuV4Q6mOJoGWgXJ44nFgEhXibZRvfsaSqeLKukzky8tJNJDzFiaB79ZvDfHEcazw75Ng/640?wx_fmt=png&from=appmsg&randomid=wmmx5215)
+![Image](images/640_f6ea5da2de6e.png)
 
 如下图展示了 Vela 的系统/机架视图，为确保高可用性，作者在系统中采用了冗余网络设计。每个 NIC 的端口连接到不同的 ToR 交换机，作者这里采用的是 2 个 100 Gbps Port（如上图），然后每个 NIC 的 0 号 Port 都连接到 Rack 中的 0 号 ToR，1 号 Port 连接到 1 号 ToR。（PS：其中的 1 个 Port 应该是为了冗余设计，这也就是为什么 Node 是 4 个 2x100 Gbps 的 NIC，但作者介绍其每个节点只有 4 个 100 Gbps 的 NIC）
 
@@ -63,7 +63,7 @@ PS：针对上述方案我们有两个疑问：
 - 上述提到每个机架提供 1.6Tbps 的跨机架带宽，而 6 个节点理论带宽上限为 6*4*100Gbps=2.4Tbps，因此扩展后相当于 Leaf 的上行和下行是有收敛的。也许采用的是 40 个 100 Gbps Port 的 Switch，NIC 占用了 24 个 Port，只剩下 16 个 Port？
 - 散热系统是否能够满足需求？毕竟从 3 个节点扩展到 6 个节点的功耗翻倍，散热也会明显增加。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaw8lyqvmB0AuV4Q6mOJoGWfkX1oYMjT5Ul5tSj5uODpyMKex3vf8JMh7JDdsC8WwODvib8alN7VmQ/640?wx_fmt=png&from=appmsg&randomid=vluodb61)
+![Image](images/640_d85b10a7691e.png)
 
 #### 3.1.1 网络
 
@@ -74,7 +74,7 @@ Vela 专为大规模模型训练设计。为支持更大规模的模型训练，
 
 RDMA 使得一个处理器能够直接访问另一处理器的内存，无需涉及任一计算机的操作系统，从而通过尽可能减少中间过程，大幅提升处理器间的通信速度。如下图 Figure 2 所示，结合 RoCE 的 GDR，允许一个系统中的 GPU 通过 NIC 跨以太网访问另一系统中 GPU 的内存。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaw8lyqvmB0AuV4Q6mOJoGWOuCXSiaB88xSqrLaK8SdIHTcuLVZMibgqJn2y2fsOMf7eOichDLMiaW1bQ/640?wx_fmt=png&from=appmsg&randomid=vmwjckwe)
+![Image](images/640_5ad924da07ff.png)
 
 尽管 TCP 通信在基于以太网的、多路径且易丢失的网络中表现良好，但对网络敏感的 RDMA 流量则需依赖底层网络 Infra 提供的服务质量（QoS）机制。此外，还需尽可能将网络功能卸载至现有硬件。
 
@@ -95,11 +95,11 @@ Vela 集群中的 RoCE 部署经过调优，以在 ECMP 路由下表现出色。
 - 对于 8MB 的消息，GDR 提供 2GB/s 的带宽，而 TCP 仅提供 0.2GB/s，差距达到 10 倍。这种较小消息带宽的提升主要归因于 GDR 情况下数据包路径缩短带来的延迟减少。
 - 对于 500MB 及更大的消息，GDR 提供的带宽超过 20GB/s，最高可达 30GB/s，而 TCP 则在 6GB/s 左右达到饱和，差距为 3 至 5 倍。使用 TCP 时，连接 CPU 和 NIC 的链路成为瓶颈，因为数据需要从 GPU 复制到 CPU，再从 CPU 复制到 NIC。而采用 GDR 时，数据直接从 GPU 传递到 NIC，消除了这一瓶颈链路。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaw8lyqvmB0AuV4Q6mOJoGWmv4ce681ib7tqmZRic91jtpDPNwKhBYI1NCb3a9BVMXRsFxWBO1IZuyw/640?wx_fmt=png&from=appmsg&randomid=15yexnku)
+![Image](images/640_b5e5f3f009d6.png)
 
 如下图 Figure 4 展示了使用 Ring 算法进行集合通信时网络带宽性能随参与 GPU 数量（32 -> 1752）变化的扩展情况。结果表明，GDR 在从 8MB 到 2GB 的消息大小范围以及从 32 到 1752 GPU 范围内，均能实现可扩展的性能。AI 研究人员可以利用这些网络扩展曲线来指导训练时使用的 GPU 数量，并估算在 Vela 上计划训练的不同模型的训练时间。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaw8lyqvmB0AuV4Q6mOJoGWia05nNn6tydy3oVg956ecReDRY6kaXIUOaQ678wCCxMz319aY4AEiaDQ/640?wx_fmt=png&from=appmsg&randomid=2tfdgf9x)
+![Image](images/640_606f88928f7b.png)
 
 #### 3.1.2 节点虚拟化
 
@@ -118,13 +118,13 @@ Vela 集群中的 RoCE 部署经过调优，以在 ECMP 路由下表现出色。
 - Guest XML配置：启用大页内存、NUMA 域、Device-NUMA 映射、大型内存虚拟机的主机物理位模型，以及 PCI 控制器上的 ATS。
 - Guest 操作系统配置：将最大 PCI 读请求大小增加至 4KB。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaw8lyqvmB0AuV4Q6mOJoGWXgQXf6xzrXbZanibvGZ4UzsQibDQfNmfRx4WYniaAw7UOic7JibEIol7SHQ/640?wx_fmt=png&from=appmsg&randomid=6thva7i8)
+![Image](images/640_598c3978efcc.png)
 
 作者在一个配备 8 个 A100 80G GPU 的系统上实施了这些配置，并对各种 Benchmark 和工作负载在裸金属和虚拟机上的性能进行了测量。结果表明，经过优化的虚拟机配置在所有实验中均接近裸金属性能。例如，在单节点虚拟机和裸金属上使用相同配置运行了 NMT-12 模型训练任务，裸金属环境下可达到每秒 147,000 词（WPS），而在虚拟机内则为 140,000 WPS，即虚拟化开销约为 5%。作者还通过 Cuda Samples、BERT-Large、Megatron 和 T5 11B 评估了裸金属和虚拟机的性能，虚拟机的开销范围从小于 0% 到最大 5%。所谓“小于0%”，意味着虚拟机执行实际上可能更快。
 
 虚拟化在多节点通信中也扮演着重要角色。为了评估网络虚拟化优化效果，作者采用了两个计算节点，每个节点 8 个 A100 80GB GPU 和 4 张 Mellanox ConnectX-6 Dx 双端口网卡（即总带宽800 Gbps），运行 IBM Cloud KVM 虚拟机管理程序（当时为 Linux 5.4）及Ubuntu 20.04（内核为Linux 5.4）操作系统，并搭载了 NVIDIA 和 Mellanox 的最新软件栈。为测试网络性能，作者执行了nccl-tests 的 all_reduce_perf，评估了 TCP、RoCE 及 GDR 下的网络性能。如上图 Figure 5 所示，在不同系统层级应用的优化显著提升了网络性能。作者还执行了分布式 NMT-12 模型训练任务，并证明在虚拟机和裸金属环境中可实现相似性能，如下图 Figure 6 所示，作者测试了其他几项分布式 AI 训练任务，总体性能损失小于 5%。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaw8lyqvmB0AuV4Q6mOJoGWYVwfib9APKKBEicAdAM4icase6q2vm7N2PHFdJNyuM675sU1UQXOn8jcQ/640?wx_fmt=png&from=appmsg&randomid=4casihp1)
+![Image](images/640_8077312c09d6.png)
 
 综上所述，作者设计了一种方法，将节点上的所有功能（GPU、CPU、网络和存储）引入虚拟机，并开发优化的虚拟机配置，使得虚拟化开销低于 5%，这是作者所知行业内最低的开销。此外，除了上述配置优化外，还需要在虚拟机内准确表示所有设备及其连接关系，例如，哪些网卡连接到哪些 CPU 和 GPU，GPU 如何连接到 CPU Socket，以及 GPU 之间如何互联。这些优化是云控制平面的一部分，它负责在裸金属主机上创建 GPU 虚拟机。这些优化，连同其他硬件和软件配置，使作者的系统能够接近裸金属性能。
 
@@ -147,7 +147,7 @@ Vela 集群中的 RoCE 部署经过调优，以在 ECMP 路由下表现出色。
 - 在稳定状态训练期间，多个客户端同时访问文件系统。由于 NFS 的并发支持有限，迭代时间会有近 50% 的波动（例如从 6 秒到 9 秒）。在 Scale 的情况下，迭代时间相对稳定，在 4.8 秒到 5.2 秒之间变化，变化幅度小于 10%。
 - 得益于 Scale 的高性能，AI 任务的迭代速度平均比使用 NFS 快超过 10%，这直接将 AI 模型训练时间减少了 10%。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaw8lyqvmB0AuV4Q6mOJoGWuDM40U4dbAONxyI3q0R2pnz7bN80j6AWzC7c9wBXrqEORTy8Itiaupg/640?wx_fmt=png&from=appmsg&randomid=vvkosvb5)
+![Image](images/640_fdec6cbab605.png)
 
 ### 3.2 Vela 软件栈
 
@@ -196,7 +196,7 @@ CNSA：Scale 客户端集群部署在 Vela 的 GPU 节点上，对应 Scale 的 
 
 在所有 Batch 大小下，OpenShift 的迭代时间与虚拟机相比，差异在 4% 以内，甚至在某些情况下，OpenShift 甚至更优。在前述所述，作者总结了整体虚拟化开销在接近 0% 至最高 5% 之间波动；增加 OpenShift 层并未显著改变这一情况。相对于裸金属，总体开销仍控制在约 5% 以内。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaw8lyqvmB0AuV4Q6mOJoGWYB1Hic4fVI9auH5Voqia2dwDtv3fuH3owGIFp2O76AW4kJxyADOBVL3Q/640?wx_fmt=png&from=appmsg&randomid=7b6uvi7k)
+![Image](images/640_ae0e2ee8af89.png)
 
 与典型的 HPC 调度器相比，OpenShift 确实在节点上运行了更多进程，如监控 Agent、网络 Operator、日志 Agent 等，但其累积 CPU 使用率在 2% 以内，累积内存使用率低于 4%。这是一个相当小的开销，在实际应用中可以忽略不计。
 
@@ -204,7 +204,7 @@ CNSA：Scale 客户端集群部署在 Vela 的 GPU 节点上，对应 Scale 的 
 
 尽管单一集群有利于资源整合，但训练工作负载与推理工作负载在安全性和扩展性方面有着不同的需求，因此作者也在 Vela 上部署了额外的集群，以支持生产环境中的 watsonx.ai 推理服务。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaw8lyqvmB0AuV4Q6mOJoGWicpcS6NgdibQhXQfbtR3amMQib4XFsUoAQTIricwr8CTEuH4tdd9ugaWzg/640?wx_fmt=png&from=appmsg&randomid=948c3ker)
+![Image](images/640_2b530831366e.png)
 
 ### 3.3 运维效率和弹性
 
@@ -218,7 +218,7 @@ CNSA：Scale 客户端集群部署在 Vela 的 GPU 节点上，对应 Scale 的 
 - 隐晦的硬件故障（Subtle Hardware Failure）
 - 软件故障（Software Failure）
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaw8lyqvmB0AuV4Q6mOJoGW7QibKZzZdmwUsbpNWs7ufU76mHic5duPUuCJibPWJ5KwQtLn6qhdCSTQQ/640?wx_fmt=png&from=appmsg&randomid=p82hatee)
+![Image](images/640_ed3c9a249f4b.png)
 
 明确的硬件故障：当节点发生崩溃时，作者将其归类为明确硬件故障。观察显示，在过去两年中，平均每月约有 2% 的节点发生崩溃，最糟糕的情况下这一比例可达 5%。这些故障的主要来源是 GPU 板卡（称为 HGX 基板）的故障。其次，虽然较为罕见，但 NVLink 或 NVSwitch 系统的故障也是原因之一。在上述两种故障情况下，GPU 系统必须从集群中移除，并在大多数情况下由供应商修复或更换后才能重新接入集群。另一个明确的硬件故障来源是主机内存 DIMM，相较于其他故障而言，这些 DIMM 可由运维团队更换，使得系统能相对迅速地恢复运行。
 
@@ -236,15 +236,15 @@ CNSA：Scale 客户端集群部署在 Vela 的 GPU 节点上，对应 Scale 的 
 
 为检测上图 Table 1 所述硬件故障，作者采用 Activity Tracker 服务监控集群中所有虚拟机的状态。若节点崩溃并转为停止状态，Activity Tracker 支持与 Slack 集成，从而自动发送 Slack 通知，如下图 Figure 11(a) 所示。利用 OpenShift 的 Prometheus 监控堆栈，可在 IBM Cloud 不可用的情况下（如私有云部署），作为替代方案实现类似功能。如下图 Figure 10(c) 展示了一个检测“节点下线”并生成自定义日志信息的 Prometheus 规则示例，该信息随后被 OCP 中的 Alert Manager 接收。每当规则触发时，都会发送 Slack 通知，如下图 Figure 10(d) 所示。鉴于 NVLink 或 NVSwitch 系统故障常导致节点崩溃，作者还通过 LogDNA 监控 Fabric Manager 日志。当日志中出现 NvSwitch 及致命错误时，日志被解析并生成 Slack 警报，如下图 10(b) 所示。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaw8lyqvmB0AuV4Q6mOJoGW8rFVRQMqgMSxP3dmVARo0VIvm9FK0rdV77h00JvKHUmufIgODGPnkA/640?wx_fmt=png&from=appmsg&randomid=qunnumtp)
+![Image](images/640_56ace90bcd66.png)
 
 我们在 H100 系统上也遇到过 nvidia-fabricmanager 的问题，具体来说，我们发现多机分布式训练时 Pytorch 在初始化节点会 Hang 住，甚至用 NCCL 的 AllReduce 测试也会 Hang，但将 NCCL_ALGO=Ring 则可以正常执行。最终发现是节点上某进程 OOM 导致 nvidia-fabricmanager 被 Kill。而在 H100 的 NVSwitch 上支持 NVLink Sharp，所以 NCCL 的 AllReduce 默认会使用 NCCL_ALGO=NVSL，此时 nvidia-fabricmanager service 异常就导致整个任务 Hang 住，通过重启 nvidia-fabricmanager 可以解决（有些时候也需要重启机器 NCCL 2.18 / Cuda 12.2 fails on H100 system with transport/nvls.cc:165 NCCL WARN Cuda failure 'invalid argument' · Issue #976 · NVIDIA/nccl · GitHub [5]）。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaw8lyqvmB0AuV4Q6mOJoGWiciaZ6agSZ1D5vwAgo7zKTylFdOZPu6eiaia6Z3ewic4eFWDJgMn1Lhu2mQ/640?wx_fmt=png&from=appmsg&randomid=crin5pk4)
+![Image](images/640_48d4e06bdf0e.png)
 
 如前所述，并非所有 GPU 故障都能在AI 基础设施层或 OpenShift 平台内被检测到。在此类情况下，应用程序日志在遭遇特定 GPU 故障时提供了宝贵的洞察。与其手动解析超过 1000 份日志文件，不如再次依赖 LogDNA 通过匹配 CUDA 错误关键词来监控应用日志。随后，Slack 报警能精确指出作业中受 GPU 故障影响的 Pod。例如，为检测 Table 1 所述的隐晦的硬件故障，作者采用了类似方法，在 OpenShift 层定义自定义监控规则（如下图 Figure 11(a) 所示），通过 LogDNA 处理该事件并在 Slack 中生成警报（如下图 Figure 11(b) 所示）。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaw8lyqvmB0AuV4Q6mOJoGWdCrVhv6Z2SPxApeAYvdwy27tV7ficmRBaFhy7PGOGsAua9XCoOJncWw/640?wx_fmt=png&from=appmsg&randomid=3jj40h2m)
+![Image](images/640_d49ec1ea1d4c.png)
 
 为识别那些虽隐晦但可能显著影响 AI 工作负载端到端性能的硬件及软件故障，同时确保作业持续运行，作者采取了主动策略以简化根本原因分析流程。此策略始于一系列 Benchmark 测试及工具，用于表征 PCIe 链路、网卡、GPU 等各类系统组件。作者将这些测试分为两类：
 
@@ -259,7 +259,7 @@ CNSA：Scale 客户端集群部署在 Vela 的 GPU 节点上，对应 Scale 的 
 
 另一个常见问题是由于 GPU HBM 内存中存在可纠正的错误。这表现为系统消息中显示 GPU 当前正在进行待处理的行重映射，这可以利用 NVIDIA 的 DCGM Exporter 提供的 DCGM_FI_DEV_ROW_REMAP_PENDING 指标获取。尽管客户仍可使用这些节点，但强烈建议及时重置这些 GPU。若应用程序将 GPU 内存使用推向接近满载，作业崩溃的可能性将显著增加。因此，作者还设立了一个面板（如下图 Figure 12(c) 所示），通知系统管理员这些节点无负载，可进行重置。需强调的是，GPU 内存损坏故障可能导致应用程序层面的隐晦错误。应用程序可能在训练迭代中日志显示损失值膨胀前，持续运行而未显露问题。这些故障可能在训练过程中的任何时刻发生，若不监控损失曲线的收敛情况，将导致大量 GPU 时间的浪费。DCGM 诊断（1 级和 2 级）无法检测此问题，需进行 3 级诊断，这要求独占 GPU 访问权限。为此，Autopilot 将此测试纳入侵入性测试，当 GPU 未用于 AI 工作负载时运行。测试结果导出至 Prometheus 和节点标签，以便监控和分析。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaw8lyqvmB0AuV4Q6mOJoGWkSA1MQn4zic0XKMXgrcg5rhmVMfibq09jGn6tdEaD5H2kKjGxpBf5u2w/640?wx_fmt=png&from=appmsg&randomid=8o8npjk9)
+![Image](images/640_9c42ed2a76eb.png)
 
 高级网络技术在高效扩展数百个 GPU 的 AI 训练中扮演着关键角色。如前所述，多网卡 CNI Operator 能够将多个 NIC 传递给每个 Pod，从而在不增加性能开销的情况下利用高性能基础设施的能力。多网卡 CNI 检查 TCP 接口的健康状况，但 RoCE/GDR 接口的监控则更具挑战性，因为一旦任务启动，这些接口通常专用于客户端工作负载。作者开发了一种新方法来确保这些接口的健康状态。增强的多网卡健康检查器收集每个端口上所有两节点对之间的节点网络带宽数据，并将这些信息附加到自定义资源对象的状态部分。通过查询此状态部分，可以检测到 RoCE/GDR 性能下降的节点。
 
@@ -279,7 +279,7 @@ CNSA：Scale 客户端集群部署在 Vela 的 GPU 节点上，对应 Scale 的 
 
 如下图 Table 2 展示了几个月来在 Vela 上训练的一系列代表性模型。这些模型的参数规模从 80 亿到 200 亿不等，涵盖了语言和代码应用场景。这些模型至少使用 768 个 GPU，训练了至少 2 万亿个 token，并持续训练了 30 天或更长时间。输入数据访问使用了高性能的 Scale File 系统。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaw8lyqvmB0AuV4Q6mOJoGWPAbqhup09XnMYPia4icOiaVlv5XMjZzTKOLMicFic7P3L9EAz88DMoszORg/640?wx_fmt=png&from=appmsg&randomid=4tw3sd3n)
+![Image](images/640_7317b8fd765f.png)
 
 为了评估训练吞吐量的竞争力，作者参考了两方面的信息。
 
@@ -295,7 +295,7 @@ CNSA：Scale 客户端集群部署在 Vela 的 GPU 节点上，对应 Scale 的 
 
 作者的系统管理员利用 IBM 云控制平面 API 及部分构建模块，为数据预处理、训练及推理等不同用途搭建了专属的 OpenShift 集群。例如，数据预处理工作负载主要依赖 CPU，因此这些集群配置了大量 CPU 节点。训练工作负载则需高性能网络、高性能文件系统及 GPU，故此类集群集成了这三项技术及相应的 AI 训练堆栈。而 watsonx.ai 推理服务通常每个模型使用不超过 8 块 GPU，因此这些集群对高性能网络和存储的需求较低。此外，推理服务需在多个地理位置部署，故此类集群亦分布于多个云数据中心。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaw8lyqvmB0AuV4Q6mOJoGWmLicmStnqMocM4ophuwJ1eMGoxSQwjCOfY14ZFQmh9kic5CT81Picx27A/640?wx_fmt=png&from=appmsg&randomid=w7a2cj16)
+![Image](images/640_e6e90affab47.png)
 
 ## 四、Blue Vela：新的 AI Infra 建设
 
@@ -307,13 +307,13 @@ CNSA：Scale 客户端集群部署在 Vela 的 GPU 节点上，对应 Scale 的 
 - 64TB 内存
 - 870 TB NVME 存储
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaw8lyqvmB0AuV4Q6mOJoGW3zyVPiafhZ71M1rBx97woA3nhsWmH3keOcPLo3oMPS35YStz31m1myg/640?wx_fmt=png&from=appmsg&randomid=68r9bfb8)
+![Image](images/640_424f2cf6d15c.png)
 
 ### 4.1 Blue Vela 架构
 
 由戴尔与 NVIDIA 携手设计，Blue Vela 集群作为尖端计算平台，专为应对最为严苛的模型训练任务而打造。基于英伟达 H100 SuperPod 参考架构，作者定制了 Blue Vela，以提供高性能 GPU 计算资源，最优化支持目标工作负载。本文后续章节将全面概述相应的基础设施、训练堆栈、运维模型及工作负载。如下图 Figure 15 展示了 Blue Vela 基础设施的分层视图，涵盖系统堆栈、训练堆栈、监控与治理以及用户支持层。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaw8lyqvmB0AuV4Q6mOJoGWQHGt2lgeV7wcCdJ3qic8EjdeEgbR5V4TgeZhibF13laqoH4R9GxA6V5A/640?wx_fmt=png&from=appmsg&randomid=h673z5bv)
+![Image](images/640_7160fa3cb11c.png)
 
 #### 4.1.1 网络 Infra
 
@@ -324,9 +324,9 @@ CNSA：Scale 客户端集群部署在 Vela 的 GPU 节点上，对应 Scale 的 
 - 第三是带内以太网主机网络，用于计算结构外的节点间通信。
 - 第四是带外网络，亦称管理网络，提供对服务器和交换机管理接口的访问。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaw8lyqvmB0AuV4Q6mOJoGWgOElxpgttAViaS41VmIluo1m8vdvpk65pIO3jgTT1vQ4fyQdBM91FtQ/640?wx_fmt=png&from=appmsg&randomid=tdnfpbx4)
+![Image](images/640_9a02280a693a.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaw8lyqvmB0AuV4Q6mOJoGW7Q9KoQ03WNOVIWONmMq2ga8hZWibgCToXWFnicWXU3ObkQ7VyzJGxcoA/640?wx_fmt=png&from=appmsg&randomid=4468xl6q)
+![Image](images/640_507b3e2e0356.png)
 
 尽管 InfiniBand 协议相较于以太网显得陌生且独特，作者发现它在提供峰值性能的同时，对于高性能本地集群的部署和管理更为简便。当前大型 AI 模型的训练对网络拓扑提出极高要求，因此作者在所有计算单元中采用无阻塞胖树架构（non-blocking Fat Tree），确保无 oversubscribed 链路。此外，网络拓扑根据 NVIDIA 建议进行了轨道优化（0 号 GPU 在 0 号 Leaf Switch 下，1 号 GPU 在 1 号 Leaf Switch 下，这样不同节点同号 GPU 的通信往往只用经过 Leaf Switch，而不用经过 Spine Switch），进一步优化了 AllReduce 操作的延迟，这些操作对 AI 训练工作负载至关重要。
 
@@ -373,7 +373,7 @@ Blue Vela 专为训练大型语言模型而设计。数据爬取、去重、过�
 
 作者最初想采用 rear-door 热交换器以支持远超大多数数据中心允许的 GPU 计算密度，但由于该数据中心缺乏水源，这一配置无法实施。这迫使设计并实施一种替代方案，以在满足400Gb IB 多模光纤电缆最长 50 米限制的前提下，实现所需的 GPU 容量密度。作者利用 CAD 建模设计了一种解决方案，该方案使得能够与参考架构保持一致，并在每机架中包含 4 个计算节点和 4 个 iPDU，同时保持电缆长度在限制的半米范围内。作为该解决方案的一部分，作者重新配置了机架位置，并设计了定制的 airflow containment enclosures，通过定制信号电缆走线系统进行互连。这使得能够定制机架，以利用现有的气流和散热能力来容纳比数据中心最初配置时更重的负载。如下图 Figure 17 概述了作者的计算节点机架的布局与标准行布局的关系。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaw8lyqvmB0AuV4Q6mOJoGWsvvpl1ahKv6eh4NGDcnpBLvhm20FkWxOz7F2xGwyZA6m3lBNGPo62A/640?wx_fmt=png&from=appmsg&randomid=kqxsp0zx)
+![Image](images/640_9132411884c6.png)
 
 ### 4.2 软件栈
 
@@ -415,7 +415,7 @@ Granite 模型与其他基础模型一样，与传统的 AI 工作流程有所�
 
 为支持大规模 AI 模型训练任务，并最大限度减少作业停机时间，收集了一套全面的 1180 项指标面板。如下图 Table 3 详细列出了基于时间的指标收集间隔。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaw8lyqvmB0AuV4Q6mOJoGWcqawQlTGsDzZylEaMmXoibBzycaIU0wzj16fT6Ykib9R09WbaJAbRvGw/640?wx_fmt=png&from=appmsg&randomid=xbpe4bmp)
+![Image](images/640_c50f97f326e6.png)
 
 NVIDIA 数据中心 GPU 管理器（DCGM）的 GPU 指标每 5 秒报告一次，系统级指标则每 60 秒记录一次。这两类数据源共同实现了对集群的近实时监控。这些整合的数据点和指标同样支持全系统可观测性，从而实现持续优化、诊断及系统特性描述（如下图 Figure 18 所示），例如：
 
@@ -426,13 +426,13 @@ NVIDIA 数据中心 GPU 管理器（DCGM）的 GPU 指标每 5 秒报告一次�
 - LSF 状态：此指标指示节点是否处于可用并开放接受作业的状态，还是处于关闭状态，无法接受任何作业。
 - GPU 限频及其原因：这将显示 GPU 是否未达到 100% 性能，有助于识别过热问题和 GPU 降速情况。在这些场景下，系统可能过热或发生电源中断降速。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaw8lyqvmB0AuV4Q6mOJoGWNu9kf21ia3aYQMxtt3Ah7ED6BqZ0XMibrvqkfexeS7iac2pFCVQNkY3ew/640?wx_fmt=png&from=appmsg&randomid=lgqbi5bc)
+![Image](images/640_b2d981d8ecfe.png)
 
 ### 4.5 Blue Vela 的初始化工作负载
 
 Blue Vela 经历了快速启动阶段，并迅速在模型训练中展现出显著效果。在投入生产使用的第一个月（自 2024 年 4 月 1 日起），首批模型即已完成训练并开源发布（2024 年 5 月 6 日），这一成就标志着 Granite 模型家族的重要里程碑。从一开始，该基础设施便展现出良好的吞吐量潜力，并且在相同配置环境下，其开箱即用的性能已比其他环境高出 5%。系统还处于交付阶段并致力于相应调优，作者介绍了当前任务及其性能的初步成果。目前，如下图 Table 4 所示，集群的性能显示出高吞吐量（根据训练设置和所训练模型的不同，每日吞吐量在 90-321B 之间）。随着所有 Pod 集群的完成，进一步优化性能和吞吐量的潜力巨大。通过 Operator 融合和 FSDP，预计吞吐量将再提升 25-30%。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaw8lyqvmB0AuV4Q6mOJoGWibOrLpvzRj8XVQef5gS7uQV98cic5pcxYkZD9UCM2yEVWHuibvfoDngdw/640?wx_fmt=png&from=appmsg&randomid=ue0mho3d)
+![Image](images/640_61b5ec12f3be.png)
 
 ## 五、参考链接
 

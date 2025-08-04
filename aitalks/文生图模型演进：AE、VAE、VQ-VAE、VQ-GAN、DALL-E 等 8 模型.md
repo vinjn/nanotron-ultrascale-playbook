@@ -16,7 +16,7 @@
 
 由于篇幅的原因，本文中不包含大量的数学推导，只会梳理这些模型是怎么工作的。此外，我们也会提供一些代码示例，以便更好地理解。如下图所示为我们梳理的这些模型演进的脉络，本文的介绍也会自下而上进行（括号内为相关工作发布日期）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg0KsHAJYTibyLnIfLTteSfuCHib1ibBIDwKgn9Qib0BZHb9RMk06TRoE2SCibAPhh5haicdlD6duGPibicdA/640?wx_fmt=png&from=appmsg&randomid=1macfdv8)
+![Image](images/640_314d96a67d10.png)
 
 ## 三、AutoEncoder（AE）
 
@@ -29,11 +29,11 @@ AutoEncoder 由两个主要的部分组成：
 
 如下图所示为一个 AutoEncoder 的典型示例，其中输入为一幅图像 x，经 Encoder 编码生成一个隐空间（Latent Space）的表征（Representation）z，然后 Decoder 可以使用这个表征 z 重构出输入 x（核心思想是：既然可以重建 x，那么表明表征 z 中已经充分包含 x 的潜在信息，不然无法恢复，这也就表明学习到了一个很好的 Encoder，可以用于生产输入图像的表征 z）。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg0KsHAJYTibyLnIfLTteSfuYlk1Lico7U32VZUP5wTAVb9cEhDWBYUXamLibeSyqkFr4MqlJbYrB54g/640?wx_fmt=png&from=appmsg&randomid=ygawow8u)
+![Image](images/640_5fb6851d4551.png)
 
 训练该模型的目标就是让输入和输出的误差尽量小，如下所示，其中 e 表示 Encoder，d 表示 Decoder：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg0KsHAJYTibyLnIfLTteSfuDiagvkXj9Dmjl6yXDwPS3CEqrF22xbQuicvlN7d56KRrU1XqWicl5BJibQ/640?wx_fmt=png&from=appmsg&randomid=6jbm52ul)
+![Image](images/640_00778c98d5e7.png)
 
 该模型的目的是获得最佳的重建效果。模型在 Latent Space 没有增加任何的约束或者正则化，这也就意味着我们并不知道 Latent Space 是如何构建的，这也就是为什么我们很难使用 Latent Space 来采样生成一个新的图像（也就是只能重建已经有隐空间表征的图像）。
 
@@ -53,7 +53,7 @@ VAE 的模型结构如下图所示：
 2. Sampling：使用噪声 e=(e0, e1, e2, e3) 与 v 和 m 即可获得一个采样 c=(c0, c1, c2, c3)
 3. Decode：使用采样 c 经过一个 UP Layer（Linear）来生成新的中间表示，然后经过 Decoder 来生成最终的结果。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg0KsHAJYTibyLnIfLTteSfulG7uZqibTXqfYiafxUnbibulgZE0xPIUxgDyJUXr4ia1JJICG2KFZEfGJw/640?wx_fmt=png&from=appmsg&randomid=ifgcuylx)
+![Image](images/640_368f86ac1d2f.png)
 
 ### 4.3. AE 和 VAE 主要区别
 
@@ -81,35 +81,35 @@ AE 和 VAE 的结构非常类似，比如都包含 Encoder 和 Decoder，都是�
 
 如下图所示为一个 Latent Space 投影的示例，可以看出，AE 明显会聚焦于部分局部区域，而 VAE 分布更加广泛：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg0KsHAJYTibyLnIfLTteSfu08a8HxFxCVhrmIPXLkqLLM7BfU3a594SI8OIUkkZH3iaa1IRF2yVYmg/640?wx_fmt=png&from=appmsg&randomid=s6ru79mi)
+![Image](images/640_70bb11b3a77a.png)
 
 ### 4.4. 示例
 
 如下图所示为一个 AE 的示例，Encode 过程将输入映射到隐空间的一个点，而不同的点与点之间是没有规律可循的，可能是任何的内容，也就无法基于此来令 Decode 生成预期的输出：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg0KsHAJYTibyLnIfLTteSfucuFlibmiakWT8knZsyh8AppfYkbBszzRb2etibHRcNlVXS3CxxHRMaF8A/640?wx_fmt=png&from=appmsg&randomid=fdsgirct)
+![Image](images/640_c4682a556409.png)
 
 如下图所示为 VAE 的示例，模型在隐空间是一个高斯分布，因此在圆月和残月交叉的部分就包含了圆月信息（蓝框），也包含残月信息（绿框），因此其通过 Decode 后生成了半月图片（红框）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg0KsHAJYTibyLnIfLTteSfufFibjcoDNP4B4gREMUjLlKWAFzvpFCibUbDR9gEfTnHSSkicMibqSfBavQ/640?wx_fmt=png&from=appmsg&randomid=frmual1s)
+![Image](images/640_c2acc11cbe96.png)
 
 ### 4.5. 代码实现
 
 如下图是 VAE 的模型示例（用于 MNIST 训练），其结构很简单，Encoder 和 Decoder 都是由两层 Linear 组成，sampling 也很简单：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg0KsHAJYTibyLnIfLTteSfuiaYDU621zrP3GwrdgEVfaFKiaOucRQu3GSRhFx6JADibLPEMUCs9icXaNQ/640?wx_fmt=png&from=appmsg&randomid=vs4qlxfw)
+![Image](images/640_8826ba7c28de.png)
 
 训练代码也很简单，主要是 loss 函数中除了重建损失（reproduction_loss）外，也增加了一个 KL 散度损失：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg0KsHAJYTibyLnIfLTteSfuEI1ZjlruD1UcNzQZ1GRLgktgriajR76DG9MRftEAZdeZOyKicS9aP6icA/640?wx_fmt=png&from=appmsg&randomid=g430wfi2)
+![Image](images/640_644e9192565c.png)
 
 如下图所示为一个简单的生成示例，随便指定一个 mean、var 即可使用 decode 来生成一个图像：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg0KsHAJYTibyLnIfLTteSfu7R0Zj4X3bffY1h1Et7Anp1RESgm9ljG0fVPdNT6sdb05Gn0GibLRmiag/640?wx_fmt=png&from=appmsg&randomid=ixxlth94)
+![Image](images/640_ab6cc77ac424.png)
 
 如下图为使用 mean=[-1.0, 1.0]，var=[-1.0, 1.0] 生成的结果，可以看出，数字 0-9 分布在不同的区域，并且在区域交叉的地方会存在四不像的结果（其同时包含了周围不同数字的信息）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg0KsHAJYTibyLnIfLTteSfuUibHskR2cS4yciagicrTnrdoUzoS5ia87kWGFbBMEa8HyJjYWkzbC3HDMQ/640?wx_fmt=png&from=appmsg&randomid=pp1r7zvc)
+![Image](images/640_31f6f6436ed6.png)
 
 ## 五、 Vector Quantised VAE（VQ-VAE）
 
@@ -125,7 +125,7 @@ VQ 是一种数据压缩和量化的技术，它可以将连续的向量映射�
 
 我们常见的 K-means 聚类算法就是 VQ 的一种，K-means 聚类的目标为：把 n 个点（样本）划分到 k 个聚类中（通常 k 远小于 n），使得每个点都属于离它最近的聚类中心对应的类别，以此实现聚类的目的。如下图所示，所有点都被映射到 z0，z1，z2 和 z3 中：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg0KsHAJYTibyLnIfLTteSfuRVicsGXTV1sLqu5nibxhGs0gib9gLDJyyI2IdMGnGEn2dxHrccBHUtZSg/640?wx_fmt=png&from=appmsg&randomid=oixlj5yy)
+![Image](images/640_93f9b7604016.png)
 
 ### 5.3. VQ-VAE 模型结构
 
@@ -138,25 +138,25 @@ VQ-VAE 与 VAE 的结构非常相似，只是中间部分不是学习概率分�
 5. 根据索引从 Codebook 中查表，获得最终量化后的表示
 6. Decoder：将量化后的表示输入 Decoder 生成最终的输出
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg0KsHAJYTibyLnIfLTteSfu0jS0c30icDWiamYDhzQDoIvso3mrgOMKPlSkkhu7BicuQrQ4iaVib0Bw6Yw/640?wx_fmt=png&from=appmsg&randomid=kuo1s6a8)
+![Image](images/640_3ec1b2f0723f.png)
 
 ### 5.4. VQ-VAE 训练
 
 在 VQ 中使用 Argmin 来获取最小的距离，这一步是不可导的，因此也就无法将 Decoder 和 Encoder 联合训练，针对这个问题，作者添加了一个 Trick，如下图红线部分，直接将量化后表示的梯度拷贝到量化前的表示，以使其连续可导：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg0KsHAJYTibyLnIfLTteSfuJSMQZnsQ1WvA9iagViaZUnaicKetXKgY3B4zvmqrdprlhhB495owskibVw/640?wx_fmt=png&from=appmsg&randomid=o484toc5)
+![Image](images/640_ccb355b4e485.png)
 
 具体的代码实现如下所示：
 
 https://colab.research.google.com/github/zalandoresearch/pytorch-vq-vae/blob/master/vq-vae.ipynb
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg0KsHAJYTibyLnIfLTteSfuWE3FLu7DibTc3jYicdCCRaxibayicNkdibCO8RFIGeLPh1CdyZWzSpUUJXQ/640?wx_fmt=png&from=appmsg&randomid=2mounaju)
+![Image](images/640_a9901c6d939a.png)
 
 ### 5.5. VQ-VAE + PixelCNN
 
 有了上述的 VQ-VAE 模型，可以很容易实现图像压缩、重建的目的，但是无法生成新的图像数据。当然可以随机生成 Index，然后对应生成量化后的 latent code，进而使用 Decoder 来生成输出图像。但是这样的 latent code 完全没有全局信息甚至局部信息，因为每个位置都是随机生成的。因此，作者引入了 PixelCNN 来自回归的生成考虑了全局信息的 latent code，进而可以生成更真实的图像，如下图所示：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg0KsHAJYTibyLnIfLTteSfuvVUQT1t6Gk6ge5PuEY52F9ibr2wdW7eztrgm3Z2rdb0sB4uLzgLib49g/640?wx_fmt=png&from=appmsg&randomid=s48hwviu)
+![Image](images/640_6ee67bbdbb80.png)
 
 PixelCNN 和 VQ-VAE 的一作是同一个人，来自 Google DeepMind，对应的论文为：[1606.05328] Conditional Image Generation with PixelCNN Decoders。此处我们不再对 PixelCNN 展开，只需要知道它是一个自回归生成模型，可以逐个像素的生成，因为其是自回归模型，所以每个位置都能看到之前位置的信息，这样生成的 latent code 能够更全面的考虑到空间信息，有助于提高模型生成图像的质量和多样性。
 
@@ -184,7 +184,7 @@ VQ-VAE-2 的模型结构如下图所示，以 256x256 的图像压缩重建为�
 - 训练阶段：其首先使用 Encoder 将图像压缩到 Bottom Level，对应大小为 64x64，然后进一步使用 Encoder 压缩到 Top Level，大小为 32x32。重建时，首先将 32x32 的表征经过 VQ 量化为 latent code，然后经过 Decoder 重建 64x64 的压缩图像，再经过 VQ 和 Decoder 重建 256x256 的图像。
 - 推理阶段（图像生成）：使用 PixelCNN 首先生成 Top Level 的离散 latent code，然后作为条件输入 PixelCNN 以生成 Bottom Level 的更高分辨率的离散 latent code。之后使用两个 Level 的离散 latent code 生成最终的图像。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg0KsHAJYTibyLnIfLTteSfutaLMiazqsaZibwk7Nicibu6Vp2f366DIB9Kichwa8RWkXQkdq5ZBH5m4kgw/640?wx_fmt=png&from=appmsg&randomid=9gre0lzz)
+![Image](images/640_1f2aff826c39.png)
 
 当然，基于这个思想作者也进一步验证了使用 3 个 Level 来生成 1024x1024 分辨率的图像，相应的压缩分辨率分别为 128x128、64x64、32x32。
 
@@ -202,7 +202,7 @@ VQ-GAN 的作者也是著名的 Stable Diffusion 的作者，对应的论文为�
 
 需要说明的是，VQ-GAN 的 v1 版本发表在 20 年 12 月，而 OpenAI 的 DALL-E 发表在 21 年 2 月，正好对应 VQ-GAN 的 v2 版本，因此 VQ-GAN 的前两个版本并没有与 DALL-E 对比，直到 21 年 6 月的 v3 版本才添加了和 DALL-E 的对比结果（可能也是这个原因，VQ-GAN 也并没有支持文本到图像的生成能力）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg0KsHAJYTibyLnIfLTteSfuAWZXhasKKAq0dffVKNm9vLkRKrPJMY8NLicibIIaC9jk6tmm2icfpqphA/640?wx_fmt=png&from=appmsg&randomid=9zgplb59)
+![Image](images/640_0de7e1387c99.png)
 
 ### 7.2. VQ-GAN 模型结构
 
@@ -210,7 +210,7 @@ VQ-GAN 的作者也是著名的 Stable Diffusion 的作者，对应的论文为�
 
 VQ-GAN 的整个模型结构如下图所示，整体看着比较复杂，实际训练时是分为两阶段训练的，先训练下面的 VQ-GAN 部分，再训练上面的 Transformer 部分：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg0KsHAJYTibyLnIfLTteSfuNaT8HTJYrcwNXGVGNFpQ7oKDB9iaaibkYgC76fIaHp1CZEibfTledibvSA/640?wx_fmt=png&from=appmsg&randomid=wyzungl0)
+![Image](images/640_81196f072b4b.png)
 
 #### 7.2.2. VQ-GAN 训练
 
@@ -219,7 +219,7 @@ VQ-GAN 的整个模型结构如下图所示，整体看着比较复杂，实际�
 - Discriminator：对生成的图像块进行判别，每一块都会返回 True 和 False，然后将对应的损失加入整体损失中。
 - LPIPS：除了像素级误差外，也会使用 VGG 提取 input 图像和 reconstruction 图像的多尺度 feature map，以监督对应的误差（具体可参考 lpips.py - CompVis/taming-transformers · GitHub）。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg0KsHAJYTibyLnIfLTteSfuR3oKPiaPQq5WWHQeXessExSVAEWSecribddouyWEibBlvKTVPQKEvKSFw/640?wx_fmt=png&from=appmsg&randomid=1vxitld3)
+![Image](images/640_1103c56fcc84.png)
 
 #### 7.2.3. Transformer 训练
 
@@ -228,13 +228,13 @@ VQ-GAN 的整个模型结构如下图所示，整体看着比较复杂，实际�
 - 待训练图像经过 Encoder 和 VQ 后编码成离散的 latent code。
 - 使用离散的 latent code 作为 Transformer 的输入和 target 来进行自回归的监督训练。也就是使用 S<i 来预测 Si 对应的 code。（当然，也可以加入可选的条件约束，比如类别信息）
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg0KsHAJYTibyLnIfLTteSfu4mZdKEApLySAmMPOWLf1jpeN6shnIFswweoiaWaoSb2XpMJW05oGQ0w/640?wx_fmt=png&from=appmsg&randomid=4eop5e9n)
+![Image](images/640_70c8830be129.png)
 
 ### 7.3. 高分辨率生成
 
 离散 latent code 相比原始图像的压缩率通常是 16x16 或 8x8，以 16x16 为例，要生产一个 1024x1024 分辨率的图片，对应的离散 latent code 为 64x64，而 GPT 模型推理中计算量与序列长度成二次方关系，也就是 O(644*K)，其代价很高。因此作者提出了使用滑动窗口 Attention 机制来降低计算量的方案，具体来说，预测每一个位置的 code 时只考虑局部 code，而不是全局 code，比如使用 16x16 的窗口，计算量将降低到 O(642*162*K)，几乎降低为原来的 1/16。当然，对于边界的区域，并不是使用当前位置作为中心，而是将窗口相应地向图像中心偏移，保证窗口大小：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg0KsHAJYTibyLnIfLTteSfuJwiba7XhNpvbw3LPYicBMwOBJAdG2Nk1sE5RxlAbW2FSuJg6z4tIDULw/640?wx_fmt=png&from=appmsg&randomid=4ee14sta)
+![Image](images/640_75a3738c7346.png)
 
 ### 7.4. 高分辨率生成示例
 
@@ -242,45 +242,45 @@ VQ-GAN 的整个模型结构如下图所示，整体看着比较复杂，实际�
 
 #### 7.4.1. 读取分割掩码
 
-#### ![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg0KsHAJYTibyLnIfLTteSfuS7oVyMY4E7PokGoxOFdb8KyMufBS3bIoEg7t79QibKMn9UGug74gaGg/640?wx_fmt=png&from=appmsg&randomid=znua0wf6)
+#### ![Image](images/640_5246b9662836.png)
 
 掩码可视化如下图所示：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg0KsHAJYTibyLnIfLTteSfuwYDdF7aash5lA7jJibR0YANRaMacLIvUwnLTJoIibf2HzpoqbOxO3MOw/640?wx_fmt=png&from=appmsg&randomid=vnw2ew9j)
+![Image](images/640_1cfaa6309927.png)
 
-#### 7.4.2. 生成分割条件对应的离散 latent code![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg0KsHAJYTibyLnIfLTteSfuuHS6C2JVXFRFoPc37Z5KghZI9yno52OTicgfTVhNewvUfgz7KD3oW3A/640?wx_fmt=png&from=appmsg&randomid=8j3lx77n)
+#### 7.4.2. 生成分割条件对应的离散 latent code![Image](images/640_9276ff79c764.png)
 
 如下图所示，encode_to_c 对应的是额外训练的 Encoder（https://github.com/CompVis/taming-transformers/blob/master/taming/models/cond_transformer.py#L168-L182）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg0KsHAJYTibyLnIfLTteSfuP525SHcYpxxMLHYjswjiaib9l6c2EibhBrPAXV7ARfBNI868OZ7p3QLLQ/640?wx_fmt=png&from=appmsg&randomid=leo7ro3d)
+![Image](images/640_bf86a03ae919.png)
 
 #### 7.4.3. 初始化待生成图像的离散 latent code
 
-#### ![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg0KsHAJYTibyLnIfLTteSfucsdJnAyC080ibEmQ5QnqgqjR8z0TiaenGiaTGNWdtOQpvQK48GYZxNOSA/640?wx_fmt=png&from=appmsg&randomid=dfm7igho)
+#### ![Image](images/640_eff35999636c.png)
 
 使用随机生成的离散 latent code 经 Decoder 生成的图像如下图所示，可以看出其更像是一些噪声：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg0KsHAJYTibyLnIfLTteSfu8MqmEPyOxGjqJxtEibpx56H1R8mYu4ibhXRSjDvEsmUEsaiapMcCGUhEg/640?wx_fmt=png&from=appmsg&randomid=h0dg9ucu)
+![Image](images/640_cbe8c8aea94b.png)
 
 #### 7.4.4. 生成离散 latent code
 
 如下图为具体的逐个生成离散 latent code 的过程，因为有 42x64 个 code，因此要迭代 42x64 次：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg0KsHAJYTibyLnIfLTteSfuKBoQYUtALqCDXup7qhwFJqk0Gfp1wvjQl8vpouhYtgzGfXXMe4CBkg/640?wx_fmt=png&from=appmsg&randomid=9wbk8myi)
+![Image](images/640_b545ed27b7ae.png)
 
 #### 7.4.5. 生成结果
 
 如下图所示为最终的生成结果，可以看出与输入的分割 mask 很匹配：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg0KsHAJYTibyLnIfLTteSfucjnAoevO6nFibjWr5EY353a9n2ddibbxIT7H2rHlDqt1F0YDFSLs7Feg/640?wx_fmt=png&from=appmsg&randomid=4g4c61e4)
+![Image](images/640_e1159fca5926.png)
 
 在上一部分生成离散 latent code 的过程中，需要将条件和待生成 patch concat 到一起，生成一个 1x512 的序列，但实际输入 Transformer 模型的是前 511 个 Token，这是因为 GPT 是自回归模型，在训练时第 255 个位置（从 0 开始）预测的是第 256 个 Token（也就是第一个图像 Token），第 510 个 Token 预测的是第 511 个 Token，而 511 位置生成的 Token 并没有被监督训练。因此预测生成的 Token 对应的 index 为 [255, 510]，此时再根据 local_i 和 local_j 就可以正确获取当前位置对应的 code。在官方代码库 Issue 也有人问起这个问题，不过还未被回答：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg0KsHAJYTibyLnIfLTteSfugiaagWvz6qOibtgKZGH82XvsnWyoAnPdcaljAvcpkXpkKPoSVI1kEc3w/640?wx_fmt=png&from=appmsg&randomid=t62wg7n7)
+![Image](images/640_dbad16914f36.png)
 
 如下图所示，如果输入 1x512 个 Token，然后根据 index [256, 511] 来获取生成 Token，并根据 local_i 和 local_j 来获取 code（实际位置已经出现偏差），最终生成的图像质量非常差：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg0KsHAJYTibyLnIfLTteSfulvVoFc1qp3FSibUdrjdArcagFfgMJITqhUk5wfe0RnNZsftibVFgXTvg/640?wx_fmt=png&from=appmsg&randomid=998f0dun)
+![Image](images/640_62bb97bc5111.png)
 
 ## 八、 DALL-E（dVAE、DALL-E）
 
@@ -298,7 +298,7 @@ DALL-E mini 对应的文档为：DALL-E Mini Explained，对应的代码库为�
 
 与 VQ-GAN 类似，DALL-E 的训练也是分为两个阶段，第一阶段是训练 VAE，不过并没有使用 VQ-VAE，而是使用 Discrete VAE（dVAE），整体来说与 VQ-VAE 类似，主要的区别是引入 Gumbel Softmax 来训练，避免 VQ-VAE 训练中 ArgMin 不可导的问题。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg0KsHAJYTibyLnIfLTteSfuPn0bfdC5TSQ2bQv63eJESNnwY3mG5jWRvXgYWTDNrWVyRsApTbbCfA/640?wx_fmt=png&from=appmsg&randomid=viw0l3x5)
+![Image](images/640_03dd2405f56f.png)
 
 #### 8.2.2. Gumbel Softmax
 
@@ -306,19 +306,19 @@ Gumbel Softmax 是一种将离散采样问题转化为可微分操作的技术�
 
 如下图所示，一个图像经 Encoder 编码会生成 32x32 个 embedding，和 codebook （8192 个）内积再经 Softmax 即可得到在每个 codebook 向量的概率：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg0KsHAJYTibyLnIfLTteSfuqiaV4reL8YvD3XMWpfnEb3WciaIial8gfeciaJOb0EhUQFbRImrblH6mfw/640?wx_fmt=png&from=appmsg&randomid=rxocwn8k)
+![Image](images/640_a14189e84a9e.png)
 
 应用 Gumbel Softmax 采样即可获得新的概率分布，然后将其作为权重，对相应的 codebook 向量进行累积就可以获得 latent vector。然后 Decoder 可以基于此 latent vector 重构输出图像。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg0KsHAJYTibyLnIfLTteSfus7bHDEqdGZziabMzI2oqwcrXLn076nkk70BnibvibnAwYkPqic70IwkoXQ/640?wx_fmt=png&from=appmsg&randomid=1gx06nxx)
+![Image](images/640_ff7839c28e5f.png)
 
 在上述的过程中，通过添加 Gumbel 噪声的方式进行离散采样，可以近似为选择 logits 中概率最大的类别，从而提供一种可微分的方式来处理离散采样问题。具体来说，其关键为 Gumbel-Max Trick，其中 gi 是从 Gumbel(0, 1) 分布中采样得到的噪声，τ 是温度系数。需要说明的是，t 越小，此处的 Softmax 就会越逼近于 ArgMax。τ 越大，就越接近于均匀分布。这也就引入了训练的一个 Trick：训练起始的温度系数 τ 很高，在训练的过程中，逐渐降低 τ，以便其逐渐逼近 ArgMax。在推理阶段就不再需要 Gumbel Softmax，直接使用 ArgMax 即可。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg0KsHAJYTibyLnIfLTteSfuJssQoBticZGcMZV8TPoguYrdsiaia4HlCHtyiceocdF4RRBpy4zLvfDY6w/640?wx_fmt=png&from=appmsg&randomid=hsavor27)
+![Image](images/640_3cc6c874d9db.png)
 
 如下图 DALL-E 的示例中正是直接使用的 ArgMax：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg0KsHAJYTibyLnIfLTteSfu4G1myzXXcQICibpE0Kf7eKotPkD7sZ3icoqvfuha0WKzyicwwom7Y26UQ/640?wx_fmt=png&from=appmsg&randomid=kqy3m4ue)
+![Image](images/640_6cc89bc67dde.png)
 
 ### 8.3. Transformer
 
@@ -326,7 +326,7 @@ Gumbel Softmax 是一种将离散采样问题转化为可微分操作的技术�
 
 对于 Transformer 模型，作者使用 12B 参数量的 Sparse Transformer（64 层，每层 62 个注意力头，每个头的 hidden size 为 64），对于文本，使用 BPE-encode 编码为 Token，限制了最大 256 个 Token，词表大小为 16,384。图像词表也就对应 codebook，大小为 8192。图像 Token 直接使用 dVAE 的 Encoder + ArgMax 采样获得，未添加 Gumbel 噪声。（需要说明的是，此部分训练、推理代码都没有开源）
 
-作者将文本输入固定为 256 个 Token，因此当文本 Token 不足 256 个时会进行 Padding，如下图所示，同时也会给 Image Token 添加行索引 embedding 和列索引 embedding。还会有一个特殊的 Token 来标识无文本输入的情况。此外，因为输入中既包含文本 Token，又包含图像 Token，而学习的主要目标是生成图像 Token，因此训练中文本相关的交叉熵损失权重为 1/8，而图像相关的交叉熵损失权重为 7/8。![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg0KsHAJYTibyLnIfLTteSfuxFT8Fbx4uSRWS4MSrYLQ1uf0ib24UcqgDNMxlGRaohIZEWRf4EELAyw/640?wx_fmt=png&from=appmsg&randomid=frn6gpya)
+作者将文本输入固定为 256 个 Token，因此当文本 Token 不足 256 个时会进行 Padding，如下图所示，同时也会给 Image Token 添加行索引 embedding 和列索引 embedding。还会有一个特殊的 Token 来标识无文本输入的情况。此外，因为输入中既包含文本 Token，又包含图像 Token，而学习的主要目标是生成图像 Token，因此训练中文本相关的交叉熵损失权重为 1/8，而图像相关的交叉熵损失权重为 7/8。![Image](images/640_b22ff8a75a7a.png)
 
 针对 Transformer 模型，作者用了 3 种 Attention Mask（所有图像 Token 都能看到所有文本
 Token，但只能看到部分图像 Token）：
@@ -335,13 +335,13 @@ Token，但只能看到部分图像 Token）：
 - Column Attention：对于 (i-2)%4 = 0 的层使用，比如第 1 层，第 3 层。
 - Convolutional Attention：只在最后一层使用。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg0KsHAJYTibyLnIfLTteSfucKhdIVY98oG5BWlVNBOPoibAoa9PMcxiaZ3omuY5oe1nhia4nkmmujz2Q/640?wx_fmt=png&from=appmsg&randomid=zuukozec)
+![Image](images/640_b5f292ef52cf.png)
 
 #### 8.3.2. 模型训练
 
 有了 dVAE 模型之后，第二阶段就是就是训练 Transformer（此阶段会固定 dVAE），使其具备文本引导生成的能力。DALL-E 使用大规模的图像-文本对数据集进行训练，训练过程中使用 dVAE 的 Encoder 将图像编码为离散的 latent code。然后将文本输入 Transformer，并使用生成的 latent code 来作为 target 输出。以此就可以完成有监督的自回归训练。推理时只需输入文本，然后逐个生成图像对应的 Token，直到生成 1024 个，然后将其作为离散的 latent code 进一步生成最终图像。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg0KsHAJYTibyLnIfLTteSfu0Q2RxRuQjmGzeCRRBia657ibv4jwKCEwmXn6dtQl3cdXvubTnZnf2kJA/640?wx_fmt=png&from=appmsg&randomid=9bnx0cwp)
+![Image](images/640_efb8ad7dacbf.png)
 
 最终作者在 1024 个 16G 的 V100 GPU 上完成训练，batch size 为 1024，总共更新了 430,000 次模型，也就相当于训练了 4.3 亿图像-文本对（训练集包含 250M 图像-文本对，主要是 Conceptual Captions 和 YFFCC100M）。
 
@@ -351,13 +351,13 @@ Token，但只能看到部分图像 Token）：
 
 如下图所示，DALL-E mini 中作者使用 VQ-GAN 替代 dVAE，使用 Encoder + Decoder 的 BART 替代 DALL-E 中 Decoder only 的 Transformer。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg0KsHAJYTibyLnIfLTteSfuDGZGj9ISEKbTCgJxd8QV97XpRe80xV0ibbSTnTKkc7U44vxW7ImH1Eg/640?wx_fmt=png&from=appmsg&randomid=btyem2t3)
+![Image](images/640_a95f323efb2e.png)
 
 ### 9.2. DALL-E mini 模型推理
 
 在推理过程中，不是生成单一的图像，而是会经过采样机制生成多个 latent code，并使用 VQ-GAN 的 Decoder 生成多个候选图像，之后再使用 CLIP 提取这些图像的 embedding 和文本 embedding，之后进行比对排序，挑选出最匹配的生成结果。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg0KsHAJYTibyLnIfLTteSfu0bLN5S5Fyek7ZJzZYs2xVLUdkdlckWAsvdd5pKnjFfR1XNERogiaCiaA/640?wx_fmt=png&from=appmsg&randomid=vn2cspoa)
+![Image](images/640_26b155548b26.png)
 
 ### 9.2. DALL-E mini 和 DALL-E 对比
 
@@ -382,7 +382,7 @@ VQ-GAN 几乎和 DALL-E 在同期发布，但不具备文本引导生成的能�
 
 CLIP 是 OpenAI 发布的在大规模图文数据对（4亿）上通过对比学习进行预训练的图文对齐模型。如下图左侧是其对比预训练过程，在一个 batch 中对应的图文特征作为正对，图片特征和其他文本特征作为负对。如下图右侧，可广泛用于 zero-shot 的图像分类等任务，在 LMM（大规模多模态模型）中也常作为 image encoder 使用。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg0KsHAJYTibyLnIfLTteSfuTLrf7WZK1xAVpFY804YiaGMQjvT96IpgfBUxrlNaBRV8N9wABN9aAqQ/640?wx_fmt=png&from=appmsg&randomid=7l80h7ce)
+![Image](images/640_6047e3d94981.png)
 
 ### 10.3. VQGAN-CLIP 方案
 
@@ -393,13 +393,13 @@ CLIP 是 OpenAI 发布的在大规模图文数据对（4亿）上通过对比学
 - Random Crops + Augmentation：如果在单个图像上计算，则 CLIP 损失的梯度更新噪声比较大。为了克服这个问题，作者对生成的图像进行多次修改，从而产生大量增强的图像。涉及随机裁剪、翻转、色彩抖动、噪声等。图像的高级语义特征往往对这些变化并不敏感（随机裁剪有可能影响语义内容，不过作者测试发现影响不大），因此平均所有增强图像的 CLIP 损失可以减小每个更新步骤的方差。
 - Latent Vector 正则化：当使用无约束 VQ-GAN 图像生成时，输出往往是非结构化的，添加增强有助于实现整体的一致性，但最终输出通常仍包含不需要的纹理块。为了解决这个问题，作者将 L2 正则化应用于 Z-vector，并赋予相应权重。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg0KsHAJYTibyLnIfLTteSfuSBEJVsgqmgqaGYQUaO1x0e9mIspHoAtR2ZWaxED0uEficIkdiap44gibQ/640?wx_fmt=png&from=appmsg&randomid=dkvvcwlf)
+![Image](images/640_e36d35739f98.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg0KsHAJYTibyLnIfLTteSfuV4UglLdwrFIY3AkKC9HHicGg9mOdBNyaZjLzNoMSa32sogwUIYulhGA/640?wx_fmt=png&from=appmsg&randomid=r95830n3)
+![Image](images/640_7556b507eccf.png)
 
 VQGAN-CLIP 无需训练，但其迭代更新的方式同样导致其生成效率相对比较低，如下图 Table 2 所示为作者的对比结果：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg0KsHAJYTibyLnIfLTteSfuciaSGNNwia6HB1P425h5WPmv380kc4faOuuUsOZYIuEvxvs1qwicAVAIw/640?wx_fmt=png&from=appmsg&randomid=6t9a0hmq)
+![Image](images/640_0bfeb4e27320.png)
 
 ## 十一、参考链接（Reference）
 

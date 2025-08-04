@@ -23,7 +23,7 @@ Muse 官方代码并没有开源，不过 Huggingface 尝试了复现：GitHub -
 1. [文生图模型演进：AE、VAE、VQ-VAE、VQ-GAN、DALL-E 等 8 模型](http://mp.weixin.qq.com/s?__biz=Mzk0ODU3MjcxNA==&mid=2247485323&idx=1&sn=4408ac639f54f87c62cb64503cc2e9d9&chksm=c364c0cef41349d8f7a0c2d388b3de7bdfef049c8024b09e382e20a8e337e7c7acbca7b0a8e7&scene=21#wechat_redirect)
 2. [OpenAI 文生图模型演进：DDPM、IDDPM、ADM、GLIDE、DALL-E 2、DALL-E 3](http://mp.weixin.qq.com/s?__biz=Mzk0ODU3MjcxNA==&mid=2247485383&idx=1&sn=13c638d36899e6b3f8935be850b8ba79&chksm=c364c082f4134994d7672f4c35d5044b7271ec9978ac6f4fc5015da01f10f5388d4983c1deaa&scene=21#wechat_redirect)3. [Google 图像生成模型 ViT-VQGAN & Parti-20B](http://mp.weixin.qq.com/s?__biz=Mzk0ODU3MjcxNA==&mid=2247485482&idx=1&sn=d508b9e561db18763d6abe7860246cb0&chksm=c364cf6ff4134679717c65ed5e4baf9f927c048e68948aa05920c0dd001e3b2116147c5678dd&scene=21#wechat_redirect)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjicWk9KPiaS8hP0XicxgCwj45WwhlLvffacw3ItqAX8Og6OuPrjvic4smCAJ9rEkvjfibzsXuNoybWmMg/640?wx_fmt=png&from=appmsg&randomid=ihsmj0kn)
+![Image](images/640_5c4a51c84b46.png)
 
 ## 二、摘要
 
@@ -31,7 +31,7 @@ MaskGIT 是 Google Research 团队于 2022 年 2 月发布的图像生成模型�
 
 如下图 Figure 1 所示为 MaskGIT 生成的图像，其中 a 是以类别为条件生成的，b 是图像编辑的结果，c 是图像扩展的结果：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjicWk9KPiaS8hP0XicxgCwj45E0IvPevxEUBDNh4vgEdicMwCwN7uweHObtsQPSPCcIwJX2gAKWtJxSg/640?wx_fmt=png&from=appmsg&randomid=fme6rqmx)
+![Image](images/640_56cd5c1e517e.png)
 
 Muse 是 Google 继 Imagen 和 Parti 之后，于 2023 年 1 月发布的新的文生图模型，其不同于流行的基于扩散模型或自回归模型的方案，而是在离散的 Token 空间上基于 Mask 方式进行训练，在当时获得 SOTA 水平，并且生成效率更高。
 
@@ -45,7 +45,7 @@ Muse 同样采用预训练的 LLM 提取文本 embedding，和 MaskGIT 一样，
 2. 由于使用了量化的图像 Token 以及并行解码，速度相比效果相当的模型快的多。
 3. 开箱即用，可以直接应用于图像编辑等应用上。
 
-如下图 Figure 1 所示为 Muse 通过文生图生成的 512x512 分辨率的图像：![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjicWk9KPiaS8hP0XicxgCwj45cCo5AzSJZB1RXTmhXFMUytMwib74oUn5zoqXRzVAjib7yWUvYUl2iaMJg/640?wx_fmt=png&from=appmsg&randomid=359od3xy)
+如下图 Figure 1 所示为 Muse 通过文生图生成的 512x512 分辨率的图像：![Image](images/640_f438dfac71d0.png)
 
 ## 三、MaskGIT 模型和方法
 
@@ -53,7 +53,7 @@ Muse 同样采用预训练的 LLM 提取文本 embedding，和 MaskGIT 一样，
 
 如下图 Figure 3 所示，MaskGIT 采用 VQGAN 的模型范式，与 VQGAN 不同的是，VQGAN 中的 Transformer 采用序列生成的方式，在推理阶段其图像 Token 要一个一个预测，性能比较差，而 MaskGIT 中，Transformer 生成模型采用 Masked Visual Token Modeling 方式来训练（采用类似 Bert 的双向 Transformer 模型），也就是随机遮挡部分图像 Token，模型训练的目标是预测这些遮挡的 Token。以此方式训练的 Transformer 可以充分利用并行解码（Parallel Decoding）方式加速生成效率。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjicWk9KPiaS8hP0XicxgCwj45eFn29Ukmic3spDA33Y1BodzyumohAwdnXyEFHKcDNVfBBubqm8ebeYg/640?wx_fmt=png&from=appmsg&randomid=ebnkrplr)
+![Image](images/640_8917fa9c2f26.png)
 
 ### 3.2. 并行解码过程
 
@@ -62,7 +62,7 @@ Muse 同样采用预训练的 LLM 提取文本 embedding，和 MaskGIT 一样，
 - 上部分为 VQGAN 中采用的序列解码方式，生成 16x16=256 个图像 Token 需要解码 256 次。
 - 下部分所示为 MaskGIT 采用的并行解码方式，只用 8 个解码步骤即可生成 16x16=256 个图像 Token（图中深色的块即为解码过的 Token）。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjicWk9KPiaS8hP0XicxgCwj45SNjHLMibHgyWgxqUGbNTVz0Ocvrw0PWwG6QaKvQ9sJV98ozoiabzhZsA/640?wx_fmt=png&from=appmsg&randomid=2vk0g9jm)
+![Image](images/640_7a7a76eaf026.png)
 
 具体来说，并行解码过程包含 4 个步骤（假设待生成序列长度为 N，K 表示 codebook 大小，总共需要迭代的次数为 T）：
 
@@ -75,19 +75,19 @@ Muse 同样采用预训练的 LLM 提取文本 embedding，和 MaskGIT 一样，
 
 如下图 Figure 8 和 Table 3 所示，作者经过消融实验发现在 Mask Schedule 函数中采用 Cosine Schedule 获得了最优的结果，因此最终采用 Cosine Schedule 方案：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjicWk9KPiaS8hP0XicxgCwj45T6TRcEAZtWkANHA0SUIQrbo02OS0SmhxdmDaLuIyWsZDSNMujVuLNg/640?wx_fmt=png&from=appmsg&randomid=48sj8810)
+![Image](images/640_1194613e857a.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjicWk9KPiaS8hP0XicxgCwj45KbevIbpFO2v9uRWgsCsfO7ep7AgVjPGTtwUp1QMaDXlEjW8kNOvdRA/640?wx_fmt=png&from=appmsg&randomid=nu3tg20c)
+![Image](images/640_d7b12358175e.png)
 
 ### 3.4. 加速效果
 
 如下图 Table 1 所示，本文的 MaskGIT 在同样规模甚至更小的模型的情况下，使用更少的生成步骤获得更好的效果：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjicWk9KPiaS8hP0XicxgCwj45oMOHbsz1uz6iaEesNMEYbmkX76u95UZgFZosBhxA6Ugv7hZPbknmRyA/640?wx_fmt=png&from=appmsg&randomid=ictxliki)
+![Image](images/640_eea2eef28a27.png)
 
 如下图 Figure 4 所示，因为 MaskGIT 可以显著降低采样步数，因此可以大幅降低生成时间，在生成不同 Token 数的情况下，MaskGIT 相比 VQGAN 可以加速 30-64 倍：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjicWk9KPiaS8hP0XicxgCwj45B0oNapzpkIClEogzV98Ky9M5ar3xR9SPgZE4mRAJPvqhLhwaUMZt1g/640?wx_fmt=png&from=appmsg&randomid=qq2lek78)
+![Image](images/640_80d110852b64.png)
 
 ## 四、Muse 模型和方法
 
@@ -106,7 +106,7 @@ Muse 同样采用预训练的 LLM 提取文本 embedding，和 MaskGIT 一样，
 - Masked Tokens 中的灰色块就表示 Mask 掉的图像 Token，在训练阶段需要预测这些 Mask 掉的 Token，在生成阶段相当于 Mask 掉所有 Token，也就是要预测所有 Token。
 - 文本 embedding 都是以条件的形式通过 Cross Attention 机制与 Image Token 进行融合。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjicWk9KPiaS8hP0XicxgCwj45rt37bwxLib9USHzEGHDEB5PKDo5rA4oyicuTVF5ex5VnteuedN6XFGrw/640?wx_fmt=png&from=appmsg&randomid=w8il4o5d)
+![Image](images/640_a53ed6494f53.png)
 
 ### 4.2. 预训练文本编码器
 
@@ -120,7 +120,7 @@ Muse 同样采用预训练的 LLM 提取文本 embedding，和 MaskGIT 一样，
 
 与 VQGAN 不同，Muse 中作者采用全卷积模型，以此来支持各种分辨率的图像。Encoder 包含几个下采样的 block，来降低空间分辨率，Decoder 包含几个上采样 block，用于从离散的 latent 向量恢复图像。给定一个 HxW 的输入图像，假设下采样率为 f，则 Encoder 编码后生成的 Token 序列大小为 H/f x W/f。对于 256x256 的图像，作者令 f=16，也就是生成 16x16=256 个 Token，对于 512x512 的图像，作者令 f=8，也就是生成 64x64=4096 个 Token。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjicWk9KPiaS8hP0XicxgCwj45v4OA8vjtONsMxwxgk7k665oSVD7P4iat6bz8BEVfvSDiagUI7vGEZ4iaA/640?wx_fmt=png&from=appmsg&randomid=ycuk9vhq)
+![Image](images/640_d0ce245a8f6d.png)
 
 正如之前工作所述，编码后的离散 Token 序列可以捕获更高层次的语义，同时忽略低层次的噪声。此外，这些 Token 的离散化使 Muse 可以利用交叉熵损失来预测 mask 掉的 Token。
 
@@ -132,7 +132,7 @@ Muse 同样采用预训练的 LLM 提取文本 embedding，和 MaskGIT 一样，
 
 如下图 Table 4 所示为最大的 Base 模型的配置，可以看出，其 Transformer 层数和 Hidden 维度都是 Bert Large 模型的 2 倍（分别为 24 和 1024），Bert Large 对应的参数量为 340M，Base 模型对应的参数大概为 632M：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjicWk9KPiaS8hP0XicxgCwj45icPzelrciaqtm7yxwJic59y2yzic4ly3s7o4XPTsf1OCicpnqNpDEcicYJ2g/640?wx_fmt=png&from=appmsg&randomid=8yirob35)
+![Image](images/640_5fc9a7e3836b.png)
 
 ### 4.5. 超分 Transformer 模型
 
@@ -142,11 +142,11 @@ Muse 同样采用预训练的 LLM 提取文本 embedding，和 MaskGIT 一样，
 
 其超分模型如下图所示，其第一阶段生成的 16x16 的 Low-Res Token 会经过一些列的 Transformer Encoder 层（图中红框），然后与文本 embedding concat 到一起输入 Transformer Decoder 层（图中蓝框），并作为 K 和 V 与图像 embedding 完成 Cross Attention，最终生成 64x64 的 High-Res Token。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjicWk9KPiaS8hP0XicxgCwj45cd039lVsJe9nicxhwOxQ09oKzmNLYicAibBtsia6S3BsDp37sBbiaqTgEeg/640?wx_fmt=png&from=appmsg&randomid=ydr7b8ou)
+![Image](images/640_45f23b8ad229.png)
 
 如下图 Table 6 所示为超分模型的配置，可见其 Encoder Transformer 为 16 层，与上图中的 8 层不太一致，不知道是不是笔误，而 Transformer 为 32 层（两个 Transformer 都是类似 Bert 的双向 Transformer，只不过后一个多了 Cross Attention，此外，Hidden 维度都是 1024，只有 Base 模型的一半）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjicWk9KPiaS8hP0XicxgCwj45d7eL3IjZ7GGdToDm9tfyaDGF2aBV1vMbGxUAfeGTXRbt2ib3sVPQ9pQ/640?wx_fmt=png&from=appmsg&randomid=ds1ufb1g)
+![Image](images/640_49dfaf9b4e77.png)
 
 ### 4.6. Decoder 微调
 
@@ -160,17 +160,17 @@ Muse 同样采用预训练的 LLM 提取文本 embedding，和 MaskGIT 一样，
 
 如下图 Figure 13 所示，微调后的 Decoder 可以重建出更清晰的细节：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjicWk9KPiaS8hP0XicxgCwj45l19NeBpDFJBuoamfbGrOFqDBOTcS4aibqz7r94rkGykhaJCd7AVeDVA/640?wx_fmt=png&from=appmsg&randomid=do3537gg)
+![Image](images/640_7b7dcd2317b5.png)
 
 其中 VQGAN 的训练超参如下图 Table 5 所示：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjicWk9KPiaS8hP0XicxgCwj45Fls7sp9bpnE1UqXribIh8u82CB515K8g4lCib82NT4rs7GLKaOKG0gzw/640?wx_fmt=png&from=appmsg&randomid=gg2fbyxz)
+![Image](images/640_c513ee138cbd.png)
 
 ### 4.7. 可变的掩码比例
 
 作者参考 MaskGIT 的方式，掩码比例采用 Cosine scheduling，对于每一个训练样本都会从如下的分布中采样一个 mask 比例 r，其中 r ∊ [0, 1]，因此对应的 mask 比例期望为 2/π=0.64。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjicWk9KPiaS8hP0XicxgCwj45JPicg1S1IZUJFha2H3ibPoFhSuCrjql3LCDfuqqJBT9N3XGMe5nkOakw/640?wx_fmt=png&from=appmsg&randomid=v4xw9ohc)
+![Image](images/640_13d40d4f85e3.png)
 
 ### 4.8. Classifier Free Guidance
 
@@ -184,23 +184,23 @@ Muse 同样采用预训练的 LLM 提取文本 embedding，和 MaskGIT 一样，
 
 如下图 Figure 5 所示为不同 Step 生成的图像：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjicWk9KPiaS8hP0XicxgCwj452kECgib0v6JDagCNHUB5EibgZn1OQtYsvofLcbYnhdD5ibOP7A9neJicrg/640?wx_fmt=png&from=appmsg&randomid=lquyd9kt)
+![Image](images/640_cf32244aaab2.png)
 
 此外，作者也提到开始有一些优化方法可以大幅降低 Diffusion 模型的解码步数，但在文生图模型中还没经过充分验证。（不过，在本文之后的两个月，2023 年 3 月，OpenAI 发表的 [2303.01469] Consistency Models 可以进一步将 Diffusion 模型的生成过程减小到 2 步，并且在 DALL-E 3 中得到应用。）
 
 如下图 Table 3 所示，作者在 TPUv4 上对 Parti-3B、Imagen、Muse-3B 进行了评估，对于 Stable Diffusion/LDM 作者采用之前在 A100 GPU 上最好的结果，其生成不同分辨率的时间如下所示，可以看出，Muse-3B 的生成速度大幅领先其他模型：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjicWk9KPiaS8hP0XicxgCwj45qYxWSnQA3t55xZlbozljqjPHnmwRKTRDLtDfRozE2f19Ooaz6PBmQQ/640?wx_fmt=png&from=appmsg&randomid=fmolx7m8)
+![Image](images/640_c8b5cce6c6a5.png)
 
 ### 4.10. 评估结果
 
 在 CC3M 上评估结果如下图 Table 1 所示，Muse 获得了最好的效果：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjicWk9KPiaS8hP0XicxgCwj45iclkebqGj6yuH3sLMQP9Zyfml09ic9XYDE7hQAaR7wMEVXWqSrJXlWxA/640?wx_fmt=png&from=appmsg&randomid=23uy2z3v)
+![Image](images/640_574d8ce710ae.png)
 
 在 MS-COCO 上的评估结果如下图 Table 2 所示，Muse-3B 同样获得了很不错的结果：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjicWk9KPiaS8hP0XicxgCwj45OEIHvFlnC4ByMpiazAW3h8HY9vYu7PBqwc2QK9vcGuUicrB1OH5jKZCw/640?wx_fmt=png&from=appmsg&randomid=jzndpwk5)
+![Image](images/640_f2e644220e19.png)
 
 ## 五、参考链接
 

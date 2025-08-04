@@ -41,17 +41,17 @@ Meta 在其 LLaMA 3 技术报告中简单提到用于训练 LLaMA 3 的大规模
 
 RDMA 是一种硬件辅助通信加速的行业标准，RDMA 实现了 “verbs” API，比如读和写（可以参考：RDMA Verbs API - NVIDIA Docs）。与基于 TCP/IP 的通信不同，基于 TCP/IP 的通信中，数据包需要先发送到内核，然后再复制到 CPU 内存中，而 RDMA 绕过了发送方和接收方的内核，直接从应用进程内存中传递数据。如下图所示：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzibqbZrLw6ibnHtWaibFoXSQcBuqVEqwPviat5UXMr0tibgPg7pXPb1Z88AOsvyicvpxbgYnS1eLZiah9w/640?wx_fmt=png&from=appmsg&randomid=isz0qzxt)
+![Image](images/640_ef1ce4134c66.png)
 
 如下图所示为几种常见的 RDMA 方案，现在比较常见的是 IB 和 RoCEv2：
 - IB 是 NVIDIA 提供的一种专用的高性能计算网络技术，具有专用的网络架构和硬件设备，IB 使用专用的 InfiniBand 协议栈，包括物理层、链路层、网络层和传输层，专门设计以优化高性能计算和低延迟通信。
 - RoCEv2 是一种在标准以太网基础上实现 RDMA 的协议，RoCEv2 使用常见的以太网交换机和网卡，因此更容易与现有的以太网基础设施集成。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzibqbZrLw6ibnHtWaibFoXSQCaqRmb3HJUwJibjPeacxeIIauiaddrslLQzSlav9viaOdsCXHmDhqqsCg/640?wx_fmt=png&from=appmsg&randomid=sxsqruc1)
+![Image](images/640_66f514ca58ed.png)
 
 RDMA verbs 消息封装在以太网/IPv6/UDP 数据包中，并通过常规以太网络进行传输，打包/解包封装在 RDMA NIC 硬件中处理。如下图所示为对应的 RoCEv2 Packet Format：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzibqbZrLw6ibnHtWaibFoXSQpgKibfMNY7QRAW5b6y4oy87S4Qs2RZovB6LbAoezRbia4FsddHGZO46w/640?wx_fmt=png&from=appmsg&randomid=o9d3ssns)
+![Image](images/640_eb66db3bae81.png)
 
 ### 3.2 集合通信（Collective Communicatin）
 
@@ -63,7 +63,7 @@ RDMA verbs 消息封装在以太网/IPv6/UDP 数据包中，并通过常规以�
 - 其次：集合通信原语可以生成多种网络流量模式。比如 AlltoAll 在所有 endpoint 之间形成 Full Mesh 流量模式，可能导致高度暂时性的网络拥塞。然而，它的高活跃流量简化了路由，可以使用哈希方案降低持续拥塞风险。
 - 最后：集合通信原语选择的逻辑拓扑会影响 GPU 之间的网络拥塞和数据交换。与 Tree 方案相比，基于 Ring 实现的 AllReduce 具有独特的拥塞和哈希冲突含义。NCCL 会根据 GPU 数量和 Message 大小等因素优化相应选项。然而，这种方法也有局限性，比如，由于硬编码配置文件导致的潜在不确定性、某些消息大小或大型作业的性能不佳，以及一些实现中集合通信算法的不相关性。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzibqbZrLw6ibnHtWaibFoXSQR26ib6MORhwkibr2BwHqzKJoKxeJAa7DMGicUFZJaeXNBD3l3qibfsiaw7Q/640?wx_fmt=png&from=appmsg&randomid=n35423ac)
+![Image](images/640_798bba80fba9.png)
 
 ### 3.3 训练工作负载
 
@@ -72,11 +72,11 @@ RDMA verbs 消息封装在以太网/IPv6/UDP 数据包中，并通过常规以�
 - （a）Job 大小趋势：这里主要是分析 GPU <= 128 的情况，也就是不包含大规模的 LLM Job。可以看出，Job 的 GPU 数通常是 8 的整数倍，这是因为单机 8 个 GPU，此外，作者也不推荐使用小于 8 卡运行（PS：小于 8 卡确实容易导致碎片化问题，但是有些小型任务也确实没必要使用 8 卡 H100，不过也许 Meta 有 A100 集群，可以让小型任务跑在 A100 上）。
 - （b）通信类型分布：基于 DDP 的任务中，AllReduce 和 AlltoAll(v) 占绝大部分；基于 FSDP 的任务中，会额外多了一些 AllGather 和 ReduceScatter。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzibqbZrLw6ibnHtWaibFoXSQyGl9w87z6hTgaCry2e27DEY6pbtxbOFg6hCm6jhMZGckfOWbDYw5Sw/640?wx_fmt=png&from=appmsg&randomid=06mohyq1)
+![Image](images/640_acec94a2f849.png)
 
 如下图 Figure 2 所示为不同模型中各类通信原语实际通信 Message 大小（通信的元素数量）的分布，可以看出，不同模型的 Message 大小变化很大：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzibqbZrLw6ibnHtWaibFoXSQXbd0RcbOSzzmN71rr8ZqgpCuoA3iaGR2zLsRUykgG0Irlm3NaWeP5Sw/640?wx_fmt=png&from=appmsg&randomid=po26qouf)
+![Image](images/640_eb9aa73fb84e.png)
 
 每个集合通信操作中 GPU 数量的趋势：无论是 Ranking Job，还是 LLM Job，每个集合通信操作中 GPU 的数量并没有与 Job 大小以相同的速度增长。这是因为在大规模训练中会使用多维并行策略，这有助于限制最大集合通信操作中 GPU 的数量，即使运行的 Job 中有成千上万个 GPU。因此，本文中的其他部分主要关注涉及 16-128 个 GPU 的集合通信操作。
 
@@ -95,11 +95,11 @@ RDMA verbs 消息封装在以太网/IPv6/UDP 数据包中，并通过常规以�
 
 比如 NVIDIA 的 SN4000 系列以太网交换机都是 64MB 的 fully shared buffer（https://nvdam.widen.net/s/6269c25wv8/nv-spectrum-sn4000-product-brief）如下图所示；而最新的 SN5000 系列也只有 160MB 的 fully shared buffer。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzibqbZrLw6ibnHtWaibFoXSQ2jz6db762xmmC3KSuLic8Via8ibia1RJDA8rdgL510FGbuUvYsEUR7auKw/640?wx_fmt=png&from=appmsg&randomid=dse7k7en)
+![Image](images/640_de8d5315ac8b.png)
 
 而 ARISTA 的 7800R3 系列交换机都采用 Deep packet buffer，最多可以达到 24GB/line（7800R3 Series Data Center Switch Router）
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzibqbZrLw6ibnHtWaibFoXSQvqeInyicqx5gxOyiaGTEsg2u6yLaozPXQTZeFNP8YyAKqW4EMdBG919g/640?wx_fmt=png&from=appmsg&randomid=ksqfauvh)
+![Image](images/640_725203ee565c.png)
 
 ### 3.5 DSCP-based PFC
 
@@ -128,7 +128,7 @@ DSCP 是一种在 IP 头中用于标识 IP 包优先级的字段。通过在 PFC
 - GPU Tray（Accelerator Tray）
 - 8 个 GPU，通过 NVLink Switch 实现全互联。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzibqbZrLw6ibnHtWaibFoXSQ2cf5IH4Ikb6ICtJfcZVyOtA87fh14DOVTlKQ16HBnJeeiaSfGnOLLOQ/640?wx_fmt=png&from=appmsg&randomid=ozymjsp1)
+![Image](images/640_5a3506ba3fa7.png)
 
 PS：PCIe Retimer 是一种用于延长 PCIe 信号传输距离并增强信号完整性的硬件设备。随着 PCIe 链路速率的增加（如PCIe 4.0、5.0 甚至 6.0），信号衰减和噪声问题变得更加严重，特别是在长距离传输或使用质量较低的电缆和连接器时。PCIe Retimer 通过 Retiming, Re-amplifying 和 Re-shaping 来减少这些问题。
 
@@ -141,7 +141,7 @@ PS：PCIe Retimer 是一种用于延长 PCIe 信号传输距离并增强信号�
 - 每个 CPU 又通过 PCIe Gen 5x16 连接一个 OCP NIC。
 - CPU 0 通过 DMI 连接 PCH。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzibqbZrLw6ibnHtWaibFoXSQjP9rD07p9O6IANnSM0GvE0icZic2F1PzoPLkKj7oI9QbiauzXAKU9bVLQ/640?wx_fmt=png&from=appmsg&randomid=335jiqkj)
+![Image](images/640_22077e2e750d.png)
 
 ### 4.2 网络拓扑
 
@@ -152,7 +152,7 @@ PS：PCIe Retimer 是一种用于延长 PCIe 信号传输距离并增强信号�
 - 前向网络：前向网络通过 Fabric 交换机（FSW）和 Rack 交换机（RSW）连接。前向网络会连接存储，用于为训练提供数据供给。会保证前向网络具有足够的入口带宽，以避免阻塞 GPU 的工作负载。
 - 后向网络：后向网络是专用网络，可在非阻塞架构中连接所有 RDMA NIC，从而在集群中的任意两个 GPU 之间提供高带宽、低延迟和无损传输。后向网络利用 RoCEv2 协议，该协议将 RDMA 服务封装在 UDP 数据包中，以便通过网络进行传输。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzibqbZrLw6ibnHtWaibFoXSQ09joX9G0OhfcXchXAZs4tOZZo5ibByib478O6fbILbZWV48D2JIPsTMg/640?wx_fmt=png&from=appmsg&randomid=n4vju87g)
+![Image](images/640_0a2b1cc3648c.png)
 
 #### 4.2.2 后向网络
 
@@ -167,7 +167,7 @@ PS：PCIe Retimer 是一种用于延长 PCIe 信号传输距离并增强信号�
 - 其在 CTSW 的上下行采用了 1:7 的收敛比，因此在调度时应尽量减少跨 AI Zone 的流量。
 - 为了缓解跨 AI Zone 流量的瓶颈，作者增强了训练 Job 调度器（会感知 GPU 服务器之间的拓扑位置，推荐排序后的分配方案），以便将 Job 放在最合适的位置，减少跨 AI Zone 的流量，从而减少 Job 执行时间。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzibqbZrLw6ibnHtWaibFoXSQKxhKZ4yeFPtKBMjkKINOex05Vz2KR9EtjxgwgT5lFDPfibnpsKRicaibg/640?wx_fmt=png&from=appmsg&randomid=vjocihs5)
+![Image](images/640_d00a3b5f529c.png)
 
 如下图所示为我们根据 LLaMA 3 技术报告数据绘制的集群网络拓扑（PS：不一定严格对齐），其总共包含 24K GPU，采用 3 层 Clos 网络：
 
@@ -179,7 +179,7 @@ PS：PCIe Retimer 是一种用于延长 PCIe 信号传输距离并增强信号�
 - Aggregation Switch：每个 Cluster Switch 只有 28 个上行 Port，而总共有 16*8=128 个 Cluster Switch，因此可以使用 28 个 Aggregation Switch 将所有 Cluster Switch 连接起来，每一个都连接所有 Cluster Switch，对应每个 Aggregation Switch 使用 128 个 400G Port。
 - Data Center：总共有 8 个 Pod，也就是 24K H100 GPU。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzibqbZrLw6ibnHtWaibFoXSQ0gqXTjPpLpiaGViaL14Hl0BbEEZkNI3n8iav4lw5icHAHV7YgYTPeBLdpg/640?wx_fmt=png&from=appmsg&randomid=9s1gdzjm)
+![Image](images/640_7fc394a4391b.png)
 
 ## 五、路由
 
@@ -197,7 +197,7 @@ PS：PCIe Retimer 是一种用于延长 PCIe 信号传输距离并增强信号�
 
 作者最初考虑使用广泛采用的 ECMP，它根据五元组的哈希值随机放置数据流：源 IP、目标 IP、源 UDP 端口、目标 UDP 端口以及协议。然而，由于低熵问题，ECMP 在训练工作负载中表现不佳。作者使用最大均值比（MMR，也就是负载最大链路的流数量和每个链路平均的流数量之比）来衡量 ECMP 均衡性，这是因为集合通信中的大多数数据流大小相同。作者观察到 16 个链路模拟中 1000 个流的平均 MMR 超过 1.2。如下图 Table 2 所示，实际上这种情况要糟糕的多。这种负载不均衡会导致大象流发生碰撞的概率大得多，从而造成严重拥塞并降低网络吞吐量和 Job 性能。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzibqbZrLw6ibnHtWaibFoXSQPkCjEMIUzzoicc0NuicLSxiaKxvv8go3wOibsV25n6yAoad3IsNO5Ocyfw/640?wx_fmt=png&from=appmsg&randomid=3jkmfa46)
+![Image](images/640_13b7b252a70e.png)
 
 #### 5.2.2 路径固定
 
@@ -219,13 +219,13 @@ PS：PCIe Retimer 是一种用于延长 PCIe 信号传输距离并增强信号�
 
 作者将交换机配置为执行增强型 ECMP（E-ECMP），以使用交换机 ASIC 的 UDF 功能对 RoCE 数据包的目标 QP 字段进行额外哈希。这增加了熵，如下图 Figure 7 所示，与没有 QP 扩展的 ECMP 基线相比，E-ECMP 和 QP 扩展使得 AllReduce 集合通信性能提高 40%：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzibqbZrLw6ibnHtWaibFoXSQeib5K7pEvOINHnicYaycAwZIb2EHm1V64rNV5hIsYU34cxtey1XHJlwQ/640?wx_fmt=png&from=appmsg&randomid=cfuygbho)
+![Image](images/640_2eec7d399cd9.png)
 
 #### 5.3.3 QP 权衡
 
 QP 缓冲区是 RDMA NIC 中的稀缺资源，QP 资源在 Ranking 和 LLM 工作负载之间的使用方式不同。对于 Ranking 工作负载，因为其通常涉及 Full Mesh 通信（例如 AlltoAll），本身已经具有相对比较高的熵，因此使用 QP=4。而对于 LLM 工作负载，往往涉及分层集合通信（比如 AllReduce），熵比较低，因此使用 QP=16。其结果如下图 Figure 8 所示：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzibqbZrLw6ibnHtWaibFoXSQKbYk1zFzZFjMm6B5cpM7Sd8d5ZgsWYhe0QicrtWPpgmoUV8ezfjEfXA/640?wx_fmt=png&from=appmsg&randomid=aa79jh75)
+![Image](images/640_53f809016de3.png)
 
 #### 5.3.4 不同 QP 扩展方案
 
@@ -249,7 +249,7 @@ PS：如果使用 NCCL 的话，可以使用 “NCCL_IB_QPS_PER_CONNECTION” �
 
 从硬件角度来看，ECMP 和路径固定方案都有局限性。因此，作者借鉴 EBB: Reliable and Evolvable Express Backbone Network in Meta 和 Engineering Egress with Edge Fabric: Steering Oceans of Content to the World，通过开发中心化流量工程（Tfaffic Engineering，TE）控制器来解决这些问题。TE 控制器根据实时工作负载和拓扑动态优化路由。如下图 Figure 9 所示为 TE 的架构，展示了如何优化动态路由分配：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzibqbZrLw6ibnHtWaibFoXSQXT3bdgoKKzZEWtlD8xxaGExZmufUJaAz5WiaqbujDkbFsqQeVuVM3kQ/640?wx_fmt=png&from=appmsg&randomid=fdwjcqss)
+![Image](images/640_a003346346f7.png)
 
 #### 5.4.1 控制平面
 
@@ -275,7 +275,7 @@ PS：如果使用 NCCL 的话，可以使用 “NCCL_IB_QPS_PER_CONNECTION” �
 
 在可控环境中，与 16 个上行链路设置上的 E-ECMP 相比，TE 在现实世界的 NCCL 基准上的链路利用率更加均衡。使用 E-ECMP 时，链路利用率差异很大：最大带宽的 40%-90%；而 TE 均衡使用最大带宽的 80%，减少了最坏的情况。如下图 Figure 10 所示，在 128 个训练节点下，TE 在 AllReduce 和 AlltoAll 集合通信中的表现比 E-ECMP 高出 5%-10%：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzibqbZrLw6ibnHtWaibFoXSQtVv2fLT5eibghEYScXbg5EiahfkgpZw5GcDJgUSoA2XCepN3He90zNgA/640?wx_fmt=png&from=appmsg&randomid=e1p7nhpr)
+![Image](images/640_c923146d221f.png)
 
 #### 5.5.3 TE 的运维经验的教训
 
@@ -295,7 +295,7 @@ Flowlet Switching（Let it flow: resilient asymmetric load balancing with flowle
 
 不同级别网络拥塞：分布式训练会产生独特的 Full Mesh 和分层流量模式（如 Tree 和 Ring），这两种模式会产生不同的拥塞模式，如上 Table 2 中的 Buffer 占用率也不同。针对这种情况也没有标准的最佳实践来处理拥塞问题。如下图 Figure 3 所示为 Ranking 模型和 LLM 的流量模式：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzibqbZrLw6ibnHtWaibFoXSQvQhQWsicYnGG83KqxUzPrEQOh7mG8o9RJ7xy3D2DiaQricrj7s0nrMaPQ/640?wx_fmt=png&from=appmsg&randomid=ynil4h9r)
+![Image](images/640_0bf430a3ae32.png)
 
 上一部分讨论了由于负载均衡效率低下导致的持续拥塞的解决方案。然而，即使流量分配完美，集合通信流量模式（如 AlltoAll）也可能导致临时缓冲区的积压和突增。这种现象也引申出了对流量控制和拥塞控制的需求，以便通过避免流量丢弃和提供可预测的尾延迟来实现可预测的性能。这个部分深入探讨相应的传输设计和解决方案，以应对与网络拥塞相关的挑战。
 
@@ -321,11 +321,11 @@ Flowlet Switching（Let it flow: resilient asymmetric load balancing with flowle
 
 如下图 Figure 12 所示，作者在 200G RDMA 部署中使用默认的 DCQCN 算法，并使用了更加严格的 ECN 阈值配置来最小化 PFC，然而调整后的性能（蓝色）还不如 Baseline 的性能（红色）。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzibqbZrLw6ibnHtWaibFoXSQolVHNyoTTXk0Fh0CKWRr8qFiatlMd1hJLAoQ422eUulfXxs1RGTicZHg/640?wx_fmt=png&from=appmsg&randomid=jhz1x3aw)
+![Image](images/640_567adf9f7f59.png)
 
 如下图 Figure 13 所示，通过进一步的微调，可以以 3%（非常微小）的优势获得更好的完成时间，而 PFC 这样的拥塞指标也变得更加糟糕。因此，作者采用了宽松的 ECN 标记，允许 CTSW 中建立缓冲区，同时保留默认的 DCQCN 配置。这也说明了调优 DCQCN 是一项非常有挑战性的工作。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzibqbZrLw6ibnHtWaibFoXSQZke5ZYVu1ial4LhwDCGaPTPnanygz4s2wecyzhfxVUs7chhuM1z8CRQ/640?wx_fmt=png&from=appmsg&randomid=mg960y8i)
+![Image](images/640_069f7526d6ce.png)
 
 当网络进一步过渡到 400G 时，作者识图进一步调整 DCQCN 以适应新的网络速度和拓扑结构。然而，作者发现固件中的 DCQCN 实现已经改变，因此在 400G 网络中并没有采用 DCQCN。也就是，仅使用 PFC 进行流量控制，而没有其他任何传输层拥塞控制。
 
@@ -338,7 +338,7 @@ Flowlet Switching（Let it flow: resilient asymmetric load balancing with flowle
 3. 接收端的 GPU 线程然后将 Channel 缓冲区的内容复制到对应的 Compute 缓冲区。
 4. 最后，双方 CPU proxy 线程回收 Channel 缓冲区，接收端 CPU proxy 线程在 Channel 缓冲区准备好后发送另一个 CTS 数据包。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzibqbZrLw6ibnHtWaibFoXSQNTudkcNicCujjLdBOPfJKFyIYI5Rux2qVq0NMjr5Iu5zAoOb9TbFvGw/640?wx_fmt=png&from=appmsg&randomid=mb7szs4q)
+![Image](images/640_45842feb3add.png)
 
 作者充分利用这一机制作为接收端驱动的流量准入，以限制网络上的 in-flight 流量，尤其是网络拥塞开始堆积时。然而，配置正确的设置也比较有挑战性：
 
@@ -366,7 +366,7 @@ PS：NCCL 中可以通过 NCCL_BUFFSIZE 设置缓冲区大小，也可以通过 
 
 由于开发环境和生产环境的差异，集合通信库（如 NCCL）可能会通过 RoCE 互联提供次优的性能。比如开发人员环境中可能存在一些假设，包括：非常低的 RTT 时延（<10μs）、自适应路由机制、无超额订阅的非阻塞拓扑。这就需要对集合通信库和网络配置进行联合优化，以实现最佳性能。如下图 Figure 15 所示，通过联合优化，作者的 RoCE 性能提高 2 倍以上：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzibqbZrLw6ibnHtWaibFoXSQjhMQH5ZRAI4x2UcH86DunSHlt5jbg0dq1jxH3WZ5icXrhP4C8ZTRuog/640?wx_fmt=png&from=appmsg&randomid=uwqdhezi)
+![Image](images/640_09adbf7344fa.png)
 
 ### 7.2 路由和拓扑的影响
 
@@ -375,7 +375,7 @@ PS：NCCL 中可以通过 NCCL_BUFFSIZE 设置缓冲区大小，也可以通过 
 - 第一阶段后向网络 1:1 的订阅比例，第二阶段是 RTSW 上行带宽扩大 2 倍（冗余），可见第二阶段性能相比第一阶段显著提高。第一阶段性能较低和不一致性是因为之前描述的静态路由流量冲突。第二阶段虽然解决了性能问题，但是要投入 2 倍的网络基础设施。
 - 第三阶段表示迁移到流量工程时的情况，依然是第二阶段的网络，与第二阶段性能类似，不过更加紧凑。第四阶段是将订阅比例从 1:2 降低到 1:1.125，以不影响性能的前提下降低 CTSW 硬件成本。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzibqbZrLw6ibnHtWaibFoXSQ4JvFkAhh9CZC0OuRu1LT2URicShF88hlqrHenYmrMuaSDh8zn6d75xA/640?wx_fmt=png&from=appmsg&randomid=ji23dpdd)
+![Image](images/640_48bca3a90b44.png)
 
 ### 7.3 可观测性工具
 

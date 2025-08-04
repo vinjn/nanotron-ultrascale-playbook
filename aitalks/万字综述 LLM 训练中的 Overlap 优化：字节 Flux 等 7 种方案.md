@@ -8,7 +8,7 @@
 
 在大规模分布式训练场景中，计算和通信的重叠（Overlap）一直是一个关键的研究热点。随着硬件性能的提升，计算能力和通信带宽之间的差距日益显著。如下图所示，硬件算力每 2 年大约扩大 3x，而通信带宽每 2 年只提升 1.4x，这种差距带来的影响在大规模训练任务中愈加明显。例如，在使用 H100 和 A100 集群进行 LLM 训练时，H100 的通信开销占比通常会高于 A100。这种情况下，通信可能成为了系统性能的瓶颈，因此，如何在计算和通信之间实现高效的 Overlap，已成为优化分布式训练性能的关键策略之一。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjU4Cs3CT0hsF56AfEiamBWQocnFY8WPvwDCDT4sANicAicHD7TGfglq30yDLKxEM6DnDVKpxqURxC7g/640?wx_fmt=png&from=appmsg&randomid=nuawiry4)
+![Image](images/640_ab58061f4618.png)
 
 实际上，大部分计算和通信的 Overlap 可以理解为生产者和消费者的 Overlap，生产者可以是计算也可以是通信，生产者与消费者可以是短程依赖也可以是长程依赖，通常短程依赖带来的挑战更大，而长程依赖则较容易实现 Overlap。比如：
 
@@ -38,11 +38,11 @@ AllReduce 是集合通信中常见的分布式计算操作，用于多个设备�
 
 具体的 ReduceScatter 操作如下，每个设备（GPU）发送一部分数据给下一个设备，同时接收上一个设备的数据并累加。这个过程进行 K-1 步（假设有 K 个设备），ReduceScatter 后每个设备都包含一部分数据的 Sum：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjU4Cs3CT0hsF56AfEiamBWQK02NBgULYm20X7UhfjPibZr5zPbNCUWSvyiceeLKZ9QftHavtzfibUJ0Q/640?wx_fmt=png&from=appmsg&randomid=rjymkbb3)
+![Image](images/640_f4ae7f649bc0.png)
 
 具体的 AllGather 操作如下，每个设备将其持有的部分结果发送给下一个设备，同时接收上一个设备的部分结果，逐步汇集完整的结果，同样需要 K-1 步。AllGather 后，每个设备都包含全量的数据：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjU4Cs3CT0hsF56AfEiamBWQoxqENEpEh2J327VIraJWaVnAU3GUJvSbztFQRiaPt1bE8ylWFJJFeag/640?wx_fmt=png&from=appmsg&randomid=s8qmq2wn)
+![Image](images/640_d9aa5e67c50b.png)
 
 ### 2.2 LLM Tensor Parallelism AllReduce
 
@@ -50,11 +50,11 @@ AllReduce 是集合通信中常见的分布式计算操作，用于多个设备�
 
 如下图 （a）所示，MLP 层的两个 Linear 层采用先列切（A，Column Parallelism），然后行切（B，Row Parallelism）的方案，这样两个 Linear 之间不用通信：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjU4Cs3CT0hsF56AfEiamBWQpjQEBK98TDjHNm1NltqcNqAH3cibGddlJQv6njbHVFk8uiaIC3dVrjsQ/640?wx_fmt=png&from=appmsg&randomid=8o412cu1)
+![Image](images/640_5d070f096ba2.png)
 
 如下图（b）所示，由于每个 Head 的 Attention，Softmax 都可以独立计算，因此可以按照 Head 的方式切分（等价于列切分），然后对之后的 Linear 采用行切分（B），这样 Self-Attention 中间也不用通信：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjU4Cs3CT0hsF56AfEiamBWQtc6tlNVD3mUwUvWYsicrXN0o30sAbWiaSj8Dm42OJeQiaTUlyPBSgia8ag/640?wx_fmt=png&from=appmsg&randomid=mwf5y56p)
+![Image](images/640_cf149a5a07d1.png)
 
 如上所述，采用先列切、再行切的方式，每个 Transformer Block 中都需要两个 AllReduce 操作，对于一个 40 层的模型则需要至少 80 个 AllReduce 操作。
 
@@ -62,13 +62,13 @@ AllReduce 是集合通信中常见的分布式计算操作，用于多个设备�
 
 如下图所示为 Ring ReduceScatter 的优化，可以等效为一个 All2All 操作实现数据的重排，然后在 Local 进行 Reduce 操作。此过程只有一个 All2All 的整体通信操作，虽然实际上与 Ring 实现的方式的通信量和计算量没有变化，但可以避免 K-1 个 Ring Step 的同步，进而可以有效降低时延。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_jpg/zhVlwj96tTjU4Cs3CT0hsF56AfEiamBWQ1pPgxFyicoBSMYWOJdNIITHpubDp2CyUcuwzfoOw8qDH8a9h3uoHnYg/640?wx_fmt=jpeg&from=appmsg&randomid=omz3r5rj)
+![Image](images/640_f94744ce9c3a.jpg)
 
 ### 2.4 ZeroBubble
 
 [2401.10241] Zero Bubble Pipeline Parallelism [1] 中作者提出 Zero Bubble，核心思路是将 Backward 分为两个部分，一部分计算输入的梯度，另一部分计算参数的梯度，如下图 Figure 1 所示。这里计算输入的梯度有明确的依赖关系，也是链式法则不断传递的基础；而计算权重的梯度却没有明确的依赖，甚至可以滞后很多。此外，三个红色部分计算量相当，这也就是为什么常见的流水线并行（Pipeline Parallelism，PP）中 Backward 的长度为 Forward 的 2 倍。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjU4Cs3CT0hsF56AfEiamBWQA48LUKGwg87NchCmJofvrVYuLSctQXD2RDkTFibLPchUV044xkLDtXA/640?wx_fmt=png&from=appmsg&randomid=tmhsarm2)
+![Image](images/640_8d2ea805dd1d.png)
 
 ## 三、Microsoft - CoCoNet
 
@@ -92,11 +92,11 @@ PS：然而，生成的代码执行效率不及直接采用 cuBlas、cutlass 或
 - 然后，Autotuner 应用一系列变换以优化程序，同时确保算法逻辑保持不变。例如，将 AllReduce 与 Dropout 融合为 FusedAllReduce，并使其与矩阵乘法 Overlap。
 - 最后，生成对应的通信与计算代码，并且可以通过 PyTorch 执行。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjU4Cs3CT0hsF56AfEiamBWQ18Xcps41s3YxLKEfoTsb4mExXLGiaBg0ewy1HopxNUkCq9nlRpGrUhQ/640?wx_fmt=png&from=appmsg&randomid=t7n45jyf)
+![Image](images/640_e2e30c907343.png)
 
 CoCoNet 提供了 4 种能够保持语义的转换方案，用于优化以 DSL 表示的程序。以下图 Figure 3 的代码为例，其主要是实现了 ：矩阵乘法 + AllReduce + Dropout + Add。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjU4Cs3CT0hsF56AfEiamBWQdfHJRCLU8Bxes6e25ABN2Y340mBX1y2NH0Je4g3T8MCqXDmSDAerkg/640?wx_fmt=png&from=appmsg&randomid=pws604s8)
+![Image](images/640_6489d064e8f4.png)
 
 具体的几个转换过程如下：
 
@@ -109,9 +109,9 @@ CoCoNet 提供了 4 种能够保持语义的转换方案，用于优化以 DSL �
 7. fusedAR.comp(scOut) 则指定了需要与 FusedAllReduce 融合的计算，返回的 out 则是输出结果。
 8. Overlap：对一系列生产者-消费者操作，可以执行 Overlap 变换。比如有多个数据要执行上述操作（不同样本，数据的不同 Chunk），则可以实现通信与计算的 Overlap。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjU4Cs3CT0hsF56AfEiamBWQKnJhvBsLvXv4Ex8aOR2EtP0CN6AuNUP4HFMpn5fTL1oRWa4h4eWtbg/640?wx_fmt=png&from=appmsg&randomid=1t898rxd)
+![Image](images/640_5aecb8097a14.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjU4Cs3CT0hsF56AfEiamBWQ9RXkOppegViaQH3ibrGG3NFiadg8ZXjqEAUwfiaed5H1Z4a3xp1zGnwkkg/640?wx_fmt=png&from=appmsg&randomid=nuwdwf8g)
+![Image](images/640_770d96350b9e.png)
 
 CoCoNet 提供了 AutoTunner，能够自动探索程序的所有调度方案的空间，并针对特定底层框架和输入规模，返回性能最佳的调度方案。
 
@@ -120,13 +120,13 @@ CoCoNet 提供了 AutoTunner，能够自动探索程序的所有调度方案的�
 - (a)：两个 PP Stage 之间会有一个 PP Stage 0 内部的 AllReduce 操作，以及一个 PP Stage 0 与 Stage 1 之间的 P2P 操作。
 - (b)：将数据拆分为多个 Chunk，并使用 ReduceScatter + AllGather 代替 AllReduce，即可实现一定的 Overlap，并减少冗余数据传输。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjU4Cs3CT0hsF56AfEiamBWQoAul5wBWBeegKdZmRmROjOOuwRYRxYtF3tRAjH4jvQmBBCJQjwv9WQ/640?wx_fmt=png&from=appmsg&randomid=i0nfs42b)
+![Image](images/640_0065823dfee5.png)
 
 ### 3.3 结果
 
 如下图 Figure 1 所示，MatMul 与 AllReduce 的细粒度 Overlap 执行可掩盖 80% 的 MatMul 执行时间，并带来 1.36x 的加速效果。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjU4Cs3CT0hsF56AfEiamBWQmxGVpibyQ8icbG1MYuMvSMY21ot0s4H0fCTN2thmPiaet4uXUKHy5sbiag/640?wx_fmt=png&from=appmsg&randomid=tpxkjoij)
+![Image](images/640_e4c577d3903a.png)
 
 ## 四、Google - Intra-layer Overlapping via Kernel Fusion
 
@@ -146,7 +146,7 @@ CoCoNet 提供了 AutoTunner，能够自动探索程序的所有调度方案的�
 
 如下图 Figure 1 所示，不同规模模型在 128-2048 TPU 上训练，通信开销可达 22%-42%：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjU4Cs3CT0hsF56AfEiamBWQicCHkrTVx0ynqRfytTICib4yOS2PFEicRtRD1mEwHiaZQDyibgrSuwVLGfw/640?wx_fmt=png&from=appmsg&randomid=ueu9gv2t)
+![Image](images/640_c7dc75fe1abb.png)
 
 #### 4.2.2 方案概览
 
@@ -159,24 +159,24 @@ CoCoNet 提供了 AutoTunner，能够自动探索程序的所有调度方案的�
 - 为了得到最终结果，每个部分结果需要额外执行一次 Dynamic Updata Slice 操作。
 - 通过执行多次上述操作可以获得最终结果，确切的步骤次数取决于 A 的切片数。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjU4Cs3CT0hsF56AfEiamBWQDJpVtg9fKMUVJohMp5qKnAInIfZI5ia06CEsrB2rqmSvGibY8cdxyO2w/640?wx_fmt=png&from=appmsg&randomid=70q0uwb3)
+![Image](images/640_b9ff2e2af7cb.png)
 
 同样地，ReduceScatter 操作可与相应的计算过程 Overlap 执行，如下图 Figure 5 所示。在此例中，C0（C00 与 C01 之和）及 C1（C10 与 C11 之和）分别为 C 在设备 0 和 设备 1 上进行 ReduceScatter 后的操作分片。由于基于计算结果进行通信传输，在此情形下，各设备需要异步传输累加结果分片而非操作数，累加结果分片在各设备上初始化为 0：
 
 - 每轮迭代开始时，各设备异步发送累加结果分片到另一个设备（例如，首轮迭代中设备 0 发送切片 C0 到设备 C1），并与此同时启动部分 Einsum 计算。
 - 计算完成后，部分结果在迭代末尾被加到接收的累加结果分片，比如首轮迭代的结果 C10 与从设备 1 接收的结果分片 C1。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjU4Cs3CT0hsF56AfEiamBWQ2zDKSyFGAeedcAa6Wph5EtHOxEoXmy6sibphic6AxpGRDicFpg1niciaBIQ/640?wx_fmt=png&from=appmsg&randomid=ww18qjab)
+![Image](images/640_4656e2646f72.png)
 
 Kernel Fusion 是一种有效减少慢速主内存访问和 Kernel 启动开销的方案，作为最重要的优化手段之一，Kernel Fusion 在 XLA 中通过启发式方法自动执行。因此，针对本文的方案作者也会进一步应用 Kernel Fusion。然而，基于默认启发式构建的某些融合操作可能损害 Overlap 性能。如下图 Figure 11 所示，11a 展示了一个简化的图结构，为默认的融合策略，其中的灰色方框为融合节点，白色方框表示一个或多个融合的高阶算子指令。其中两个 Einsum，Einsum_1 有一个异步的 CollectivePermuteDone 输入，由于 Einsum_0 与 CollectivePermuteDone 相互独立，预期其能与异步数据通信并行执行，以实现 Overlap。然而，与 Einsum_0 融合的加法操作在 Fusion_0 与 CollectivePermuteDone 之间引入了数据依赖，导致第三个节点顺序执行。为了避免这种不良融合，启发式策略调整为先将 Add 操作与具有异步 CollectivePermuteDone 操作的 Einsum 进行融合，新生成的图结构如图 11b 所示，数据通信得以成功与 Fusion_0 Overlap。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjU4Cs3CT0hsF56AfEiamBWQp8zwQibkM7wIcaA5HA8t02OYicbKUFa4g1hhdziaqhwXmAACcOARvbAyg/640?wx_fmt=png&from=appmsg&randomid=j9pb9ohz)
+![Image](images/640_c814ebe6d6bb.png)
 
 ### 4.3 结果
 
 如下图 Figure 12 所示为不同模型优化前后可以达到的峰值 TFLOPS，可以看出，优化后有比较明显的提升：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjU4Cs3CT0hsF56AfEiamBWQsVqn61TeUJic9eRD3DU5UiaR6HicGBoRriaDxm6nd7CibpELnqYYy7nvMoQ/640?wx_fmt=png&from=appmsg&randomid=774t8y2y)
+![Image](images/640_27c83079adbe.png)
 
 ## 五、AMD - T3
 
@@ -201,11 +201,11 @@ PS：T3 依赖于特定的硬件特性，如计算增强型存储器（NMC），
 
 如下图 Figure 2 所示，Transformer 模型通常会采用 TP 来切分模型，以便能训练更大规模模型。然而，这一过程要求在层与层之间执行 AllReduce 操作。其中 Figure 2b 为未切分的操作，而 Figure 2c 为切分后跨两个设备的操作。在 2b 中，每个设备仅持有部分权重。连续两个矩阵乘可以先按列切，再按行切，之后通过一个 AllReduce 操作获取完整结果。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjU4Cs3CT0hsF56AfEiamBWQQgzj07vkcBJFNJY78Ok5btDWz6uCRMNPOMg1zbUicj449qFdP1bcRcw/640?wx_fmt=png&from=appmsg&randomid=95z7j8jz)
+![Image](images/640_3c1ed40c72f4.png)
 
 而这些串行的 AllReduce 操作可能成为性能瓶颈。如下图 Figure 4 展示了多种常见 Transformer 模型中使用 TP 后各操作的执行时间占比。可以看出，其 AllReduce（ReduceScatter + AllGather）的通信占比甚至比 GEMM 还长，比如 Megatron-GPT2 和 T-NLG 在训练与推理（Prefill）中，通信时间分别高达 34% 和 43%。而且往往算力增长比网络带宽增长更快，这也会进一步加大通信的占比。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjU4Cs3CT0hsF56AfEiamBWQ1m6Yz8ZuzJMvLCNQliaClBW6VwyM4Tv6c4iaDnPAw9z3VfNRJiaOfH3YA/640?wx_fmt=png&from=appmsg&randomid=kkw6czk6)
+![Image](images/640_88d68da7d54f.png)
 
 #### 5.2.2 对比
 
@@ -223,7 +223,7 @@ PS：T3 依赖于特定的硬件特性，如计算增强型存储器（NMC），
 - 此外，T3 利用近内存计算（Near Memory Computing, NMC）进行 Reduce 操作，以减少因通信产生的内存访问。
 - 最终，这些优化可以在几乎不修改 Kernel 代码的情况下透明地实现。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjU4Cs3CT0hsF56AfEiamBWQgLdqBGKvAD59BkAvA3MF8qHfGl7ujzFnaic5ibsz19xA7ha5gkQGm9PA/640?wx_fmt=png&from=appmsg&randomid=masy54l9)
+![Image](images/640_654beb46cea7.png)
 
 如下图 Figure 7 展示了 4 个 GPU 下，ReduceScatter（RS） 操作与 GEMM 的 Overlap 执行情况。该 GEMM 根据输入数据和 Kernel 实现分为多个工作组（WG）阶段执行，而 RS 则依据参与设备数量分为多个 Step 进行。为了简化图示，图中 GEMM 阶段数比所需的 Ring Step 数多 1。在每一个 Step 中，GEMM 某一阶段的执行和其输出的 Reduce 与前一 Step 输出的通信并行进行。在第一个 Step 中，GEMM 直接将输出传输到远程设备（remote_update）。后续的稳态 Step 则需通过 DMA（dma_update）完成。对于 N 台设备，稳态 Step 需执行 N-2 次，以处理不同的数据块。
 
@@ -235,11 +235,11 @@ PS：T3 依赖于特定的硬件特性，如计算增强型存储器（NMC），
 
 为了提升 T3 的性能，作者还对运行时和硬件进行了细微调整。为实现如图 Figure 7 中 GEMM 与 RS 的完美 Overlap，作者还对跨 GPU 的 GEMM 工作组调度进行了错位安排。此外，还通过引入一种简单而有效的内存控制仲裁（Memory Controller Arbitration，MCA）策略来增强内存系统，以管理计算与通信之间的内存竞争问题。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjU4Cs3CT0hsF56AfEiamBWQVSXAT52AiafXgXNhzSIicVhTNyc71ia6sk3UfNlXF92sbvuia4d3BiaYcKA/640?wx_fmt=png&from=appmsg&randomid=hn0sinxx)
+![Image](images/640_c6e70f4911dd.png)
 
 如下图 Figure 8 展示了搭载 T3 增强功能（以橙色标注）的 GPU 执行上述稳态步骤的情况。GPU 执行 GEMM 运算，为某一 Stage 生成 local 更新（L1）。同时，GPU 接收针对同一 Stage 的 DMA 更新（D1a），并向上一阶段发送 DMA 更新（D1b）。在内存控制器处，经过改进的MCA 策略对 local 与 DMA 流量进行仲裁，以避免争用。随后，更新数据被传输至经过 NMC 增强的 DRAM（L2a，D2a），同时 Tracker 记录其进度（L2b，D2b）。一旦 Tracker 检测到内存区域所需的 local 和 DMA 更新，便会触发这些更新通过 DMA 传输至相邻 GPU（L3）。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjU4Cs3CT0hsF56AfEiamBWQU9CSu9z1ic3IfVRnMWkODAenx6AFLftxBMicpn9cjfZhAnsyFLjPlCNg/640?wx_fmt=png&from=appmsg&randomid=mxy1yjan)
+![Image](images/640_3ddb08983257.png)
 
 ### 5.3 结果
 
@@ -247,7 +247,7 @@ PS：T3 依赖于特定的硬件特性，如计算增强型存储器（NMC），
 
 如下图 Figure 16 所示，作者通过模拟评估了本文方案的加速比，可以看出，其能够获得 15%-50% 不等的加速：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjU4Cs3CT0hsF56AfEiamBWQ2jwXCCHd0B9O2aFN9J6NTGSvxs1zhMpyhdu3zYfVhSWLuWmccryqHA/640?wx_fmt=png&from=appmsg&randomid=fj0ko0k4)
+![Image](images/640_778c968d0e36.png)
 
 ## 六、北大 Centauri
 
@@ -269,7 +269,7 @@ PS：T3 依赖于特定的硬件特性，如计算增强型存储器（NMC），
 - 如下图 Figure 1b 所示，有些工作依赖复杂的编译器相关工作来对集合通信及邻近计算进行切分，并在算子层面生成融合 Kernel（比如上述的 Microsoft CoCoNet）。然而，细粒度的 Kernel 融合可能忽视了更广泛的 Graph 级别的调度计算（上述 Microsoft - CoCoNet 和 Google Intra-layer Overlapping via Kernel）。比如，1b 中的 Matmul B 反而比 1a 中的 Matmul B 慢。
 - 如下图 Figure 1c 所示，本文方案可以系统且全面地发掘 Overlap 空间的全部潜力，通过合理切分通信操作，能够充分扩展通信 Overlap 的优化空间。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjU4Cs3CT0hsF56AfEiamBWQmicMeiclX9X1YibV57WSTiaYFjNJORxoVoUATOlokjZWWIiardSAuJXXicbg/640?wx_fmt=png&from=appmsg&randomid=7g7m1pe6)
+![Image](images/640_f571db51ab4e.png)
 
 #### 6.2.2 方案概览
 
@@ -278,7 +278,7 @@ PS：T3 依赖于特定的硬件特性，如计算增强型存储器（NMC），
 - 通信切分：通过考量三个基本维度，生成潜在切分空间，并为每种集合通信选择高效策略。
 - 层次调度：在上述全面但较大的切分空间下，优化整图的 Overlap 调度成为一项复杂的任务，为了简化复杂的调度任务，作者将复杂的混合并行集合通信分解为三个层次，每个集合通信被分配至特定调度层级。各层级选取开销较低的切分与调度方案，旨在实现整体优化 Overlap 方案。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjU4Cs3CT0hsF56AfEiamBWQFfF2WjpYj6nEMM7VvVKwX6xCvmUAdtvwJ534KV7Uic1B25QuAoFq8vw/640?wx_fmt=png&from=appmsg&randomid=gbkw4ahz)
+![Image](images/640_6a170e00e8bd.png)
 
 1. 原语替换：将 AllReduce 拆分为 Reduce-Scatter 和 AllGather。
 
@@ -288,7 +288,7 @@ PS：T3 依赖于特定的硬件特性，如计算增强型存储器（NMC），
 
 如下图 Figure 4 展示了通信切分的流程抽象，在混合训练中的每一个通信都会生成一个树形结构的切分空间，树中的每个叶节点都代表一种可行的切分方案。所选的方案旨在实现最小的调度成本，所有节点上的分区策略构成了一个庞大的切分方案森林，适用于混合训练任务。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjU4Cs3CT0hsF56AfEiamBWQqDibP4YgIOib0Yn2JRtLxCHM3ibcjkTw6zZHeP3bPg9icsTVV580sRAA9w/640?wx_fmt=png&from=appmsg&randomid=qs80fhsv)
+![Image](images/640_4db3b9d474c1.png)
 
 4. OP 级调度：OP 级别的细粒度调度旨在有效地 Overlap 每个 Forward Transformer Layer 内的通信和计算操作，实现两个拆分后的集合通信和计算 OP 之间的 Overlap。这个优化保证了每个 通信的 Overlap 策略是按顺序决定的，从而以贪婪的方式提高整个 Layer 的效率。
 
@@ -297,7 +297,7 @@ PS：T3 依赖于特定的硬件特性，如计算增强型存储器（NMC），
 - 过于精细的工作负载切分可能会导致通信和计算几乎完全 Overlap，但由于多个小型 GPU Kernel 启动和数据移动开销，它可能会对整体性能产生负面影响，如下图 Figure 5b 所示。因此，粒度较大的策略更可取。
 - 对于组切分，带宽感知调度以及节点间和节点内通信的恰当顺序至关重要，如下图 Figure 5c 和 5d 的比较所示，适当交错节点内和节点间调度方案，在下图 Figure 5e 中取得了最大的性能改进。因此，以适当的切分粒度正确交错执行节点内和节点间通信至关重要。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjU4Cs3CT0hsF56AfEiamBWQicBb7AcuOibkZLfTpC8xKKMghYLChGRFRx7FM2223lwHwUT3jPGo13pQ/640?wx_fmt=png&from=appmsg&randomid=i5qx26b9)
+![Image](images/640_9f6c95503e31.png)
 
 5. Layer 级调度：根据 Layer 内关键路径调整执行顺序。
 
@@ -306,7 +306,7 @@ PS：T3 依赖于特定的硬件特性，如计算增强型存储器（NMC），
 - 如下图 Figure 6a 和 6b，传统方法中，激活计算的输出作为前一 OP Backward 的输入，激活计算往往会赋予更高的调度优先级。然而，在混合并行配置中，这两部分的不同执行优先级会导致不同的时延。
 - 如下图 Figure 6c，作者区分了激活梯度计算与权重梯度计算的两条关键路径，在同一个 Layer 内，通过不同调度优先级带来的成本来选择相应的最优策略。（这一部分也可以参考之前我们介绍过的 Zero Bubble）
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjU4Cs3CT0hsF56AfEiamBWQCuP2ypnLwyzChRSRZPMibicYIwELKpibeiaCr7G91fEt1W4motzZYdYm6Q/640?wx_fmt=png&from=appmsg&randomid=kz57d4co)
+![Image](images/640_5d55efc75ef4.png)
 
 6. 模型级调度：模型级别的 Overlap 旨在隐藏梯度和权重在 Forward 和 Backward 阶段中的通信过程，提升整体训练效率。
 
@@ -320,7 +320,7 @@ PS：T3 依赖于特定的硬件特性，如计算增强型存储器（NMC），
 - 如下图 Figure 7c 所示，广度优先调度则走向另一个极端，即启动每个 Batch 中所有大小为 𝑚𝑏 的 Micro-Batch 以实现 Overlap（16 个 Micro-Batch 同时启动），但伴随而来的是峰值内存消耗的显著增加。这种权衡体现在内存最小化调度与 Overlap 最大化调度之间。
 - 如下图 Figure 7d 所示，AllReduce 拆分为 ReduceScatter 和 AllGather，通过优化选择最优策略，同时启动 8 个 Micro-Batch，内存消耗适中，8 倍激活量。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjU4Cs3CT0hsF56AfEiamBWQWXESgdVxlI6gDhRAj4ibaJ2XUcC1LoTtfxkpeQ8mFctiavdDWLyUuH5w/640?wx_fmt=png&from=appmsg&randomid=xgqf1xre)
+![Image](images/640_e3a311a85924.png)
 
 ### 6.3 结果
 
@@ -330,7 +330,7 @@ PS：T3 依赖于特定的硬件特性，如计算增强型存储器（NMC），
 - 尽管在集群 B 中性能提升的潜力有限，但仍能在 256 个 GPU 上将吞吐量提高 5%。
 - 在 FSDP + DP 配置中，初始阶段，由于 DP 通信开销的增加，所有 6 种配置的吞吐量均有所下降，然而，Centauri 始终能保持更高的加速比。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjU4Cs3CT0hsF56AfEiamBWQBicdib6aXXcAiautKjpWRL7CP2rAEzCDiayd63BeJODeUepvWoJYGFnKeg/640?wx_fmt=png&from=appmsg&randomid=yzzz9z50)
+![Image](images/640_d7e425e95584.png)
 
 ## 七、字节 Flux
 
@@ -352,7 +352,7 @@ PS：T3 依赖于特定的硬件特性，如计算增强型存储器（NMC），
 
 如下图所示，作者统计了不同训练任务、推理任务在不同 GPU 上的 TP 通信时延，可以看出，在 PCIe 设备中通信占比很高；而 H800 NVL 相比 A100 NVL 的算力提升更多，通信带宽提升较少，也就导致通信占比更高。在 PCIe 设备中 TP 通信占比甚至达到 40%-60%。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjU4Cs3CT0hsF56AfEiamBWQ5m4odd0uLjBIrUNrj1pw0lClHcYbzYm2CWs90CjP1bDkgibXpl11tJA/640?wx_fmt=png&from=appmsg&randomid=9cxtzdu4)
+![Image](images/640_7302ba91e048.png)
 
 #### 7.2.2 ReduceScatter Overlap
 
@@ -362,7 +362,7 @@ PS：T3 依赖于特定的硬件特性，如计算增强型存储器（NMC），
 
 如下图 Algorithm 1 所示为具体的算法：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjU4Cs3CT0hsF56AfEiamBWQmpuSruyN81DibmVVsC75WDLo1hv0JPf7XvFw8FpX3r1baDkoPzk3T9w/640?wx_fmt=png&from=appmsg&randomid=631xpkvc)
+![Image](images/640_0430fed6442a.png)
 
 #### 7.2.3 AllGather Overlap
 
@@ -370,7 +370,7 @@ PS：T3 依赖于特定的硬件特性，如计算增强型存储器（NMC），
 
 在 Kernel 端，GEMM 分块计算被函数 WaitSignal 阻塞，直至信号值被设置为真。此处，信号由GetSignal 依据输出坐标（m 和 n）以及 TP 中的设备数量（NTP）从信号集合（signal_list）中选取。每个通信信号仅在主机端当对应输入 Tensor 的部分（通信分块）准备就绪时才被设置为真，即该部分已在运行融合 Kernel 的设备上接收完毕后。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjU4Cs3CT0hsF56AfEiamBWQ1dWCZM18WqUeiaDNRclzu4El73nWu3Vq75o6kwvn3Sicharm8icmTRRKA/640?wx_fmt=png&from=appmsg&randomid=zqp9xe91)
+![Image](images/640_aa596a49e00f.png)
 
 如下图 Algorithm 3 展示了主机端相应的通信过程：主机端（无论是基于 pull 还是 push）执行分块通信操作（DataTransfer），并异步地将相应信号（SetSignal）设置为真。
 
@@ -378,7 +378,7 @@ PS：T3 依赖于特定的硬件特性，如计算增强型存储器（NMC），
 - 基于 push 的方法则将分块推送至远程设备，随后设置远程信号。
 - 需注意的是，在 pull 模式下，signal_list 仅包含本地信号，而在 push 模式下，signal_list 包含远程设备的信号。这两种变体的选择被视为一个调优参数。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjU4Cs3CT0hsF56AfEiamBWQkWiclNN2j2SSibhL6giaicuuzpLAicSYPQsyFRLFX0Pj9OZZKZmoTlTwT3Q/640?wx_fmt=png&from=appmsg&randomid=vgwv7wbp)
+![Image](images/640_a6a2b7f93251.png)
 
 值得一提的是，在 AllGather 方法中，作者将通信的等待逻辑融合到 GEMM Kernel 中，而非整个通信操作。因此，AllGather 并不必然依赖 P2P 通信。同时，在 AllGather 中，通信的分块策略（tilescomm）与 GEMM 计算的分块策略相互解耦。这一设计提供了一种灵活的权衡方式，能够在不损害 GEMM 效率的前提下，选择 Overlap 机会与通信效率之间的最佳平衡。
 
@@ -388,13 +388,13 @@ PS：T3 依赖于特定的硬件特性，如计算增强型存储器（NMC），
 
 相比之下，作者提出的技术不存在上述限制。作者的 Overlap 方案 Tf 能够在极小开销下实现与原始 GEMM 操作 Tg 相当的性能。其细粒度分解策略完美契合现代 GPU 设计特性，即通过上下文切换的 Warp 和数百个在 SM 间并发活跃的 Warp 来隐藏延迟，如下图 Figure 5 底部所示。最终，作者的方法在不影响 GEMM 计算效率的前提下，仅在执行末尾引入少量通信开销。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjU4Cs3CT0hsF56AfEiamBWQ0YqYs1QcE7e37ZVZoaesPuEoYibsdoujltouL12GntyKXxhC561SKUg/640?wx_fmt=png&from=appmsg&randomid=kq6j95fb)
+![Image](images/640_64a3ca0be4cb.png)
 
 如下图 Figure 6 展示了 AllGather 中的各种 Overlap 技术间的关键差异。现有 Overlap 技术 Tm 虽较原始粗粒度方法 Tc 有所提速，但因 GPU GEMM 效率降低，仍逊于原始 GEMM 操作时间 Tg。而作者的 Overlap 技术 Tf 则能实现与原始 GEMM 操作 Tg 相媲美的性能。
 
 AllGather 中长时延指令源于等待信号，此现象始于每个 Warp 的开端，因 WaitSignal 在起始阶段已融合，其时延取决于相应数据传输的到达时间。对于数据已抵达的 Tile，时延近乎为 0；而对于数据尚未就绪的 Tile，Warp 间的上下文切换可掩盖其等待时延。值得一提的是，本地 Tile 的信号始终预设为真，因此总有部分 Warp 无需等待信号。最终，作者的方法仅在执行初期引入少量通信，且未损害 GEMM 计算效率。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjU4Cs3CT0hsF56AfEiamBWQ4K5YYR1VEcKxbdYgGuibMmdibLWibPdvwoO3pqD0iauhyia5MpzHduaYOibQ/640?wx_fmt=png&from=appmsg&randomid=trzbvbdy)
+![Image](images/640_1f7b4212b5fd.png)
 
 ### 7.3 结果
 
@@ -410,7 +410,7 @@ Flux 相较于 Megatron-LM 与 vLLM 基线：
 - 在 A100 NVLink 上，训练与 Prefill 加速分别达到 1.05x 与 1.45x，Decoding 加速则为 1.30x；
 - 在 H800 NVLink上，训练与 Prefill 加速分别提升至 1.10x 与 1.66x，但 Decoding 阶段未见显著加速。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjU4Cs3CT0hsF56AfEiamBWQvraKLicaVQHKEH4g0jb5pRNqzCciau28zvoZicAVgbaiazks5Ms4KXkZwg/640?wx_fmt=png&from=appmsg&randomid=shdr4yzz)
+![Image](images/640_7bd28fde8b8c.png)
 
 ## 八、MicroSoft DeepSpeed-Domino
 
@@ -432,17 +432,17 @@ PS：需要说明的是，本文的 Domino 主要是针对 TP 中的 AllReduce �
 
 作者使用 Megatron-LM 框架，在 DGX-H100 集群中，测量了 GPT-3 和 LLaMA-2 系列模型张量并行（TP）训练中的通信开销，如下图 Figure 3 所示，通信时间占到 End2End 训练时间的 22% 到 47% 不等。可以看出，即使使用高速的 NVLink + NVSwitch 和 Infiniband 互联，通信开销仍然占据很大的部分。这主要是对比 V100/A100 GPU，算力的增长更加明显，通信的开销就会更加突出。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjU4Cs3CT0hsF56AfEiamBWQ4qImFIpCn3ujNNRPVpf4hd7vTA22Xiabic5y2mnqHlxYd7ib5aGpJ4asw/640?wx_fmt=png&from=appmsg&randomid=777apsz6)
+![Image](images/640_04883d46c055.png)
 
 #### 8.2.2 方案概览
 
 如下图 Figure 5 所示，首先是按照输入数据的 Batch 维度进行切分（假设 Tensor 都是 2 维），这样可以避免按列切分时的通信量激增。由于 Batch 维是完全独立的，因此不需要在所有 Transformer 层之间进行同步，可以实现层内和层间计算和通信 Overlap。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjU4Cs3CT0hsF56AfEiamBWQIUWcSv6jAhraZH4NATbOwbq7lb8ibw66WT0I2a2iatibZxLPIdunfF7UQ/640?wx_fmt=png&from=appmsg&randomid=qkib0cn6)
+![Image](images/640_96d432db508b.png)
 
 如下图 Figure 6 所示，同样可以在 B 的最后一个维度按列切分，也可以实现层内的计算和通信的 Overlap，但是在层结束时需要同步操作，然后才能执行下一个注意力或 MLP 计算。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjU4Cs3CT0hsF56AfEiamBWQV8nA7ThrzekehpMVFUYbDhP6ZsvHSABcWEySibUkCsBiaryBSgTs9HfQ/640?wx_fmt=png&from=appmsg&randomid=we123mkp)
+![Image](images/640_3ea4b8180cf0.png)
 
 #### 8.2.3 混合切分
 
@@ -450,19 +450,19 @@ PS：需要说明的是，本文的 Domino 主要是针对 TP 中的 AllReduce �
 
 如下图 Figure 7 中，在 Forward 阶段，为了隐藏 SelfAttention 后的 AllReduce 通信，可以首先执行 μ-Batch 0 的 SelfAttention，然后异步启动其 AllReduce 操作（AllReduce(attn 0)），以避免 GPU 在通信过程中的阻塞。随后立即启动 μ-Batch 1 的 SelfAttention 计算，其可以与 AllReduce(attn 0) 异步执行。而 μ-Batch 1 SelfAttention 后的 AllReduce(attn 1) 可以与随后的 Dropout，残差连接及 Noram 操作 Overlap。MLP 中类似。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjU4Cs3CT0hsF56AfEiamBWQAocfRibYv36xEaOmlUWc5DtNKtEQKxjwgJdqo4EYtImr07a0ITWuqWQ/640?wx_fmt=png&from=appmsg&randomid=30teq189)
+![Image](images/640_d08391dab366.png)
 
 如下图 Figure 8 中，在 Backward 阶段，首先采用了上述的跨 Micro-Batch 的计算与通信 Overlap 策略。为进一步扩大 Overlap 范围，作者还采用了同一个 Micro-Batch 内的通信与权重梯度计算的 Overlap。
 
 然而，由于 PyTorch 自动生成了梯度计算图，精确控制梯度通信以与梯度计算 Overlap 比较有挑战。为此，作者开发了一个 no-operation 模块，在 Forward 阶段接收通信句柄，并在 Backward 保留以供使用。其 no-operation 模块可以与 torch.autograd() 无缝集成。这种方式使得能够精确控制异步通信的完成时间，而无需复杂的代码修改。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjU4Cs3CT0hsF56AfEiamBWQHyMsgESz8fXlrhwaEpgZOEjFhLuqto3OJ8myLXs8vDIzPgpBsicSXKA/640?wx_fmt=png&from=appmsg&randomid=jozl1q2a)
+![Image](images/640_0e5d172c7bdb.png)
 
 ### 8.3 结果
 
 如下图 Figure 9 所示，提出的 Domino 在不同规模模型，不同的序列长度下可以有效加快迭代速度：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjU4Cs3CT0hsF56AfEiamBWQ6vt5EMMF1GzK1AjCzRibyROAK1hKJlZSOfuumGAXPcicicKc8g5JcJHwQ/640?wx_fmt=png&from=appmsg&randomid=8ps7smlz)
+![Image](images/640_e12f98446f00.png)
 
 ## 九、中科大 DHelix
 
@@ -482,13 +482,13 @@ DHelix，是一种受 DNA 结构启发的新型架构，可以显著提升 LLM �
 
 作者首先分析了 64 卡 A40 GPU 集群上使用 Megatron-LM 框架进行训练的通信开销。如下图 Figure 3 所示，作者展示了多种 Transformer 模型，不同规模下总训练时间中计算和 3 种通信操作的分布情况。可以看出，在这个规模下，通信已经占主导地位，尤其是在大模型中。其中主要是模型并行带来的集合通信开销，即 TP/SP、CP、EP。另一方面，DP 和 PP 引入的通信则低得多。例如，在 LLaMA-39B 模型中，TP 和 CP 引起的通信占据执行时间的 55%；而 Phi-31B 模型则产生了约 34.3% 的 EP 通信开销：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjU4Cs3CT0hsF56AfEiamBWQNe1ynnjK73xJaC8fxuUhfvjlC68Yic3Csy1ntIreUafbialWWkcWJmdg/640?wx_fmt=png&from=appmsg&randomid=3x3u6xhf)
+![Image](images/640_b141ce14710a.png)
 
 #### 9.2.2 方案概览
 
 DHelix 在算子层面执行系统级的交错处理，以适配两条并行链路，即 α 链路 和 β 链路，每条链路处理一个 Micro Batch，从而最大化 GPU 利用率。作者通过引入时间延迟实现 SI 双链路，使得 α 链路的 Forward 与 β 链路的 Backward 得以协同调度，因为它们执行过程中呈现出互补的内存消耗模式，可以保证总激活内存占用量维持在单链路的峰值附近。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjU4Cs3CT0hsF56AfEiamBWQ8paGNRqBxfCDdkWB2N6pmNJFCbePC3tZp58hck1O6ScaW4MtR2o4mQ/640?wx_fmt=png&from=appmsg&randomid=7b8y0j8a)
+![Image](images/640_990827307639.png)
 
 #### 9.2.3 模型折叠
 
@@ -499,7 +499,7 @@ DHelix 在算子层面执行系统级的交错处理，以适配两条并行链�
 
 相较于之前的模型复制方案，DHelix 的模型折叠并未改变每个 GPU 上的模型参数规模。因此，借助 SI 技术，同一套模型参数可以同时执行两条链，每个 GPU 上实时处理两个 Micro Batch，而其消耗的 GPU 内存容量几乎与当前最先进的分布式训练框架处理单链时相当。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjU4Cs3CT0hsF56AfEiamBWQZiaFPDibOzTiaZ3AONobJzZvyGiaAyQbIL8LqwN4Mo0S5DyQRocOOribLxg/640?wx_fmt=png&from=appmsg&randomid=nxddsjwa)
+![Image](images/640_051f28040c98.png)
 
 #### 9.2.4 调度优化
 
@@ -509,7 +509,7 @@ Dhelix 并不是简单地释放两个 Micro Batch 并让 GPU 尽力进行协同�
 2. 通过将一堆 Forward 和 Backward 算子划分为连续 Segment 来生成算子 Segment。
 3. 使用动态规划搜索最优的 SI 配对方案，通过在执行过程中插入 Barrier 来保证两个链的协同执行。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjU4Cs3CT0hsF56AfEiamBWQRWhVrT9Esfx5tlAXynAtQ2jFLeuPiafV7JtwtYzI2DZBYKl6nboc2ibg/640?wx_fmt=png&from=appmsg&randomid=zxp2wveu)
+![Image](images/640_cabefc1fb31d.png)
 
 ### 9.3 结果
 
@@ -517,7 +517,7 @@ Dhelix 并不是简单地释放两个 Micro Batch 并让 GPU 尽力进行协同�
 
 如下图 Figure 13a 展示了每个 GPU 的训练吞吐，借助 NVLink，Megatron-LM 获得了很高的 TFLOPS，在16K 和 32K 序列下分别实现 186 TFLOPS（60% MFU）和 160.9 TFLOPS（52% MFU）。这主要是因为节点内 TP 通信成本降低，仅占总训练时间的 10%；此外，Megatron-LM 能够部分重叠 CP 相关通信。相比之下，DHelix 在 Megatron-LM 基础上仍有 7-24% 的提升，在 CP 为 4 时提升更明显，这是因为 DHelix 有效隐藏了增加的跨节点通信，保持了 199.7 TFLOPS（64% MFU）的吞吐量。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjU4Cs3CT0hsF56AfEiamBWQBUew7fNOoAr88yddTHicjibRKNrdt4vD9FMZXBvFapIJfWuPBM6kibJNA/640?wx_fmt=png&from=appmsg&randomid=10880qo5)
+![Image](images/640_02b956da6ad8.png)
 
 ## 十、参考链接
 

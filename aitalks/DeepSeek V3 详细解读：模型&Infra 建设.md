@@ -50,17 +50,17 @@ DeepSeek-V3 是一个 MoE（Mixture-of-Experts）语言模型，总参数量 671
 - MTP：
 - MTP 的深度 D 为 1，也就是除了精确预测下一个 Token 外，每个 Token 还额外预测一个 Token。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThsKh6dHDsibafJT330KHuk6fOS4pPhmhtvzQC8PxicYpylnPL2MicLr4XRSvYmHEzqDOM1guAdAqatQ/640?wx_fmt=png&from=appmsg&randomid=f8ptaq12)
+![Image](images/640_7dcc6dbd2991.png)
 
 ### 3.2 MLA
 
 如下图公式 1-11 列出了 MLA 中的关键公式，我们在这里标注了相应的 Shape 信息，以便与上图中相对应：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThsKh6dHDsibafJT330KHuk6tUnZOhaWbek802BdZbgFlova6ibCInKsdUlV8jwAocEc2MIR04ZicYYw/640?wx_fmt=png&from=appmsg&randomid=189fu7bt)
+![Image](images/640_e9cc89376e03.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThsKh6dHDsibafJT330KHuk618U2JfaIK8JMMDs8yGuIMJicicfnRtxczWkw5994OqrmxiajJzVjewebg/640?wx_fmt=png&from=appmsg&randomid=md8amhvs)
+![Image](images/640_529637400bd0.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThsKh6dHDsibafJT330KHuk66nrUHyUKn4aBtHJY7kr9tU8icwREou2ABWLNXibs26KFqYXymVONiacdw/640?wx_fmt=png&from=appmsg&randomid=gefrfqjn)
+![Image](images/640_e4d557576b39.png)
 
 如上图可知，对于每一个 Token，推理时在每一个 Transformer Layer 需要需要缓存的 Cache 为蓝色的两个方块，大小为 512+64=576。而标准 MHA 需要缓存的大小为 2 * Hidden 维度 ，即 2*7168=14336，也就是 DeepSeek V3 的 MLA 的 Cache 大小只有 MHA 的 1/25。
 
@@ -70,17 +70,17 @@ DeepSeek-V3 是一个 MoE（Mixture-of-Experts）语言模型，总参数量 671
 
 具体来说，作者采用了 DeepSeek AI 论文 [2408.15664] Auxiliary-Loss-Free Load Balancing Strategy for Mixture-of-Experts [3] 中的负载均衡策略，具体来说，其通过动态更新每个专家的偏置（b）来维持专家的负载均衡，而不会引入额外的干扰梯度。如下图公式 16 和 Figure 1 所示：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThsKh6dHDsibafJT330KHuk6NOPMPJVXaroiaoKZgCVadHfU60GZ4NtKC1xOO9bGicD49k3OIvCtTDjw/640?wx_fmt=png&from=appmsg&randomid=fwgl3pgw)
+![Image](images/640_d10b7bc7a86f.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThsKh6dHDsibafJT330KHuk6h6vNKvBOxZmFrxxoIzJdh1ySTwXctNYsecIyG9CF7vx1RHgOZaMDdQ/640?wx_fmt=png&from=appmsg&randomid=oew416hn)
+![Image](images/640_5fd9c57ef0ad.png)
 
 #### 3.3.2 补充的序列级辅助损失
 
 尽管 DeepSeek-V3 主要依赖于无辅助损失的策略来实现负载平衡，但为了防止在任何单一序列中出现极端的不平衡，作者采用了一种补充的序列级均衡损失：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThsKh6dHDsibafJT330KHuk6532dYkZjoZdXOQiakcRrnia9wTgtRPRKA9VT0Sb4ZEDZDuHIQ9sriaZng/640?wx_fmt=png&from=appmsg&randomid=oisk3dka)
+![Image](images/640_3a84842fdcd2.png)
 
-其中，α 为平衡因子超参数，T 表示序列中 Token 个数，Nr 表示专家个数，Topk 表示选择分数最大的 Kr 个专家，![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThsKh6dHDsibafJT330KHuk6Qq3dLnvttibaqDPSUXBVSK06f9YReSy4EgPZal6Yv8jo6A1dq0PcAIg/640?wx_fmt=png&from=appmsg&randomid=kai0ib2y)
+其中，α 为平衡因子超参数，T 表示序列中 Token 个数，Nr 表示专家个数，Topk 表示选择分数最大的 Kr 个专家，![Image](images/640_4946a39b04b7.png)
 
 表示一个序列中归一化后第 t 个 Token 在第 i 个专家的分数。1(⋅) 表示指示函数，其值为 1 表示某条件成立，为 0 表示不成立，比如第 t 个 Token 未在专家 i 的 Topk 中，则值为 0。
 
@@ -103,7 +103,7 @@ DeepSeek-V3 是一个 MoE（Mixture-of-Experts）语言模型，总参数量 671
 - 增强了训练信号的密度，可能提升数据利用效率。
 - 或许能使模型预先规划其表征，以便更好地预测未来 Token。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThsKh6dHDsibafJT330KHuk643H2XXy92GazWhUxPzKyPRg8gF8TDkVHXVBPMzicNnlMNojQKxhOMPQ/640?wx_fmt=png&from=appmsg&randomid=3eblmqjv)
+![Image](images/640_a25fa013d6bc.png)
 
 如下图 Figure 3 展示了 MTP 的具体实现。与上图 Meta 论文中采用独立输出 Head 并行预测 D 个额外 Token 不同，作者采用顺序预测额外 Token 的方式，并在每一预测深度保持完整的因果链。
 
@@ -111,7 +111,7 @@ DeepSeek-V3 是一个 MoE（Mixture-of-Experts）语言模型，总参数量 671
 - MTP Module 1 用于预测下下一个 Token，MTP Module 2 用于预测下下下一个 Token（与 LLM 推理中常见的多头投机采样思路一致）。
 - MTP Module 中的输入都包含两个部分，一个是上一个 Module 的 Output Head 的输入，以及上一个输入 Token，并且其中的 Embedding Layer 和 Output Head 都是共享自 Main Model，只有新增的 RMSNorm + Linear Projection 和一个 Transformer Block。由于这里有两个输入分别经过 RMSNorm 后 Concat 到一起，因此需要一个额外的 Linear Projection 进行降维，保持维度一致。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThsKh6dHDsibafJT330KHuk6yibxp6V3TolqsCRy11TyJLIQe64cDBzEic8hQbNcs6ExFk7mOyMiaPQxw/640?wx_fmt=png&from=appmsg&randomid=2ktfsm2r)
+![Image](images/640_0c7427c6cf6a.png)
 
 #### 3.4.2 MTP 推理
 
@@ -125,11 +125,11 @@ DeepSeek V3 在包含 2048 H800 GPU 的集群上训练，每个节点包含 8 �
 
 PS：作者在后文中提到其 NVLink 提供了 160 GB/s 的通信带宽，大约是 IB（50 GB/s）的 3.2x。其 160 GB/s 与实际的 400 GB/s（双向）不符，推测这里是单向实测带宽。如下图所示，我们在 8*H100 GPU 上实测单向的 device to device Memory 带宽，大约为 900 GB/s * 80% / 2 = 360 GB/s。而 160 GB/s 为 400 GB/s * 80% /2 = 160 GB/s。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThsKh6dHDsibafJT330KHuk6dZicicBMMYE4MzwHn3pdkIu3ubxbyyJtl5ZjkLudJRDQXsy4gasB7PVw/640?wx_fmt=png&from=appmsg&randomid=jse3ttyh)
+![Image](images/640_7b188c39a1a9.png)
 
 而 IB（50 GB/s）可以理解为理论或实际 NIC 带宽，H100/H800 上后向网络通常都会采用 400 Gb/s 的 NIC。如下图所示（使用 ib_write_bw 和 ib_read_bw 测试），当 Message 比较大时，发送或者接收实测带宽最大都能达到 400 Gb/s，双向总带宽可以达到 800 Gb/s（这一点与 NVLink 口径不同）。另外，也可以推测每个节点包含 8 个 400 Gb/s 的 NIC。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThsKh6dHDsibafJT330KHuk6jznpPfiaib2Cjibm98Dv8B69NPicTm4qocrquwmlBpzyEgqcFq12UhADNg/640?wx_fmt=png&from=appmsg&randomid=oddqc0gn)
+![Image](images/640_aed886835555.png)
 
 ### 4.2 训练框架
 
@@ -151,11 +151,11 @@ DualPipe 的核心思想在于将一对独立的 Forward 与 Backward Chunk 内�
 
 其中的 All2All Dispatching 和 All2All Combining 如下所示，就是 MoE Block 之前和之后的两个 All2All 通信：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThsKh6dHDsibafJT330KHuk605OuxqI2QgGmoGLEgc8Mtd4sibnVtFQ1dfj0gvz7IYLjneCBRsQYllw/640?wx_fmt=png&from=appmsg&randomid=zoe7eoy9)
+![Image](images/640_4a8518f2ad0f.png)
 
 特别地，对于 Backward Chunk，作者借鉴了 ZeroBubble（[2401.10241] Zero Bubble Pipeline Parallelism [6]），如下图 Figure 1 所示，Attention 与 MLP 均可进一步分为两部分：Backward for Input 及 Backward for Weight。此外，还有一个 PP 通信组件。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThsKh6dHDsibafJT330KHuk6T3YPlibUcTukUbViaJw25ZCWHGNHVX6VWgWuDTakjSrEV0vejwYuNbwg/640?wx_fmt=png&from=appmsg&randomid=kehpz9pp)
+![Image](images/640_190b7871ee50.png)
 
 如下图 Figure 4 所示，针对一对 Forward 与 Backward Chunk，重新排列这些组件，并手动调整 GPU SM 在通信与计算间的分配比例。在此 Overlap 策略下，能够确保 All2All 和 PP 通信在执行过程中完全隐藏，其中：
 
@@ -165,7 +165,7 @@ DualPipe 的核心思想在于将一对独立的 Forward 与 Backward Chunk 内�
 - 紫色表示 PP 通信
 - 红色表示 Barrier 同步
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThsKh6dHDsibafJT330KHuk6ySzBl6TRvE0sw2mKvDJEYOWsx71xCd14C6dvh4XKx1wrIgOa09WPnw/640?wx_fmt=png&from=appmsg&randomid=2v71c66j)
+![Image](images/640_7c2fb90474eb.png)
 
 完整的 DualPipe 调度如下图 Figure 5 所示，其采用双向 PP 调度，同时从流水线两端输入 Micro Batch，使得大部分通信得以完全 Overlap（PS：8PP，双向 20 Micro Batch，反方向 10-19 的 10 个 Micro Batch 并没有列出来，因此我们用红色 10-19 补充了部分 Micro Batch）。这种 Overlap 还确保了随着模型进一步扩展，只要保持恒定的计算与通信比，仍可在跨节点部署细粒度专家的同时，实现近乎零的 All2All 通信开销。
 
@@ -183,11 +183,11 @@ PS：正常来说是无法实现双向 PP 调度的，主要是因为 Forward �
 - Stage 7 上有 Layer 14, 15 以及 Layer 0, 1 的权重
 - 相当于有 2 份相同的模型副本，Forward 的顺序可以从 Stage 0 到 7，也可以从 Stage 7 到 0。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThsKh6dHDsibafJT330KHuk6aqwk0QgsddExmmNIZLuxfiaXiaEic6c6N8LABUjKZWdNw8WsoSZd5SrDQ/640?wx_fmt=png&from=appmsg&randomid=of340mo4)
+![Image](images/640_e424ff02bb69.png)
 
 此外，即便在通信负担不重的更一般场景下，DualPipe 仍展现出效率优势。如下图 Table 2 所示，作者总结了不同 PP 方案下的 PP Bubble 与内存使用情况。与 ZB1P 相比，DualPipe 在减少 PP Bubble 及优化内存占用方面表现更佳。其中的 Parameter x2 是正如上述所示，存储了 2 份相同的模型参数，也就需要占用更大的内存（激活的占用也会稍微增加），相当于用空间换时间；然而，因为作者训练时采用了比较大的 EP，整体来说并不会增加太多内存占用。此外，DualPipe 仅要求 PP Stage 和 Micro Batch 可被 2 整除，无需 Micro Batch 可被 PP Stage 数整除。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThsKh6dHDsibafJT330KHuk6UPM3YxLy0jhJiaODQlk8HtxlAT7zeejvyY9Rn7fuN8511gdpzhtcymw/640?wx_fmt=png&from=appmsg&randomid=x3hcvynw)
+![Image](images/640_96088d7ddc65.png)
 
 PS：对于一个内部框架（HAI-LLM）而言，完全可以针对自己的硬件环境（集群）以及模型场景（MLA + MoE）制定专有化的优化方案，比如手动调整 SM 在计算和通信中的比例，从而获得比开源方案更优的性能。
 
@@ -200,7 +200,7 @@ PS：对于一个内部框架（HAI-LLM）而言，完全可以针对自己的�
 - 为了有效利用 IB 和 NVLink 的不同带宽，作者将每个 Token 限制为最多被发送到 4 个节点，从而减少 IB 流量。
 - 对于每个 Token，在做出路由决策时，首先通过 IB 传输到其目标节点上具有相同节点内索引的 GPU。一旦到达目标节点，将努力确保它通过 NVLink 立即转发到承载目标专家的特定 GPU，而不会被随后到达的 Token 阻塞。（PS：比如说，节点 A 上 GPU 0 的 Token 要发送到节点 B 上的 GPU 3，则对应的路径为：节点 A GPU 0 -> 节点 B GPU 0 -> 节点 B GPU 3。这样做是因为高性能 GPU 训练集群往往会采用轨道优化，同号 GPU 在一个 Leaf Switch 下，如下图所示，因此可以利用高速的 NVLink 来代替从 Leaf Switch 到 Spine Switch 的流量，从而降低 IB 通信时延，并且减少 Leaf Switch 和 Spine Switch 之间的流量）
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThsKh6dHDsibafJT330KHuk6O5T4n7UEBr916XicticWcGsPE7QQZoM1PjngLzjwMicvPqbuKKribS2MUg/640?wx_fmt=png&from=appmsg&randomid=0j4rmc5a)
+![Image](images/640_4fde9374c917.png)
 
 通过上述方式，IB 和 NVLink 的通信也可以完全 Overlap，每个 Token 可以有效地为每个节点平均选择 3.2 个专家，而不会产生 NVLink 的额外开销。这意味着，尽管 DeepSeek V3 在实践中只选择了 8 个路由专家，但它可以将这个数字扩展到最多 13 个专家（4 个节点 × 3.2 个专家/节点），同时保持相同的通信成本。总的来说，在这样的通信策略下，只用 20 个 SM 足以充分利用 IB 和 NVLink 的带宽。
 
@@ -233,7 +233,7 @@ NVIDIA 和零一万物等都介绍过在 Hopper GPU 上使用 FP8 训练来提�
 
 如下图 Figure 10 展示了其训练曲线，证明采用高精度累加和细粒度量化策略后，相对误差始终保持在 0.25% 以下。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThsKh6dHDsibafJT330KHuk6rFRvzHh5nQr7WCezwoDtBUyBicOOPKlC2cibiafTsc7HzhOpeCZgMs83Q/640?wx_fmt=png&from=appmsg&randomid=r1y7a63z)
+![Image](images/640_6a7789a0cd66.png)
 
 #### 4.3.2 混合精度框架
 
@@ -241,7 +241,7 @@ NVIDIA 和零一万物等都介绍过在 Hopper GPU 上使用 FP8 训练来提�
 
 首先，为加速模型训练，关键计算 Kernel（比如，GEMM 操作）大多采用 FP8 精度实现。这些 GEMM 操作接受 FP8 Tensor 作为输入，并输出 BF16 或 FP32 格式的结果。如下图 Figure 6 所示，与线性算子相关的三个 GEMM 操作，包括 Forward（Fprop）、激活 Backward（Dgrad）和权重 Backward（Wgrad），均以 FP8 执行。这一设计理论上使计算速度较原 BF16 方法提升一倍。此外，FP8 Wgrad GEMM 允许激活值以 FP8 存储，供 Backward 使用，从而显著降低内存消耗。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThsKh6dHDsibafJT330KHuk6Xic54UPsnSyV76Ta4SPR7dbvA1x0ia48P5LUTTuMBAkKgAF7j1uge2ibA/640?wx_fmt=png&from=appmsg&randomid=7hwmq0rq)
+![Image](images/640_02e2e6d0fa57.png)
 
 尽管 FP8 格式具有效率优势，但某些算子因对低精度计算比较敏感仍需更高精度。同时，一些低成本算子也可采用更高精度，对整体训练性能的影响微乎其微。因此，作者对以下组件保持原始精度（如 BF16 或 FP32）：Embedding Module、输出 Head、MoE 门控模块、归一化算子及 Attention 算子。这些有针对性的高精度保留确保了 DeepSeek-V3 的训练动态稳定性。为进一步保证数值稳定性，作者将主权重、权重梯度和优化器状态以更高精度存储。尽管这些高精度组件带来一定的内存开销，但通过分布式训练系统中跨多个 DP Rank 的有效分片，其影响很小。
 
@@ -255,7 +255,7 @@ NVIDIA 和零一万物等都介绍过在 Hopper GPU 上使用 FP8 训练来提�
 - 对于权重，以 128x128 的 Block 为单位（即，每 128 输入 Channel 每 128 输出 Channel）进行分组与缩放。
 - 此方法通过更小的元素组调整缩放比例，确保量化过程能更好地适应异常值。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThsKh6dHDsibafJT330KHuk6LQ9808R1mASXGGFZocFysPXVt3Abtqwmq0MZxuPr5IA91ObxuJYzAA/640?wx_fmt=png&from=appmsg&randomid=ib8ubx1k)
+![Image](images/640_fd2feccb5583.png)
 
 该方法的关键改进是在 GEMM 操作中引入按组缩放因子。不过，这一功能在标准的 FP8 GEMM 中并未直接支持。然而，结合精确的 FP32 累加策略，它可以被高效实现。值得注意的是，这里的细粒度量化策略与 Microscaling Format（[2310.10537] Microscaling Data Formats for Deep Learning [7]）的理念高度一致，而 NVIDIA 下一代 GPU（Blackwell 系列）的 Tensor Core 已宣布支持具有更小量化粒度的 Microscaling Format。
 
@@ -271,7 +271,7 @@ NVIDIA 和零一万物等都介绍过在 Hopper GPU 上使用 FP8 训练来提�
 
 如下图为 NVIDIA Transformer Engine 中的 Delayed Scaling 实现方案，其 amax history 最多可以存储 1024 个 history。在进行当前 Tensor 的 Scaling 操作时，会使用当前 Tensor 之前的 amax history 来预测当前的 amax（比如之前 history 的最大值），然后进行 Scaling 操作；Scaling 操作的同时会计算当前的 amax，并更新 amax history。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThsKh6dHDsibafJT330KHuk6ndUib5oibyT5o3E9ba4ASJbB7jMGduCqoBYOtvJAheGOnmWDc8Oa3yRA/640?wx_fmt=png&from=appmsg&randomid=7b8pahsq)
+![Image](images/640_d641682ac1d8.png)
 
 #### 4.3.4 低精度存储和通信
 
@@ -320,21 +320,21 @@ Prefill 阶段的最小部署单元由 4 个节点组成，共 32 个 H800 GPU�
 
 DeepSeek V3 的训练成本很低，如下图 Table 1 所示，总共训练 2788K H800 小时，按照每个 H800 每小时 2 美元的成本，总成本大约为 560 万美元。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThsKh6dHDsibafJT330KHuk6SYicaaAvbXCw9eiaSb6e6QkdAR0BjQFdwnggxhUbic22jTpLyGR4ywR7A/640?wx_fmt=png&from=appmsg&randomid=a2s29zv8)
+![Image](images/640_836d37139e11.png)
 
 然而我们也看到很多文章中声称 “DeepSeek 把训练成本打下来 99%”，如下图所示，其声称 “LLaMA-3.1 的训练成本超过 5 亿美元”，Meta 真的这么拉胯吗？
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThsKh6dHDsibafJT330KHuk6ZK2DDUXicwDKPGf9muTg9Bic1Qx1EtNj3IzbyhcbcQibial3Z8UOp0XKyA/640?wx_fmt=png&from=appmsg&randomid=oj411g33)
+![Image](images/640_a7dc61e83d73.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThsKh6dHDsibafJT330KHuk657x20bgjBVicXpU35XvuPkR9zbOU5BDnicLPAQ7O2U3FTCQG4W4OYxMQ/640?wx_fmt=png&from=appmsg&randomid=9bem7fpq)
+![Image](images/640_32307983881c.png)
 
 如下图为 LLaMA 3.1 的训练成本（来自 meta-llama/Llama-3.1-8B · Hugging Face [9]），以 LLaMA 3.1 405B 为主，其总共的训练成本为 30.84M H100 GPU 小时：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThsKh6dHDsibafJT330KHuk6YpHJNRyoXy32wrYSpklvY3DdWXC7ktc02lwClZc9rqIaLWlVyia0GYw/640?wx_fmt=png&from=appmsg&randomid=upb2auvr)
+![Image](images/640_2d3252697e7d.png)
 
 H800 相比 H100 主要是阉割了 NVLink 的通信带宽，整体成本并不会相差太大，比如 Pricing | Lepton AI [10] 每个 H100 每小时 3 美元。自建集群或者大规模租赁通常会低于这个数值，假设为 2.5 美元，那么 LLaMA 3.1 405B 的训练成本应该为 30.84M * 2.5 = 7710 万美元，声称 LLaMA 3.1 的训练成本为 5 亿美元确实非常不妥。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThsKh6dHDsibafJT330KHuk6shicLjIbIyQabTVmoicbU86EhoYKquE8EWDhzOicticIICPmKic2g3nDelw/640?wx_fmt=png&from=appmsg&randomid=fkuash6t)
+![Image](images/640_05243e76eb9d.png)
 
 除此之外，LLaMA 3.1 的训练成本应该还包含实验、以及故障等问题导致的成本开销，如果只考虑有效训练时长，上述成本应该会更低。
 
@@ -385,7 +385,7 @@ MFU = (Token 数 * Ctoken) / (训练 GPU 小时数 * GPU FLOPs * 3600)
 
 然而，作者在技术报告 The Llama 3 Herd of Models | Research - AI at Meta [11] 中提到，405B 模型训练的 MFU 也能达到 40% 左右。此外，根据我们的经验，70B Dense 模型预训练的 MFU 应该在 40% 以上的水平。而上述计算出 LLaMA 3.1 70B 的 MFU 只有 25% 左右，那么很可能的原因是上述 7.0M H100 小时包含了实验，容错等时间。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThsKh6dHDsibafJT330KHuk6ZRtqCvDOl2Tp9q3WibJE4uib4GRibdjvZWER0KialKKa7IgIe4k8xNeZaQ/640?wx_fmt=png&from=appmsg&randomid=p7rwiyn9)
+![Image](images/640_18436a42e5ff.png)
 
 ## 五、参考链接
 

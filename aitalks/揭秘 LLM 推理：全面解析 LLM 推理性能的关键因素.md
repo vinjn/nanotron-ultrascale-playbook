@@ -106,15 +106,15 @@
 - Prefill：根据输入 Tokens（Recite, the, first, law, of, robotics） 生成第一个输出 Token（A），通过一次 Forward 就可以完成，在 Forward 中，输入 Tokens 间可以并行执行（类似 Bert 这些 Encoder 模型），因此执行效率很高。
 - Decoding：从生成第一个 Token（A） 之后开始，采用自回归方式一次生成一个 Token，直到生成一个特殊的 Stop Token（或者满足用户的某个条件，比如超过特定长度） 才会结束，假设输出总共有 N 个 Token，则 Decoding 阶段需要执行 N-1 次 Forward，这 N-1 次 Forward 只能串行执行，效率很低。另外，在生成过程中，需要关注的 Token 越来越多（每个 Token 的生成都需要 Attention 之前的 Token），计算量也会适当增大。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_gif/zhVlwj96tTjt3FwFLA5MaoVRPfcsfSz0fbOMNSVvxvzFI0IfKBf8M3UKdabPUoGEXpV6HrPQAKFv2A5cMj8aeQ/640?wx_fmt=gif&randomid=x71z2w9e)
+![Image](images/640_2b6ffcb149fc.gif)
 
 ### 2.2 KV Cache
 
 如下图所示，在 LLM 推理中最关键的就是下图中的 Multi-Head Attention，其主要的计算集中在左图中灰色的 Linear（矩阵乘）和 Scaled Dot-Product Attention 中的 MatMul 矩阵乘法：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThBsr2a3CbjbVu4juKSYdeZ97nwLibW9ics9VTjX7AgPqFIqPo5ODicMM9qzhavKqziavboNeYotWezUA/640?wx_fmt=png&from=appmsg&randomid=jij0w2s3)
+![Image](images/640_5836c988aba3.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThBsr2a3CbjbVu4juKSYdeZmHCM0yzEO1GdkiauTZeTrWuDIoaMbopib984IUBvClY83kpQE7jxibGQQ/640?wx_fmt=png&from=appmsg&randomid=a92bwpej)
+![Image](images/640_5cc3d14c51a6.png)
 
 如上右图中的 Mask 是一个下三角矩阵，也是因为这个下三角矩阵实现了 LLM Decoder 的主要特性，每个 Token 都只能看到当前位置及之前的 Token。
 
@@ -126,7 +126,7 @@
 
 在 Decoding 阶段 Token 是逐个生成的，上述的计算过程中每次都会依赖之前的结果，此时最简单的思路就是 Cache 之前计算过的中间结果，在计算当前 Token 时直接从 Cache 中读取而不是重新计算，如下图所示，上面是没有 Cache 的情况，下面是有 Cache 的情况：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_gif/zhVlwj96tThBsr2a3CbjbVu4juKSYdeZhmBDY6JyDhDob62VYN9Zho3M2ibMSG48LkcdyHXSKJiaa652icobOBxgQ/640?wx_fmt=gif&from=appmsg&randomid=wn221pey)
+![Image](images/640_e31f89d6c7fa.gif)
 
 如下表所示，在 T4 GPU 上以 GPT2 模型为例验证有无 Cache 对推理时延的影响，其加速效果非常明显，因此也成为 LLM 推理的标配：
 
@@ -142,7 +142,7 @@
 
 除此之外，Transformer 模型中的另一个关键组件 FFN 中主要也包含两个矩阵乘法操作，但是 Token 之间不会交叉融合，也就是任何一个 Token 都可以独立计算，因此在 Decoding 阶段不用 Cache 之前的结果，但同样会出现矩阵乘矩阵操作降级为矩阵乘向量。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThBsr2a3CbjbVu4juKSYdeZ5oaGz1k78R5SJJMMLuKVhvTVSsUfe4MxP3qSqwGTqzcIWvuCb88Obg/640?wx_fmt=png&from=appmsg&randomid=j5pwex0u)
+![Image](images/640_0ba9e1b88ac1.png)
 
 矩阵乘向量操作是明显的访存 bound，而以上操作是 LLM 推理中最主要的部分，这也就导致 LLM 推理是访存 bound 类型。
 
@@ -151,11 +151,11 @@
 - 三角表示 Prefill 阶段：假设 Batch size 为 1，Sequence Length 越大，计算强度越大，通常都会位于 Compute Bound 区域。
 - 圆表示 Decoding 阶段：Batch size 越大，计算强度越大，理论性能峰值越大，通常都会位于 Memory Bound 区域。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThBsr2a3CbjbVu4juKSYdeZtAKTu9vO5a9GM3DJicnHKHuTAsLIqeZnOoNENdqcjTKdMTm4gkl9ePg/640?wx_fmt=png&from=appmsg&randomid=d5kw3dsj)
+![Image](images/640_668804708f95.png)
 
 如下图所示，Prefill 阶段在比较小 Batch Size 下就可以获得比较大的计算强度，相应的吞吐也很高；而 Decoding 阶段需要比较大的 Batch Size 才能获得相对高的计算强度及吞吐（图片来自 [2308.16369] SARATHI: Efficient LLM Inference by Piggybacking Decodes with Chunked Prefills ）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThBsr2a3CbjbVu4juKSYdeZISDpFJ3NIcuibpea7OicN2YHaBiakupiaEYe3F68hMnmC0g0hWOAecgiapw/640?wx_fmt=png&from=appmsg&randomid=8i3i7p5w)
+![Image](images/640_e8b5b3ae6813.png)
 
 ### 2.4 LLM 评估指标
 
@@ -187,13 +187,13 @@
 
 微软和华盛顿大学在 [2311.18677] Splitwise: Efficient generative LLM inference using phase splitting 中提出了 Splitwise，作者专门构建了 LLM 推理集群，为 LLM 推理不同阶段选择不同的 GPU 类型，Prefill 阶段为计算密集型，可以选择高算力 GPU，而 Decoding 阶段为访存密集型，相应的可以使用算力不是特别强而访存带宽比较大的 GPU。同时为了两个阶段 KV cache 的共享，需要在 GPU 间有高速的 IB 网络互联。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThBsr2a3CbjbVu4juKSYdeZmxnRffcQUAkLLsP4y6d2vcvXrsA95SWceVJnvakTKpNL3IOpic91LCg/640?wx_fmt=png&from=appmsg&randomid=dur51mw5)
+![Image](images/640_e25a7266ac1e.png)
 
 如下图 Figure 2 所示，在 [2310.18547] Punica: Multi-Tenant LoRA Serving 中，作者针对多租户、多 LoRA LLM 推理场景构建了 LLM 推理集群，以便降低 LLM 推理的成本。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThBsr2a3CbjbVu4juKSYdeZWVvmgNZiaPznicZ8Vs9NuqpqYBmXRn8HgWiaj1jJRFBTudsY0iaNiauTRgw/640?wx_fmt=png&from=appmsg&randomid=oc6oqi0m)
+![Image](images/640_3d9303b98681.png)
 
-如下图 Figure 3 所示，在 [2311.15566] SpotServe: Serving Generative Large Language Models on Preemptible Instances 中作者基于不同云平台的廉价抢占式实例实现了快速、可靠的 LLM 推理服务。其动态的调整 LLM 的并行化配置，以适应波动的工作负载以及动态伸缩的实例，同时在整体吞吐量、推理延迟和推理成本之间取得平衡：![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThBsr2a3CbjbVu4juKSYdeZ0nlogOAJVGtkyibxdMp5v20ySWuD8RWeT1748CGbV3icxuLzmG1Bibibrg/640?wx_fmt=png&from=appmsg&randomid=44ae4eri)
+如下图 Figure 3 所示，在 [2311.15566] SpotServe: Serving Generative Large Language Models on Preemptible Instances 中作者基于不同云平台的廉价抢占式实例实现了快速、可靠的 LLM 推理服务。其动态的调整 LLM 的并行化配置，以适应波动的工作负载以及动态伸缩的实例，同时在整体吞吐量、推理延迟和推理成本之间取得平衡：![Image](images/640_af8546a447ce.png)
 
 #### 3.1.2 GPU 型号
 
@@ -228,7 +228,7 @@ NVIDIA 的 GPU 都可以用于 LLM 推理，只是性能各不相同，适合不
 
 如下图所示（Cloud GPUs - The Full Stack），同样的 GPU 在不同的云平台上价格也会有比较大的差异。即使同一个云平台，在不同的区域价格也可能不同。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThBsr2a3CbjbVu4juKSYdeZlbichTVbrJ1w7jRBrOH4U9FhcjRcFJo8MlKuBwp1lq9ic7EjMLyvvmzA/640?wx_fmt=png&from=appmsg&randomid=iapn3im9)
+![Image](images/640_d1fc8fbd4227.png)
 
 ### 3.2 分布式策略
 
@@ -236,7 +236,7 @@ NVIDIA 的 GPU 都可以用于 LLM 推理，只是性能各不相同，适合不
 
 在传统的 AI 模型推理中很少使用这些策略，因为其模型相对比较小，单卡显存足够，而 LLM 出现之后，分布式推理也变得越来越常见。如下图所示为常见 LLM 推理框架的支持情况（图片来自 [2312.15234] Towards Efficient Generative Large Language Model Serving: A Survey from Algorithms to Systems）。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThBsr2a3CbjbVu4juKSYdeZicgsIW5LoFW3Laq7icf4cZJf32A8WT94fzPESqh5aibnVtTgyQAqib6bBw/640?wx_fmt=png&from=appmsg&randomid=1me3vap9)
+![Image](images/640_6c5663264f51.png)
 
 #### 3.2.1 DP
 
@@ -246,23 +246,23 @@ NVIDIA 的 GPU 都可以用于 LLM 推理，只是性能各不相同，适合不
 
 相比之下，基本上主流的 LLM 推理框架都支持 TP，其可以有效降低时延，缓解显存的限制（更大显存为 Continuous Batching 提供了更大的空间，可以进一步提升吞吐），也是当前推理优化中常用的手段。不过大部分推理框架中 TP 会按 Hidden 维度及 Multi Head Attention 中的 header 个数来切分，通常要求 TP 个数是 2 的幂次。主流的 GPU 服务器也都满足这个要求，比如 4 * T4 GPU 服务器，比如 Google Cloud Platform 上 A100 80G 就可以选择 1/2/4/8 GPU 套餐，更多相关配置可以参考 GPU 平台 | Compute Engine 文档 | Google Cloud。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThBsr2a3CbjbVu4juKSYdeZZwRNVl1OQibIA9FTyAqdPOicld3GZx4qwagLibwiaX4Vkbl5OxY1TrA86g/640?wx_fmt=png&from=appmsg&randomid=a020nyjf)
+![Image](images/640_5086e7bd4bca.png)
 
 如下两个图所示，不管是 Prefill 阶段第一个 Token 的时延 TTFT，还是 Decoding 阶段每个 Token 的时延 TPOP 都会随着 TP 的增加而降低（具体可参考 LLM Inference Performance Engineering: Best Practices | Databricks Blog）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThBsr2a3CbjbVu4juKSYdeZcVKZswphqPCynJMI9jLxia20lhtEHzzqZu0M8kAqspQAu0lJ0KMjliaQ/640?wx_fmt=png&from=appmsg&randomid=5ol6j4va)
+![Image](images/640_381a1e1b8118.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThBsr2a3CbjbVu4juKSYdeZTyAKb0JSXZjbv6WMFzVn7hfw0qB1bubTzbhYznQ0libjuxsCA072jibA/640?wx_fmt=png&from=appmsg&randomid=49l0sb5n)
+![Image](images/640_292699cbd1c1.png)
 
 然而，TP 也有其局限性，其通信可能会比较大，成为另一种形式的访存瓶颈。如下图所示（图片来自 [2312.03134] A Hardware Evaluation Framework for Large Language Model Inference），以常见的 TP 划分方式为例，在一个 Transformer Decoder Layer 中在多个 GPU 间会有两次 AllReduce 通信，一次是 Multi-Head Attention 中的最后一个 Linear，一次是 FFN 中的最后一个矩阵乘。以 GPT-3 175B 为例，其包含 96 层，也就是说一次 Forward 要有 192 次 AllReduce（忽略 Word Embedding 相关通信）。每次的通信量与 Token Embedding 和 Batch Size 成正比，模型确定后 Token Embedding 大小确定，其大小就与 Batch Size 成正比。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThBsr2a3CbjbVu4juKSYdeZYbFjIKgcVLaR6fk1Ql4UGwBGiaIfIsru6F4tHDq2KMVCRlLbsribYhlw/640?wx_fmt=png&from=appmsg&randomid=ex45zm5c)
+![Image](images/640_62d9e546508f.png)
 
 由于 LLM 推理通常会使用 Continuous Batching 的方式提升吞吐，其随着 Batch Size 增加，Multi-Head Attention 和 FFN 的 Kernel 计算时延不会明显增加，而 AllReduce 的通信量却线性增加，相应的通信时延基本也线性增加，以至于 AllReduce 通信可能进一步成为瓶颈。而 GPU 间的通信时延与 GPU 之间的互联方式有关，比如节点内采用 PCIE 或 NVLink 互联，跨节点采用 IB 网卡互联等会导致时延有数倍的差距，此时就要根据相应的场景具体分析。
 
 如下图所示为 Batch size 为 1 和 512 时 LLM 中几个主要 OP 的计算耗时，可以看出，将 Batch size 从 1 增加到 512，计算量增加 512 倍，但是其整体时间只增加为原来的 3 倍左右（图片来自 openppl-public · GitHub）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThBsr2a3CbjbVu4juKSYdeZ5MNOgupo3JAmkrNxoDljzscNPwILS37GhrTJbvPhnPug7ZYufR2KibA/640?wx_fmt=png&from=appmsg&randomid=g70t0xww)
+![Image](images/640_56acf4a85c17.png)
 
 除此之外，Continuous Batching 的方式会希望组合尽可能大的 Batch Size，也就意味着 GPU 上同一时间可能只有一个 CUDA 计算流，当 AllReduce 通信的时候并没有其他流的计算可以 overlap，相应的 GPU 也就会空闲，存在巨大算力浪费。
 
@@ -272,15 +272,15 @@ NVIDIA 的 GPU 都可以用于 LLM 推理，只是性能各不相同，适合不
 
 如下图所示，其 PP 为 2，也就是两个 GPU，A、B、C、D 4个请求同时执行，则在 GPU 的调度中会存在很多 Bubble，比如 PB1、PB2 和 PB3，导致 GPU 的浪费：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThBsr2a3CbjbVu4juKSYdeZd0UWGDZYkJkHAlVrlZ1FWuEjmazlHS07pmRPdPxicaB6MvBicITNaYmw/640?wx_fmt=png&from=appmsg&randomid=38bln6go)
+![Image](images/640_bf8b22921f08.png)
 
 当然，针对这种问题也有相应的解决方案，比如微软团队 [2308.16369] SARATHI: Efficient LLM Inference by Piggybacking Decodes with Chunked Prefills 中尝试将 Prefill 阶段的 Prompt 切分为不同的 Chunks，并将不同请求间的 Prompt Chunk 与 Decoding 结合以尽可能减少 Bubble，获得了不错的效果。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThBsr2a3CbjbVu4juKSYdeZUUl7ebelx6DttMqJ3jTytEiaZia3ZZkzqVJQo7mZslJAebxibBZlxey6g/640?wx_fmt=png&from=appmsg&randomid=ed4ob188)
+![Image](images/640_5e44d44f36be.png)
 
 在 [2401.08671] DeepSpeed-FastGen: High-throughput Text Generation for LLMs via MII and DeepSpeed-Inference 中，作者更进一步在每个 Prompt Chunk 中都与其他请求的 Decoding 结合，进一步提升吞吐。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThBsr2a3CbjbVu4juKSYdeZ4eE3DjU2RBpjYFGes6qRtqn8JmUu8I5MZsVgtGzdzTkDicWCal0EGibg/640?wx_fmt=png&from=appmsg&randomid=2gsrvjx9)
+![Image](images/640_eb71e6501f62.png)
 
 #### 3.2.4 TP + PP
 
@@ -291,11 +291,11 @@ TP 和 PP 有各自的优势，因此通常也会将其结合起来进行混合�
 - 左边为 PP（Inter-op）：单个请求 Latency 不会随 GPU 数目增加而降低，甚至可能增加；橙色（Communication）通信耗时相对较小，但随着 GPU 数目增加绿色（Uneven Partition）Bubble 时间也会增加。
 - 右边为 TP（Intra-op）：单个请求 Latency 会随着 GPU 数目增加而降低；与此同时橙色（Communication）通信耗时也比较大。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThBsr2a3CbjbVu4juKSYdeZ647l3nnlscia4xjXkXWE2ZPe6ePCL8qd4jjXoZmjOtIBRP1TcooAExw/640?wx_fmt=png&from=appmsg&randomid=gx4oe7xu)
+![Image](images/640_52a1d57c136f.png)
 
 AlpaServe 中作者提出自动混合并行的调度策略，获得更优的效果。如下图可以看出，在没有 AlpaServe 的情况下，4 PP + 4 TP 相比 16 PP、8 PP + 2 TP 和 2 PP + 8 TP 获得了最优的结果（越大越好），而 AlpaServe 比 4 TP + 4 PP 获得了更优的结果（其中 SLO 为 Service Level Objective，CV 为 Coefficient of Variance）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThBsr2a3CbjbVu4juKSYdeZGZiaMBgT5OYkmZKHYibTXs8vOrlkD1Wkl51N2XHVGOcxtUCUFzr7t24Q/640?wx_fmt=png&from=appmsg&randomid=iuw658g5)
+![Image](images/640_d56065fc66e7.png)
 
 #### 3.2.5 Offload
 
@@ -309,11 +309,11 @@ Offload 策略会使系统调度变得更加复杂， 在模型比较大或者 G
 
 然而，不同 GPU 支持的数据类型也不同，比如 V100 的 Tensor Core 不支持 INT8 和 INT4，H100 的 Tensor Core 不支持 INT4，所有 GPU 的 CUDA Core 都不支持 INT4：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_jpg/zhVlwj96tThBsr2a3CbjbVu4juKSYdeZII6iaz3X4iamYWlK2GCXRHP2lfsuicCTiaHCZlRic3nSF8PKFMsD6kx2ib6g/640?wx_fmt=jpeg&from=appmsg&randomid=r0oeftmw)
+![Image](images/640_6411a63f70bf.jpg)
 
 虽然说量化可能对模型精度有一定影响，但是也提供了更多可能，比如 INT4 量化的 13B 模型可能效果、速度都比 FP16 的 7B 模型好，如下图所示（数据来自 GitHub - ggerganov/llama.cpp: Port of Facebook's LLaMA model in C/C++），蓝框中量化的 13B 模型比红框未量化的 7B 模型更小、困惑度更低（越低越好），同时时延（ms/tok）更低：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThBsr2a3CbjbVu4juKSYdeZuJHzvRLcu8XAHjtOlloURgb3TrZwSyiay30OSbwUCJZWQkBJgK5SKCg/640?wx_fmt=png&from=appmsg&randomid=698sbtzm)
+![Image](images/640_39c08b1279d0.png)
 
 ### 3.4 模型类型
 
@@ -323,11 +323,11 @@ Offload 策略会使系统调度变得更加复杂， 在模型比较大或者 G
 
 此外，也有一些其他的 Attention 机制会影响推理吞吐，比如各种 Saprse Attention（OpenAI 模型用的比较多），如下图所示的 Selective Attention、Sliding + Dilated、Global token 和 Hash-based 等（图片来自 [2312.15234] Towards Efficient Generative Large Language Model Serving: A Survey from Algorithms to Systems）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThBsr2a3CbjbVu4juKSYdeZbqp4nxW9mORB2Y7XVzqVyZFLlVFWg7GKUmuFThNHicMCevhtV8WOIMw/640?wx_fmt=png&from=appmsg&randomid=m1tkft3i)
+![Image](images/640_474193476e4c.png)
 
 如下图 Fig.2 所示，不同模型大小不同、相应的推理吞吐也各不相同（图片来自 [2312.03863] Efficient Large Language Models: A Survey）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThBsr2a3CbjbVu4juKSYdeZfRLfGAqEXiajiaiaNbcFWjDm7ia5DTZImCAtQCO44tQeyqWTpzEdnGq2GA/640?wx_fmt=png&from=appmsg&randomid=wsecai76)
+![Image](images/640_793434baee1b.png)
 
 ### 3.5 数据分布
 
@@ -339,7 +339,7 @@ LLM 的输入和输出序列长度都是可变的，整个服务的时延由输�
 
 在 Few Shot Learning、Self-consistency、Multi-turn chat、Tree-of-thought 等场景中，用户的 Prompt 往往很长，而输出结果 Token 数比较少，同时不同请求间存在大量的公共前缀 Token，此时用户 Decoding 阶段的推理时间可能与 Prefill 相当，甚至更短。针对这种场景，[2312.07104] Efficiently Programming Large Language Models using SGLang 中作者提出了一种共享不同请求间公共前缀的方案，以此大幅降低 Prefill 的重复计算，提升性能，在一些常见的 LLM 推理任务上获得 5 倍的加速。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThBsr2a3CbjbVu4juKSYdeZzoKUL3ZMLc3bTVdszsQl9g9VMadX9f6prjOTcwZb9EmXAMBAJMyaJQ/640?wx_fmt=png&from=appmsg&randomid=an154xm7)
+![Image](images/640_7c5d4729bdc7.png)
 
 #### 3.5.2 Lookahead 投机采样
 
@@ -349,7 +349,7 @@ LLM 的输入和输出序列长度都是可变的，整个服务的时延由输�
 
 在前面的 PP 小节我们介绍了 [2401.08671] DeepSpeed-FastGen: High-throughput Text Generation for LLMs via MII and DeepSpeed-Inference，其作者在每个 Prompt Chunk 中都与其他请求的 Decoding 结合，进一步提升吞吐。然而其效果也会受数据分布的影响，比如作者测试的都是 Prompt 比较长，而 Decoding Length 相对比较短的场景，如下图所示，如果相应 Generation 长度进一步增加，是否还能获得相应的收益也是值得考量的地方：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThBsr2a3CbjbVu4juKSYdeZT3a5FgNF2NM6lnS9RZUwcZ2m8lDqfIGMibPcPOXiaIu6FhZ2gEXw0zGw/640?wx_fmt=png&from=appmsg&randomid=8iskz0yk)
+![Image](images/640_d42320fbf2ea.png)
 
 #### 3.5.4 StreamingLLM
 
@@ -357,17 +357,17 @@ LLM 通常是在 2K 或 4K 序列长度上进行预训练，在推理时基本�
 
 针对这一场景，目前主流的方案是 [2309.17453] Efficient Streaming Language Models with Attention Sinks，其始终维护一个与训练时相当的滑动窗口来保证计算量不会剧烈增加，同时在序列开头保留几个特殊 Token 来避免效果下降太多，获得不错的效果。当然，这一方案目前还没被主流框架集成，此外也会存在精度的影响，需要进行评估。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThBsr2a3CbjbVu4juKSYdeZzmUVLJ7oUmEdNHBiaHXJ0f53jiaLlWhfe2qrO7Ra6VugXVneP0n5Mv6Q/640?wx_fmt=png&from=appmsg&randomid=lqjrpffz)
+![Image](images/640_1b94370efec0.png)
 
 #### 3.5.5 Tokenizer
 
 Tokens 可以是单词或者子单词，将文本拆分为 Token 的规则因模型而异（不同模型中可能实现不同的 Tokenizer）。例如，LLaMA 中的 Tokenizer 和 OpenAI 模型的 Tokenizer 就不太一样。虽然评估 LLM 推理时经常讨论的是基于 Token 的度量（比如，tokens/s），但是考虑到 Tokenizer 的不同，这些指标在不同的模型之间进行比较时也需要充分考虑。比如，Anyscale 的团队发现 LLaMA2 生成的 Token 数目会比 ChatGPT 生成的 Token 数目多 19%，Huggingface 的研究者也发现 LLaMA2 的 Tokenizer 生成的 Token 数会比 GPT4 的多 20% 左右。如下所示为 Anyscale 的结论Llama 2 is about as factually accurate as GPT-4 for summaries and is 30X cheaper | Anyscale：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaIUH1snG5jBBEJZbtTvpQZNiaSJiaEt8AsjdlDgCUBSvHlX0B6SZA9nt535ib6PZQyLFF2xRGOlSu9g/640?wx_fmt=png&wxfrom=5&wx_lazy=1&wx_co=1&randomid=glhuf2cw)
+![Image](images/640_2af8d66c4f2d.png)
 
 如下所示为 Huggingface 的结论：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThic0UuajBSN29grwdceT6nBCGlgdQWMFViaP7m75t6W1x84EmFj1np6EAHmFrS7u23YlZXvib9fWkjA/640?wx_fmt=png&from=appmsg&randomid=7blohfa2)
+![Image](images/640_fe457f7fc887.png)
 
 ### 3.6 Batch Size
 
@@ -379,17 +379,17 @@ Tokens 可以是单词或者子单词，将文本拆分为 Token 的规则因模
 
 Batching 方式可以提升吞吐得益于其可以增加计算强度，比如从黄色球到紫色球再到红色球，其 TFLOP/s 在不断提升，相应的 GPU 利用率也会更高：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThBsr2a3CbjbVu4juKSYdeZtAKTu9vO5a9GM3DJicnHKHuTAsLIqeZnOoNENdqcjTKdMTm4gkl9ePg/640?wx_fmt=png&from=appmsg&randomid=w05p9odf)
+![Image](images/640_9b54796ab890.png)
 
 #### 3.6.2 Continuous Batching
 
 如下图所示，使用 Continuous Batching 完成 7 个序列。左图为单次迭代后的批次，右图为多次迭代后的批次。一旦某个序列收到 END Token，就可以在其后立刻插入新的序列（即 S6、S5 和 S7），这样就可以实现更高的 GPU 利用率：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThBsr2a3CbjbVu4juKSYdeZUonMZJdkTwP7jWT8GbgDwibdw7lxoEMYicukcicS3oiassLKN739VZw8Rg/640?wx_fmt=png&from=appmsg&randomid=vyzgvad0)
+![Image](images/640_a4027b26e4ce.png)
 
 如下图所示为不同框架、不同的 Batching 策略相比原生的 Huggingface Transformer 推理的吞吐提升，最高获得了 23.51x 的提升（可参考 How continuous batching enables 23x throughput in LLM inference while reducing p50 latency）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThBsr2a3CbjbVu4juKSYdeZ2wl5vibtqLQ0AfKOl3YzBjqYvEQX9bgelal24clWBU0YESsicRiaAk9SA/640?wx_fmt=png&from=appmsg&randomid=rhm9b0ne)
+![Image](images/640_89b7436e0b58.png)
 
 ### 3.7 推理框架
 
@@ -400,25 +400,25 @@ Batching 方式可以提升吞吐得益于其可以增加计算强度，比如�
 - FasterTransformer 作为 LLM 流行之前的推理框架，针对 Transformer 模型支持各种 Kernel 融合策略，获得了很高的推理性能，后续的很多推理框架也基于 FasterTransformer，比如 LMDeploy is a toolkit for compressing, deploying, and serving LLMs. 和阿里的 RTP-LLM: Alibaba's high-performance LLM inference engine for diverse applications.，甚至 GitHub - NVIDIA/TensorRT-LLM 中的很多高性能 CUDA Kernel 也来自 FasterTransformer。
 - 很多推理框架也不支持 PP，比如 vLLM、TGI、Light-LLM、LMdeploy 和 RTP-LLM 都不支持 PP。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThBsr2a3CbjbVu4juKSYdeZbRUWoVELhdhrDzNNZNGtvZk1eGuzu9jW5nq2S2Jr59ByRgUcrfrpvA/640?wx_fmt=png&from=appmsg&randomid=gocs824a)
+![Image](images/640_55a134021036.png)
 
 不同框架特性不同，对模型支持的完善度也各不相同，性能也各有差异，甚至同一框架不同版本性能也略有不同。
 
 如下图所示，在 LMdeploy 项目中，作者声称吞吐比 vLLM 明显提升：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThBsr2a3CbjbVu4juKSYdeZnRorha5LwiavClWNODY3iclYROibYQA7Lomv85e3LSxeNsZmfpssF3FuQ/640?wx_fmt=png&from=appmsg&randomid=igjv1bqe)
+![Image](images/640_45267917f890.png)
 
 如下图所示，vLLM 在 https://github.com/vllm-project/vllm/pull/2221 这个 PR 中使用 NCCL 替换了原始的基于 Ray 的分布式通信方式，其分布式推理吞吐得到明显提升：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThBsr2a3CbjbVu4juKSYdeZ60OLauicWMg3Xx2VdX2wfXPRxcxfKFnZzCOo7XPcbvM8nLNbfro82hw/640?wx_fmt=png&from=appmsg&randomid=fkoc9zhk)
+![Image](images/640_4c69b396a592.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThBsr2a3CbjbVu4juKSYdeZVicUhLA4v9ptxicCSh8nkicUlcZA0fGDoZGUbI7dAwXibxvw6XtdxSUrcw/640?wx_fmt=png&from=appmsg&randomid=9r6ggl5r)
+![Image](images/640_5e21dbe403bb.png)
 
 ### 3.8 多 LoRA
 
 使用 [2106.09685] LoRA: Low-Rank Adaptation of Large Language Models 进行模型微调是一个非常常见的手段，可以大幅提升微调效率。对于单个 LoRA 模型，可以直接将其与 Base 模型合并进行推理即可，与常规的 LLM 推理并没有什么区别。对于多个 LoRA 的场景，当前大部分的推理框架还不支持（vLLM 刚支持，还不是很完善，https://github.com/vllm-project/vllm/pull/1804），只有 FastChat 或使用原生的 Huggingface Transformer 才能支持（阿里新发布的 RTP-LLM 也支持），当然，现在也有专门的多 LoRA 框架，比如 S-LoRA、Punica 和 Lorax。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThBsr2a3CbjbVu4juKSYdeZkelIhAUjxtg8LOllX8ZVdJQotgVFj5BY0V2vQ5rQ5ibfGrWcLbN4fsg/640?wx_fmt=png&from=appmsg&randomid=a7ho8z3j)
+![Image](images/640_c5f0a29ca8a0.png)
 
 #### 3.8.1 S-LoRA
 
@@ -426,7 +426,7 @@ Batching 方式可以提升吞吐得益于其可以增加计算强度，比如�
 
 作者对于基座模型使用 batching 计算，然后使用自定义的 CUDA Kernel 为所有的 LoRA Adapter 执行额外的 xAB 计算，过程如下图 Figure 1 所示：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThBsr2a3CbjbVu4juKSYdeZVkUVJC7kr9Hc9GCCdehYIJ1yLCP9LY4kvGSZsYPGJySBDt0yGsLoLQ/640?wx_fmt=png&from=appmsg&randomid=mwyx7vxt)
+![Image](images/640_3bc35ab5327b.png)
 
 #### 3.8.2 Punica
 
@@ -439,7 +439,7 @@ Batching 方式可以提升吞吐得益于其可以增加计算强度，比如�
 - 每个 GPU 都会启动一个 Runner，该 Runner 与 Scheduler 通信并控制所有 GPU 的执行。
 - 当 GPU 生成新 Token 时，新 Token 会由 Runner 以 Streaming 方式传输给 Scheduler，再通过 Frontends 返回给用户。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThBsr2a3CbjbVu4juKSYdeZWVvmgNZiaPznicZ8Vs9NuqpqYBmXRn8HgWiaj1jJRFBTudsY0iaNiauTRgw/640?wx_fmt=png&from=appmsg&randomid=4p1r2852)
+![Image](images/640_995b3c6a1dc5.png)
 
 #### 3.8.3 Lorax
 
@@ -467,15 +467,15 @@ GitHub - predibase/lorax: Multi-LoRA inference server that scales to 1000s of fi
 
 在 [2401.08671] DeepSpeed-FastGen: High-throughput Text Generation for LLMs via MII and DeepSpeed-Inference 中作者针对 DeepSpeed-FastGen 框架的可伸缩性和负载均衡进行了测试，单个实例 4 个 A100，实例数从 1 扩展到 16 时基本能保持线性的吞吐提升：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThBsr2a3CbjbVu4juKSYdeZWjVJdBkhhCficGeBRmxDE7THVFaY0zSwqtxQMamvYCNcFs1Nmb7MVNw/640?wx_fmt=png&from=appmsg&randomid=hodh069m)
+![Image](images/640_56926494a618.png)
 
-当然，上述的测试对应的输入比较长，输出比较短，并且输出的方差也不是特别大，可能会弱化负载不均衡的问题：![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThBsr2a3CbjbVu4juKSYdeZqd4Aq5Xgzh2xUhuanMhM1dttWN13AgaMntuEkzymGF3GuiaIfaGoS7Q/640?wx_fmt=png&from=appmsg&randomid=qjz1cjdd)
+当然，上述的测试对应的输入比较长，输出比较短，并且输出的方差也不是特别大，可能会弱化负载不均衡的问题：![Image](images/640_bd5d793f785c.png)
 
 #### 3.11.2 多样化流量分布
 
 此外，当流量不均匀时也会对推理吞吐产生很大的影响，比如 [2310.18547] Punica: Multi-Tenant LoRA Serving 中作者验证了不同推理框架在不同流量分布情况下的吞吐（针对多 LoRA 场景，会进一步地放大问题）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThBsr2a3CbjbVu4juKSYdeZSFW92Q2IndSTWhicebbKfdW3pEn7OnU920XToicN37g9NMGmcWyB9cWg/640?wx_fmt=png&from=appmsg&randomid=jc87r4ix)
+![Image](images/640_501b8ae4a2fc.png)
 
 需要说明的是，单实例性能决定了多实例的性能上限，评估通常也是针对单实例的，负载均衡问题需要结合需求在更大规模的资源下测试。
 
@@ -487,7 +487,7 @@ TrueFoundry 提供了多 GPU Pool 部署的方案，采用生产者-消费者模
 - 可以统计不同云平台的报价，动态的调整实例伸缩，以降低整体成本。
 - 每个 LLM 实例也可以根据需求尽可能地以高负载运行，比如同时从 Queue 中获取 batch 的请求来处理。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThBsr2a3CbjbVu4juKSYdeZE2vkq0m21ibbUSoxiauiaskiaupvc8TtnxT9wFor6wAyowF9vavsLrD1eg/640?wx_fmt=png&from=appmsg&randomid=nmgh1w73)
+![Image](images/640_c6dd4ee336a8.png)
 
 ## 四、总结和展望
 

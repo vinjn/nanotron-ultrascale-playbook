@@ -36,7 +36,7 @@
 
 如下所示为 Maximizing training throughput using PyTorch FSDP [1] 中 Meta 在 LLM 训练时的 MFU 和 HFU。对于 LLM 训练任务而言，通常在 A100/A800 GPU 集群中，MFU 可以达到 50%+，甚至接近 60%；而在 H100/H800 GPU 集群中， MFU 往往不超过 50%。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiac22zIGLQhy22d6wUAKEeQMrPbUWrmfC8d8tSMmt1f7nENaOiap0kAztLLnIwnzVlfJWG4NsLfqVQ/640?wx_fmt=png&from=appmsg&randomid=axzxw2a8)
+![Image](images/640_0394d08566d7.png)
 
 ### 2.2 GPU 监控集成
 
@@ -44,13 +44,13 @@ NVIDIA DCGM（GitHub - NVIDIA/DCGM: NVIDIA Data Center GPU Manager (DCGM) is a p
 
 如下图所示是一种简单又常用的使用方式，每个 Node 上会部署一个 dcgm-exporter 实例，然后由 Prometheus 来周期性的抓取监控数据，并由 Grafana 进行相应监控的可视化（https://github.com/NVIDIA/dcgm-exporter/tree/main/grafana [4] 中也有相应的 Grafana config）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiac22zIGLQhy22d6wUAKEeQibqpsqVR7VcDQtyJukSU3ap3tTCDGABq6HTvokOWXW9oByYNYJ6uBmQ/640?wx_fmt=png&from=appmsg&randomid=xcggnt8v)
+![Image](images/640_9650e23ce36a.png)
 
 ### 2.3 GPU 监控指标
 
 DCGM 的监控指标非常丰富，包括显存占用，各种算力利用率，温度、功率、频率以及 NVLink 和各种异常相关指标。其实可以在 github/DCGM/dcgmlib/src/dcgm_fields.cpp [5] 中看到所有相关指标，甚至一些单位不清晰的指标也可以从中获取。如下图所示，可以看出 DCGM_FI_DEV_NVLINK_BANDWIDTH_L0 的单位为 MB/s。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiac22zIGLQhy22d6wUAKEeQHqdF8Jj7xxSsnER9iaPbUibrVicC1CicFkRRGYePp2bSpl6V8wa9y0mWOQ/640?wx_fmt=png&from=appmsg&randomid=243z6uot)
+![Image](images/640_e844399d1c58.png)
 
 部分监控的说明也可以参考：ACK集群GPU监控2.0指标有哪些- 容器服务Kubernetes 版 ACK - 阿里云 [6]
 
@@ -66,11 +66,11 @@ NVIDIA FM（Fabric Manager）负责配置 NVSwitch 内存结构，以在所有�
 - 与 GPU 驱动程序协调，初始化GPU；
 - 监控结构中的 NVLink 和 NVSwitch 错误。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiac22zIGLQhy22d6wUAKEeQU8T4NtxLjECjurIpuJEwaqVibib1sMhIp1uqVwgNa2fV2y4E7niaibibB4A/640?wx_fmt=png&from=appmsg&randomid=zap98nc4)
+![Image](images/640_4b0fec70f17b.png)
 
 NCCL 在 2.17+ 版本开始支持 NVLink Sharp，这个也是在 H100 的 NVSwitch 才支持的。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiac22zIGLQhy22d6wUAKEeQsDaqdcS87fr3jfhvPO33C3VrjSxEHJGU8JSslvbH9821Msvxq8OvwA/640?wx_fmt=png&from=appmsg&randomid=q055nat9)
+![Image](images/640_14c3ae26953c.png)
 
 ### 2.5 GPU 故障
 
@@ -84,7 +84,7 @@ GPU 故障最大的挑战是其数量比较多，故障率比较高，一个 GPU
 
 对应 DCGM 的 DCGM_FI_PROF_GR_ENGINE_ACTIVE，表示在一个时间间隔内 Graphics 或 Compute 引擎处于 Active 的时间占比。Active 时间比例越高，意味着 GPU 在该周期内越繁忙。该值比较低表示一定没有充分利用 GPU，比较高也不意味着已经充分利用 GPU。如下图所示，表示几个 GPU 的 Utilization 到了 80%-90% 左右：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiac22zIGLQhy22d6wUAKEeQJY3j8mxWhoAsv1mLIJLCyl6ZtoqkYwwnalplicUTDAITT0drekS8ORw/640?wx_fmt=png&from=appmsg&randomid=dibeagym)
+![Image](images/640_2e3160767981.png)
 
 其实更早之前的 Utilization 指标为 DCGM_FI_DEV_GPU_UTIL，只是因为其局限性现在往往会使用 DCGM_FI_PROF_GR_ENGINE_ACTIVE，更多说明也可以参考：Question about DCGM fields · Issue #64 [19]。
 
@@ -98,7 +98,7 @@ GPU 故障最大的挑战是其数量比较多，故障率比较高，一个 GPU
 
 如下图所示为几个 GPU 的 SM Active，可见只有 60% 左右，还有一定提升空间：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiac22zIGLQhy22d6wUAKEeQnDh2oV35oxNB3ADRzs2zaM7wYzjO0wDBX3uSjkumrVW4LhC1V6Hqzw/640?wx_fmt=png&from=appmsg&randomid=oxpmw6ej)
+![Image](images/640_d089194c1e4f.png)
 
 ### 3.3 GPU SM Occupancy
 
@@ -106,7 +106,7 @@ GPU 故障最大的挑战是其数量比较多，故障率比较高，一个 GPU
 
 如下图所示为几个 GPU 的 SM Occupancy，只有 20% 多：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiac22zIGLQhy22d6wUAKEeQYj0y1Z7swicLoJpT31hnfzVAuPxQceWr1JYBINwCOlmicWTvaX15wH7Q/640?wx_fmt=png&from=appmsg&randomid=xweoxhvn)
+![Image](images/640_2cd305eccdd7.png)
 
 ### 3.4 GPU Tensor Active
 
@@ -131,9 +131,9 @@ GPU 故障最大的挑战是其数量比较多，故障率比较高，一个 GPU
 - 当有 40 个 Block，每个 Block 1 个 Thread 时，GPU Util 为 100%，SM Active 也为 100%，因为每个 Block 都会占用一个 SM。
 - 当有 40 个 Block，每个 Block 128 个 Thread 时，GPU Util 为 100%，SM Active 也为 100%，因为每个 Block 都会占用一个 SM。此时 SM Occupancy 到了 12.5%。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiac22zIGLQhy22d6wUAKEeQC628s9xM00OIuNxQPTTfapBx1heHiaAEv9tlCxHBLy5fPhVBW0iaHsuQ/640?wx_fmt=png&from=appmsg&randomid=fjg9lpq8)
+![Image](images/640_842a26565c55.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiac22zIGLQhy22d6wUAKEeQ01TmUGJic1ibic852hia9BMbic84qYBnMIfM0wknZbLTaGBYAKhp0nibkeQQ/640?wx_fmt=png&from=appmsg&randomid=8xl5srmm)
+![Image](images/640_059c942e89ec.png)
 
 #### 3.5.2 Tensor Active
 
@@ -144,7 +144,7 @@ GPU 故障最大的挑战是其数量比较多，故障率比较高，一个 GPU
 - 当有 16 个 Block 时（64,512,64），可以利用 16 个 SM，也能充分利用该 SM 的 Tensor Core，因此 SM Active 和 Tensor Active 都是 12.1%，接近 16/132=12.1%。
 - 当有 128 个 Block 时（128,16,256），可以利用 128 个 SM，也能充分利用该 SM 的 Tensor Core，因此 SM Active 和 Tensor Active 都是 96.3%，接近 128/132=97%。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiac22zIGLQhy22d6wUAKEeQv5XiaSMiczpVjDxkIV64KSgLFq2aKGeyeyWtOz5hsrPPmj1fMzmayJ4g/640?wx_fmt=png&from=appmsg&randomid=x8xv5enf)
+![Image](images/640_80dd573be3fd.png)
 
 PS：Tensor Core 不支持 FP32 的矩阵乘法，上述实验使用的是 FP16 的矩阵乘法。
 
@@ -156,9 +156,9 @@ Tensor Active 可以近似 HFU 的上限，主要是因为 LLM 中的大部分�
 
 如下图所示，我们在一个 2 个 8 * H100 GPU 的节点上使用 Megatron-LM 训练一个 3B LLM，采用 16DP 配置，基于 Megatron-LM 输出的 MFU 为 45.5%，而下面对应的平均 SM Active 为 80% 左右，平均 Tensor Active 为 48% 左右，符合我们的上述结论：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiac22zIGLQhy22d6wUAKEeQtDiag66iaTnr9Hjqldt5hR8CmdNCNCaMUSAs6NRGxqXiba4Ef62zLH1bw/640?wx_fmt=png&from=appmsg&randomid=uq36t3x1)
+![Image](images/640_8e6a9c00cad5.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiac22zIGLQhy22d6wUAKEeQJxyIBhM2iccGaNvY5x24NlVcC9O7G2WxWVNSkLOZKtedlb6Yo0zrBcg/640?wx_fmt=png&from=appmsg&randomid=2njo3ap9)
+![Image](images/640_62170cea9a30.png)
 
 #### 3.5.4 NVLink Bandwidth - all2all
 
@@ -166,19 +166,19 @@ Tensor Active 可以近似 HFU 的上限，主要是因为 LLM 中的大部分�
 
 对应的 busbw 约为 350GB/s:
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiac22zIGLQhy22d6wUAKEeQYUp2j2X5JfvKJicQTkKN4WSvIn8Nd85haibo7KXsRo0msUHLA3PdmGxQ/640?wx_fmt=png&from=appmsg&randomid=i7qortn6)
+![Image](images/640_ee1b8fb271cd.png)
 
 每个 GPU 的 NVLink Bandwidth 达到 290 GiB/s（极限 600 GiB/s）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiac22zIGLQhy22d6wUAKEeQTWYYDkoiaia5r6KN514UycwUSmAJIGuWbzcq12WEIg5TNic54UeGIKhXg/640?wx_fmt=png&from=appmsg&randomid=x8pqrsba)
+![Image](images/640_e4e3769e1387.png)
 
 每个 GPU Lane 0 的 Bandwidth 达到 16 GiB/s，对应总带宽为 16*18=288 GiB/s
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiac22zIGLQhy22d6wUAKEeQjiaficrEcB8EfuTlP04CiarNMSjicjWwZ9gmb3EbHT8257u2m2lqLCibR4g/640?wx_fmt=png&from=appmsg&randomid=xpa86yxg)
+![Image](images/640_63a542538627.png)
 
 此时的 SM Active 约为 12.1%，表明大概使用了 132*12.1%=16 个 SM，也就是通信依然会占用 GPU SM，可能与计算之间存在竞争：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiac22zIGLQhy22d6wUAKEeQb6ElOAVGZv4cw5zXdXkgySYP6JAvMhS8Yepias1gxCXrfliaOcvIZuXA/640?wx_fmt=png&from=appmsg&randomid=4yac16td)
+![Image](images/640_08e398d0fead.png)
 
 #### 3.5.5 NVLink Bandwidth - allreduce
 
@@ -188,19 +188,19 @@ NCCL 的 AllReduce 支持多种算法，比如常见的 Ring 和 Tree，也包�
 
 如下图所示，关闭 NVLink SHARP，也就是：NCCL_NVLS_ENABLE=0 all_reduce_perf -b 16G -e 16G -N 10000 -g 8。可以看出，busbw 可以达到 363 GiB/s，而每个 GPU 的 NVLink 通信带宽可以达到 170-190 GiB/s。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiac22zIGLQhy22d6wUAKEeQztTiaibmDhCp7LZRKNngekS3icASE5fgxaoAzoxhFAYaqqEgJBibNQRfaw/640?wx_fmt=png&from=appmsg&randomid=bjt6xcw0)
+![Image](images/640_06e57a7f8c67.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiac22zIGLQhy22d6wUAKEeQ6Q4j91uyDcJlLZFwwCrbPibOibXbsBWibDyutnQ4IJhjjnnueukibVibOSA/640?wx_fmt=png&from=appmsg&randomid=24dqqx6b)
+![Image](images/640_2f24e5650e65.png)
 
 如下图所示，启用 NVLink SHARP，也就是：NCCL_NVLS_ENABLE=1 all_reduce_perf -b 16G -e 16G -N 10000 -g 8。可以看出，busbw 可以达到 480 GiB/s，而每个 GPU 的 NVLink 通信带宽则只有达到 100-130 GiB/s。也就是说，此时的 busbw 更大，而 NVLink 通信带宽更低，这主要是利用了 NVSwitch 的 BroadCast 和 Reduce 能力，可以降低通信量。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiac22zIGLQhy22d6wUAKEeQerDqt7Cc8BmVHPVKdjiaEsOvD8tnf5BUoqicCVBTRtXCBOMol0Mg5a8A/640?wx_fmt=png&from=appmsg&randomid=33jd3hjl)
+![Image](images/640_04d2e2b5f170.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiac22zIGLQhy22d6wUAKEeQJzhVsu9Ir0ibNYHxTb3pCAXpw3652ExNFAeV27aiaCNBaiaEjZUaoTvXA/640?wx_fmt=png&from=appmsg&randomid=ts8098b4)
+![Image](images/640_4fffa6e23e7a.png)
 
 同时，我们也将 8 个 GPU 分成 2 组，每组 4 个 GPU 进行 AllReduce 操作，首先在 22:29 启动 0-3 号 GPU 的 AllReduce，然后在 22:32 启动 4-7 号 GPU 的 AllReduce。可以看出，0-3 号 GPU 的通信带宽并没有下降，始终为 254 GiB/s 左右。表明不同 GPU 之间的 NVLink 并没有产生干扰，这主要得益于使用 NVSwitch 实现了 GPU 全互联，每个 GPU 理论上都能达到 NVLink 带宽的极限。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiac22zIGLQhy22d6wUAKEeQf1v5L7LVCGLicgvQp20cdlvz1Qjl6cVBc3ZzG3FMDLQ4dB2ibd17xzaA/640?wx_fmt=png&from=appmsg&randomid=akzb79nj)
+![Image](images/640_c1e411ac1517.png)
 
 ## 四、GPU 异常或错误
 
@@ -210,11 +210,11 @@ Xid Error 是 NVIDIA GPU 在运行过程中遇到的一种硬件或驱动层面�
 
 如下图所示为一些常见的通常由用户应用程序导致的错误：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiac22zIGLQhy22d6wUAKEeQ5ka2wFiaKEqUCu2tp3sFotibMN2iauI7G6dmKkgHffeaPnhxN0Fibk4Zxg/640?wx_fmt=png&from=appmsg&randomid=rmcaxhhy)
+![Image](images/640_571e0ec7e18a.png)
 
 如下图所示为一些常见的通常由硬件导致的错误，往往需要重置 GPU 或者报修：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiac22zIGLQhy22d6wUAKEeQP7CiajCjCvLsmRIvnViaJCm5a0yNXtUcmdSicV90n8GAkpaoehTGn7XLQ/640?wx_fmt=png&from=appmsg&randomid=j2w6nq9x)
+![Image](images/640_6dc724684376.png)
 
 ### 4.2 SXid Error
 
@@ -244,39 +244,39 @@ NVIDIA GPU 显存经常出现的一个问题是 GPU 显存行重映射，可以�
 
 如下图所示为我们实际业务中遇到的一个 Fail-slow 问题。具体来说，我们发现任务训练的速度不符合预期，通过观察每个 Worker 的 GPU SM Active，发现存在一个 GPU 的 SM Active 指标明显高于其他 GPU。经调查后发现该 GPU 上存在被抢占的情况，导致对应的 Worker 成为 Straggler，进而整个任务的所有 GPU 被拖累。红框中驱逐异常抢占后任务速度恢复正常：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiac22zIGLQhy22d6wUAKEeQbA5zh1yJr4no7JNyicIa8rf2Iud6E56Qacnw4fhIlMuc5miagmko5FZw/640?wx_fmt=png&from=appmsg&randomid=87dyve77)
+![Image](images/640_fc1f5f1dd400.png)
 
 如下图所示，Megatron-LM 最近也加入了 Straggler 检测相关的实现（Megatron-LM/megatron/training/training.py [11]）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiac22zIGLQhy22d6wUAKEeQXRXaNRRfNU6j3ACzCdUxiaBX5ibWBFO37xasbu130XmxtSNibsntOTLWQ/640?wx_fmt=png&from=appmsg&randomid=y1cnldca)
+![Image](images/640_fcf81af0ab6d.png)
 
 ### 5.2 周期性降速
 
 我们还遇到过任务周期性降速的问题，起初怀疑过 DataLoader 和 Checkpointing 的问题，也怀疑过节点有周期性任务导致，依次被排除；也进一步排查了 CPU、GPU、网络等均未发现明显问题；最终发现某个 Rank 中 Python 的垃圾回收机制会导致一直持有 GIL，进而导致当前 Rank 成为 Straggler，拖累整个训练任务。当任务规模比较大时，多个 Rank 在一段时间内陆续成为 Straggler，进而放大该问题的影响范围：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiac22zIGLQhy22d6wUAKEeQbbQwy15N4MO6kdhzRC5N5142QG2RTEbXzDqbh2qttGxvh68MLFM9Kw/640?wx_fmt=png&from=appmsg&randomid=485bkdve)
+![Image](images/640_137f148887bb.png)
 
-解决上述问题的方法也比较简单粗暴，比如 Megatron-LM 中就有主动 GC（Garbage Collect） 的选项（Megatron-LM/megatron/training/training.py [11]）。如下图所示，可以在一定的 Step 后所有 Rank 同时主动 GC，这样就可以将所有 Rank 的 GC 放在同一时间，降低对整个任务的影响：![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiac22zIGLQhy22d6wUAKEeQhuF1uvWY2m6DUc4R3mElEHGm6qwVc0ZeFRKbUyB6IgTibo9ItDK19gw/640?wx_fmt=png&from=appmsg&randomid=lbj6md1q)
+解决上述问题的方法也比较简单粗暴，比如 Megatron-LM 中就有主动 GC（Garbage Collect） 的选项（Megatron-LM/megatron/training/training.py [11]）。如下图所示，可以在一定的 Step 后所有 Rank 同时主动 GC，这样就可以将所有 Rank 的 GC 放在同一时间，降低对整个任务的影响：![Image](images/640_de832d658676.png)
 
 ### 5.3 NVSwitch nvidia-fabricmanager 问题
 
 我们在 H100 系统上也遇到过 nvidia-fabricmanager 的问题。具体来说，我们发现多机分布式训练时 Pytorch 在初始化节点会 Hang 住，甚至用 NCCL 的 AllReduce 测试也会 Hang，但将 NCCL_ALGO=Ring 则可以正常执行。最终发现是节点上某进程 OOM 导致 nvidia-fabricmanager 被 Kill。而在 H100 的 NVSwitch 上支持 NVLink Sharp，所以 NCCL 的 AllReduce 默认会使用 NCCL_ALGO=NVSL，此时 nvidia-fabricmanager service 异常就导致整个任务 Hang 住，通过重启 nvidia-fabricmanager 可以解决（有些时候也需要重启机器 NCCL 2.18 / Cuda 12.2 fails on H100 system with transport/nvls.cc:165 NCCL WARN Cuda failure 'invalid argument' · Issue #976 · NVIDIA/nccl · GitHub [12]）。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiac22zIGLQhy22d6wUAKEeQRBEAWTruKZbM5NnFvWgSTExzs9PvXUnjRRKPOXP4hL16qjlzoRay6A/640?wx_fmt=png&from=appmsg&randomid=5ew71hxr)
+![Image](images/640_6b1c8ecdce36.png)
 
 ### 5.4 用户 Xid Error 问题
 
 我们遇到过很多 Xid Error，如下图所示，任务训练时遇到过 Pytorch 抛出 CUDA error: an illegal memory access was encountered 错误：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiac22zIGLQhy22d6wUAKEeQ7wNCkGMxfdYDfniaph45mtQsiazL7rGgScllolRvYuxpiabq37E51KruQ/640?wx_fmt=png&from=appmsg&randomid=btf0ek7b)
+![Image](images/640_c6ff410d856c.png)
 
 同时查看相关系统信息发现 GPU 有 Xid 31 的错误：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiac22zIGLQhy22d6wUAKEeQiapzlepXKibAowMIKhlHUjyfVjfuSC6IWdcFsUsBcp5925wLoYXziav9A/640?wx_fmt=png&from=appmsg&randomid=r5rrdj6t)
+![Image](images/640_49763ec20195.png)
 
 进一步根据 NVIDIA Xid 文档（1. Introduction — XID Errors r555 documentation [13]）可知，Xid 31 大部分为用户程序问题，比如访存越界等，但也有一定可能是驱动 Bug 或硬件 Bug：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiac22zIGLQhy22d6wUAKEeQPrdiaa53rice0wHKS3AaflfB1N9QSeIHWzDsK6VmAlk5KqykhmFd8q1w/640?wx_fmt=png&from=appmsg&randomid=a4z9vgz7)
+![Image](images/640_db699bf493f5.png)
 
 5.5 硬件 Xid Error
 
@@ -284,21 +284,21 @@ Meta 在 [2410.21680] Revisiting Reliability in Large-Scale Machine Learning Res
 
 我们也遇到过类似案例，如下图所示，使用 Pytorch 训练时遇到 CUDA error: unknown error 的问题：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiac22zIGLQhy22d6wUAKEeQTnian3DTWfwibwAm1HFrcABc9ic7rc5IFsYODlUjK0QstU2SgA6j7fFKg/640?wx_fmt=png&from=appmsg&randomid=672ady3g)
+![Image](images/640_7c9c1d19d106.png)
 
 进一步排查发现系统中同时出现了 pciehp Link Down，Xid 79（GPU fallen off the bus）以及 NVSwitch timeout 的错误，与此同时还在后续出现 Xid 45 的错误，这个就是常见的掉卡问题。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiac22zIGLQhy22d6wUAKEeQLxxb4HgyvgcYoCyIsicGK5Fhww5UMibsypFQoKfUKbDoviaTIfPUWaKrQ/640?wx_fmt=png&from=appmsg&randomid=t2hg7ju1)
+![Image](images/640_8449d16556ed.png)
 
 其实 Xid 也经常会一起出现，如下图所示，一个 uncorrectable 的 ECC Error 往往会伴随多个不同的 Xid 同时出现：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiac22zIGLQhy22d6wUAKEeQOdE2dvM8X1IHWBxuPvRka2jUZkNk9ibbqRFgRESrQ6hoAcMVy8hBHBw/640?wx_fmt=png&from=appmsg&randomid=kpl4qg7m)
+![Image](images/640_b695e9ae90ff.png)
 
 ### 5.6 Meta GPU GSP Error
 
 Meta 在 [2410.21680] Revisiting Reliability in Large-Scale Machine Learning Research Clusters [14] 中也提到过 GSP（GPU System Processor） 相关问题，我们在实际生产环境也遇到过，阿里云的 FAQ 中也有相关介绍，如下所示，具体可以参考 ACK集群GPU使用常见问题和解决方法- 容器服务Kubernetes 版 ACK - 阿里云 [6]：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiac22zIGLQhy22d6wUAKEeQWHGeMxzmmPfBicgdH5ia3S8OHt9jTmSRcMkqRiayTC5NqpSVD0ekdgs1g/640?wx_fmt=png&from=appmsg&randomid=yngvzto2)
+![Image](images/640_d1922d5ea3e4.png)
 
 ### 5.7 IBM GPU Memory Row ReMap 问题
 
@@ -306,7 +306,7 @@ IBM 在 [2407.05467] The infrastructure powering IBM's Gen AI model development 
 
 作者专门设立了一个面板（如下图 Figure 12(c) 所示），通知系统管理员发生显存行重映射的这些节点无负载，可进行重置。需强调的是，GPU 内存损坏故障可能导致应用程序层面的隐晦错误。应用程序可能在训练迭代中日志显示损失值膨胀前，持续运行而未显露问题。这些故障可能在训练过程中的任何时刻发生，若不监控损失曲线的收敛情况，将导致大量 GPU 时间的浪费。DCGM 诊断（1 级和 2 级）无法检测此问题，需进行 3 级诊断，这要求独占 GPU 访问权限。为此，作者的 Autopilot 将此测试纳入侵入性测试，当 GPU 未用于 AI 工作负载时运行。测试结果导出至 Prometheus 和节点标签，以便监控和分析。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiac22zIGLQhy22d6wUAKEeQ6vttzKWcT4PKuEdJanTj2H0G8zMI5FkQJQYdjVhG2iaqh5p6iaBWTeicg/640?wx_fmt=png&from=appmsg&randomid=p95x4aj4)
+![Image](images/640_437407eaa023.png)
 
 ### 5.8 Meta Lemon 节点
 
@@ -320,11 +320,11 @@ Meta 在 [2410.21680] Revisiting Reliability in Large-Scale Machine Learning Res
 
 幻方 AI 在 [2408.14158] Fire-Flyer AI-HPC: A Cost-Effective Software-Hardware Co-Design for Deep Learning [16] 中也介绍过一系列的 Xid Error。如下图 Table V 所示，作者展示了常见的 Xid Error 和对应的原因：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiac22zIGLQhy22d6wUAKEeQs5MCNXQnlBzwwVUyCs7gSwL1bWAE842q06sfTMFhf2aUTI5yXajhyw/640?wx_fmt=png&from=appmsg&randomid=o9sb0qne)
+![Image](images/640_e8c7ed97dede.png)
 
 如下图 Table VI 所示，作者也展示了不同 Xid Error 的数量和比例，可以看出，NVLink Error 占比 42.57%，这可能和作者使用的 NVLink Bridge 有关。而 Xid 31 和 Xid 43 的软件错误总共超过了 50%，这种情况大部分是程序问题，如果排除程序问题那也基本可以确定是硬件故障。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiac22zIGLQhy22d6wUAKEeQW8xCyxc8PEaCxXRTroSu6fmM5WiaJFiatkpo30lmKuiatlXUNP6pItfsQ/640?wx_fmt=png&from=appmsg&randomid=o975x4b3)
+![Image](images/640_54b871c49be7.png)
 
 ### 5.10 Meta LLaMA 3.1 预训练 GPU 问题
 
@@ -336,7 +336,7 @@ Meta 在训练 LLaMA 3 405B 模型时，使用了 15T Token，16384 H100 GPU，M
 
 作者提到，在 54 天的训练中，共遇到了 466 个任务中断，其中包括 47 次的有计划中断，以及 419 次的预期外中断。在这些非预期中断中，78% 是硬件问题，例如 GPU 或物理机其他组件的异常，其中 GPU 相关问题占到 58.7%。尽管有大量的异常，但是由于自动化运维手段的帮助，只有 3 次非预期中断是需要人工干预的。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiac22zIGLQhy22d6wUAKEeQsnxxDqPRpfbHHOzKp16QiazQ4KJhAFxXXpibccNBicfx05ibF6QWJonCgA/640?wx_fmt=png&from=appmsg&randomid=e357sbrg)
+![Image](images/640_90d4495a92e6.png)
 
 ### 5.11 上海 AI-Lab 集群异常问题
 
@@ -350,7 +350,7 @@ Meta 在训练 LLaMA 3 405B 模型时，使用了 15T Token，16384 H100 GPU，M
 - Framework：主要是几种运行错误，比如 RuntimeError、ValueError、AttributeError，主要是 Tensor 操作、Shape 以及数据类型相关，或者一系列不符合预期的行为。通常发生在作业起始阶段。
 - Script：通常是用户编码错误等，通过修改代码解决。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiac22zIGLQhy22d6wUAKEeQTvJs9KgHxutcmMJNXorsh4ESibrlcIp4GpeDpSxxicOSdnqYWwzEiamrA/640?wx_fmt=png&from=appmsg&randomid=w1bvot8l)
+![Image](images/640_55ad6c6ad0a0.png)
 
 ## 六、参考链接
 

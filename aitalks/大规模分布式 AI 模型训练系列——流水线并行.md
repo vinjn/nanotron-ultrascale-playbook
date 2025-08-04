@@ -32,15 +32,15 @@ PS：这里的不损失精度是在作者自己的场景下，换个场景也许
 
 如下图 Figure 1 所示，作者发现使用更小的 Mini Batch Size 并不会影响模型精度，反而会增加精度。但是，更小的 Mini Batch Size 会导致 GPU 上每个 Kernel 的计算量不足，反而降低模型训练的速度。因此，综合考虑速度和精度，作者将 Mini Batch Size 256 到 1024 称为 “Goldilocks zone”。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaibDbmYkDQichKjavhpRvKwkfBpRU3hpnvjXfQRwlXFcepAtbAE7Zf9d3G2fOGLCoujhHiaN7Tibssibg/640?wx_fmt=png&from=appmsg&randomid=b6hpmk98)
+![Image](images/640_5740dfc835ed.png)
 
 此外，作者也进一步验证，针对这个任务，在 Goldilocks Zone 里 Delayed Update 并不会影响模型效果：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaibDbmYkDQichKjavhpRvKwkXay2kcKFvvLUhTdyxt8vBeYGXcqrHgDqwXTVzqUPHsEFKEZ6lv01tw/640?wx_fmt=png&from=appmsg&randomid=y7kesec3)
+![Image](images/640_f53cf114910a.png)
 
 如下图 Table 4 所示，作者使用不同配置（切分）验证了本文方案（共 8 层，其中 7 层 Hidden Layer）的有效性，可以看出，使用 Pipeline + Striped top Layer 可以获得 59/18=3.3x 的加速：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaibDbmYkDQichKjavhpRvKwkGCfqvOcWzUChHNeRXiaI5YC8MQb48miasUypXwOJv0OPQonECtffOq4A/640?wx_fmt=png&from=appmsg&randomid=hdsupgy8)
+![Image](images/640_262f93a9201a.png)
 
 ## 三、CMU STRADS
 
@@ -60,7 +60,7 @@ PS：这里的不损失精度是在作者自己的场景下，换个场景也许
 
 用户通过实现 SchMP 指令来创建 SchMP 程序，而 STRADS 系统自动管理底层的机器/通信协调问题。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaibDbmYkDQichKjavhpRvKwkmyLjKbRXib86GoMXk52p36sClLYwPxOOiam9I9DSlzJlUZRxN5KGQvZA/640?wx_fmt=png&from=appmsg&randomid=gopzagrk)
+![Image](images/640_178ef5d1bc20.png)
 
 ### 3.3 Dynamic Engine
 
@@ -68,7 +68,7 @@ Dynamic Engine 是 STARADS 中的关键部分，专门针对需要动态调度�
 
 然而，动态调度算法也面临一些挑战，比如可能需要更多的计算来确定更新顺序，或者可能需要生成更小的任务，这也可能导致网络通信的延迟相对于计算时间变得更为显著。为了解决这些问题，Dynamic Engine 采用了迭代流水线（Pipelining）的方式来有效隐藏网络通信的延迟，当一个迭代的更新正在通过网络通信时，其他迭代的计算可以并行的执行。此外，流水线的深度是可以配置的，以找到最佳的收敛速度和迭代进度之间的平衡。如下图 Figure 3 所示为其 Dynamic Engine 的 Pipelining 方案，右图中通过通信和计算的 overlap 可以有效提升训练速度：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaibDbmYkDQichKjavhpRvKwk9Fr7v8slrIiaSSgGUcIKJ7pyQ8RdPRqcx3oQSCRcbqCzHCbiaw3Zobkw/640?wx_fmt=png&from=appmsg&randomid=xcwb5smv)
+![Image](images/640_cb859f7df315.png)
 
 ## 四、Microsoft PipeDream
 
@@ -93,17 +93,17 @@ PipeDream 结合了模型并行和流水线并行，通过流水线的方式处�
 
 PipeDream 提出的时候 Transformer 还没有火起来，作者针对的主要是传统的 DNN 模型，其在不同 Layer 的结构、计算量是不同的，模型的切分相对也就没那么简单。为此，作者提出了自动切分机制，如下图 Figure 7 所示，首先使用一些输入数据运行模型，并分析各层的计算时间，然后按照设备数尽可能的均匀切分。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaibDbmYkDQichKjavhpRvKwkUjibURKdWzHrd9ibWcUfOsNk4O34gNveUib87fBkQBTkcUAquNB1yS7tA/640?wx_fmt=png&from=appmsg&randomid=wxwbjs3a)
+![Image](images/640_9441d42c19b3.png)
 
 如下图 Figure 9 所示，PipeDream 也有专门的参数服务器（Parameter Server）以存储和更新模型参数：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaibDbmYkDQichKjavhpRvKwkQ05xmeHBmIM0cJVhUNccpibvpONwEvohJ9ayTSmmPbI3FhcBaE9H6WA/640?wx_fmt=png&from=appmsg&randomid=unqljf2w)
+![Image](images/640_b7311da45242.png)
 
 ### 4.4 1F1B
 
 如下图 Figure 3 所示为使用 4 台机器进行 Model Parallelism（这里模型并行不是 Tensor Parallelism，而是 Pipeline Parallelism） 训练的执行过程。其每一行代表一个机器，蓝色表示 Forward，绿色表示 Backward，Forward 和 Backward 中的数字指的是 Mini Batch 的 ID。由于是按层切分，并且同一时间只有 1 个 Mini Batch，每台机器都必须等待之前的机器执行完才能执行对应的 Stage，导致存在大量的 Bubble。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaibDbmYkDQichKjavhpRvKwk40X0w8wXjL5uKliatibk8LhgP3O48JbqFjZ7W4YIMaia0EIyAsicAialu2w/640?wx_fmt=png&from=appmsg&randomid=7tfhzbjd)
+![Image](images/640_a090f871150a.png)
 
 实际上当 Machine 1 执行完 Mini Batch 1 的 Forward 之后就可以开始 Mini Batch 2 的 Forward，以此类推。在调度的过程中，系统中的每个设备都会有两个选择：
 
@@ -114,7 +114,7 @@ PipeDream 提出的时候 Transformer 还没有火起来，作者针对的主要
 
 为了避免上述问题，作者提出了 1F1B（1次 Forward，1次 Backward）的调度机制，如下图 Figure 8 所示，4 个设备，分成 4 个 Stage。在起始阶段允许执行多个 Mini Batch 的 Forward，稳定后就保持 Forward 和 Backward 的交替执行，这样可以保证 GPU 在稳定状态下没有空闲，并且始终继续学习。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaibDbmYkDQichKjavhpRvKwkkHbr0w7eicqk6bb6pPmOwegSgNAcW0LIXoNOZ7yGTARia9RbVKD5T8RQ/640?wx_fmt=png&from=appmsg&randomid=vv1cgvn4)
+![Image](images/640_d8eb373e2e85.png)
 
 上述的 1F1B 过程并不需要 Forward 和 Backward 一样长，实际上，Backward 总是大于 Forward（大约 2 倍），此时 1F1B 依然是有效的调度机制。
 
@@ -130,19 +130,19 @@ PipeDream 提出的时候 Transformer 还没有火起来，作者针对的主要
 - Weight Stashing：为每个正在计算的 Mini Batch 都保存一份参数。Forward 计算时，每个设备（Stage）都使用最新的权重参数计算输入的 Mini Batch，并将这个参数保存，直到当前设备上对应的 Backward 计算完成。这样可以解决上述的第一个参数不一致问题，但无法解决第二个。
 - Vertical Sync：每个 Mini Batch 开始计算时都使用最新版本的权重参数，并且参数的版本号会伴随该 Mini Batch 数据的整个生命周期，在所有 Stage 都使用同一版本的参数，从而实现 Stage 间的参数一致性。这样可以解决上述的第二个参数不一致问题。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaibDbmYkDQichKjavhpRvKwkwC2uot2gR9lEzSMsFANArs51rBNhZCJouZpwdDyYjUlxmzwmuRQ20g/640?wx_fmt=png&from=appmsg&randomid=kdhs81t5)
+![Image](images/640_f260d21fe605.png)
 
 假设模型按照 Pipeline Parallelism 切分后不同 Stage 的参数为 w1,w2 等，t 表示第 t 个 Mini Batch 的更新，则原始的 SGD 对应的权重更新可以表示为：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaibDbmYkDQichKjavhpRvKwknBibPLn7x13pibkkDhqicLCuT1VG9rpQyib8A5eXg9KCmpAsrzbLQHQgibg/640?wx_fmt=png&from=appmsg&randomid=56yjr2j0)
+![Image](images/640_eabf7ff9ebd9.png)
 
 而使用了 Weight Stashing 后的权重更新可以表示如下，可以看出已经不再等价，并且使用的版本不一致：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaibDbmYkDQichKjavhpRvKwkunMVb80FicBLw5bpibicUXfFBp06LG3hx50X4s8DMXxzBH1n8LiaOGHQeA/640?wx_fmt=png&from=appmsg&randomid=iclx9uf9)
+![Image](images/640_89efb4b75996.png)
 
 进一步引入 Vertical Sync 后对应的权重参数更新可以表示如下，虽然权重的版本一致了，都是 t–n+1，但相比 t 来说中间间隔了 n-1 个：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaibDbmYkDQichKjavhpRvKwkvwtwBFLoANibZ1ZnVjunvyHriadlqQgFU9rznyFaFIicC7Y1YqyxhibEibg/640?wx_fmt=png&from=appmsg&randomid=2ly59n7y)
+![Image](images/640_d427122aceab.png)
 
 在 PipeDream 中默认采用 Weight Stashing，而不使用 Vertiacl Sync，这也就导致 PipeDream 相当于介于正常的 mini batched SGD 和 DP（使用 BSP 同步）之间的一种方案。
 
@@ -150,7 +150,7 @@ PipeDream 提出的时候 Transformer 还没有火起来，作者针对的主要
 
 如下图 Table 1 所示，作者在两个不同的集群上对几种不同的 DNN 模型进行训练。可以看出，本文的 PipeDream 相比传统的 BSP（DP 训练）最多可以加速 5x。随着训练机器的增加，PipeDream 获得了更高的加速比，近似线性加速。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaibDbmYkDQichKjavhpRvKwk9mXwtyS7nVYuNa4ibTHqdpjGW5vFo22E7J4EmoyfEABD2RhQernLCOw/640?wx_fmt=png&from=appmsg&randomid=5dgqc33n)
+![Image](images/640_7ae4c380ee64.png)
 
 ## 五、Google GPipe
 
@@ -170,15 +170,15 @@ PS：需要说明的是，GPipe 发表于 2018 年 11 月，和 Mesh-TensorFlow 
 - M 个 Micro Batch 以 Pipeline 的方式在 K 个设备上依次执行 Forward和 Backward。
 - 等 M 个 Micro Batch 都计算完后使用 N 个 Sample 对应的梯度统一进行权重 Update 操作（Optimizer Step）。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaibDbmYkDQichKjavhpRvKwkibYMNdngzjFbOXapCXL5QmqsOfa618HLBkwBbSphYXic2Q7ajS55zh8g/640?wx_fmt=png&from=appmsg&randomid=ux5cwp47)
+![Image](images/640_9cc7c3fa29e1.png)
 
 此外，作者也引入了 [1604.06174] Training Deep Nets with Sublinear Memory Cost 中的 Re-Compute 机制（也叫 Activation Checkpointing 或 Activation Recomputing）。具体来说，如下图所示，在每个 Device 中都保留该 Stage 的输入，而不保留中间的 Activation，当 Backward 阶段需要相应的 Activation 时，使用对应的输入重新计算 Activation：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaibDbmYkDQichKjavhpRvKwkwQGKdm7Yiauoe23KlxorvN0ibqqYUdhGx9zCzicFaRvmz0nlZ3TjQicGcg/640?wx_fmt=png&from=appmsg&randomid=axg2ne0h)
+![Image](images/640_0b68ddb1e3ee.png)
 
 当然，由于要在 M 个 Micro Batch 后同步 Update，因此就额外引入了更多的 Bubble，如下图所示。对于 M 个 Micro Batch，K 个 Device，其 Bubble 率为 O((K-1)/(M+K-1))。作者也通过实验验证，当 M>=4K 时可以有效缓解 Bubble 问题。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaibDbmYkDQichKjavhpRvKwkAldI0icSuscoyF0SHas9RrjnpW7pdKWmToRVlbOK7m2Hhtkhe0eNzZA/640?wx_fmt=png&from=appmsg&randomid=vqdsci63)
+![Image](images/640_cf0c6887fd73.png)
 
 ### 5.3 结果
 
@@ -187,7 +187,7 @@ PS：需要说明的是，GPipe 发表于 2018 年 11 月，和 Mesh-TensorFlow 
 - AmoebaNet 模型（CNN）：在各层的参数量、计算量不同，Pipeline Parallelism 导致很难均匀的按层切分，所以只能实现亚线性加速。比如，8 个 TPU，32 个 Micro Batch 可以获得 3.48x 加速。
 - Transformer 模型（NLP）：每层的参数量、计算量相同，切分更加均匀，可以实现近似线性加速比。比如，8 个 TPU，32 个 Micro Batch 可以获得 6.3x 加速。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaibDbmYkDQichKjavhpRvKwkeeFTw4JynKPiau6icueS1gf5OnzgknudCwklg3QnKiblBMrPIialzd4Ljw/640?wx_fmt=png&from=appmsg&randomid=4jcpac41)
+![Image](images/640_2ba91447469b.png)
 
 ## 六、Microsoft PipeDream-Flush
 
@@ -202,7 +202,7 @@ PS：需要说明的是，GPipe 发表于 2018 年 11 月，和 Mesh-TensorFlow 
 - (a)：GPipe 中把 M 个 Micro Batch Forward 计算完之后才会开始 Backward，因此其 Micro Batch 1（简写 M1） 的 Backward 执行时内存中要存储 M1、M2、M3 和 M4 的中间 Activation（不考虑 Recomputing）。
 - (b)：PipeDream-Flush 中，Worker 2 里 M1 的 Backward 计算完成之后 Worker 1 可以马上开始 M1 的 Backward，此时内存中只有 M1 和 M2 的中间 Activation。并且计算完之后可以马上释放 M1 的中间激活，也就是 M2 的 Backward 计算是内存中只有 M2 和 M3 的中间 Activation。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaibDbmYkDQichKjavhpRvKwkI0yiczEmEazbpWOXrvIdNf6EF77reJUO0icxC3YaLOic7EvbJ6mLCquDQ/640?wx_fmt=png&from=appmsg&randomid=w98ugcuw)
+![Image](images/640_515c72217d06.png)
 
 从上也可以看出，PipeDream-Flush 和 GPipe 是数学等价的，它们都能保证和非 Pipeline Parallelism 方式 Mini Batch 的训练完全等价。
 
@@ -210,7 +210,7 @@ PS：需要说明的是，GPipe 发表于 2018 年 11 月，和 Mesh-TensorFlow 
 
 如下图 Figure 6 所示，作者对比了不同切分方式/方案的性能，可以看出，本文的 PipeDream-Flush 方案吞吐明显优于 GPipe：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaibDbmYkDQichKjavhpRvKwkUHn6W3ia8BSEKNRJw7XlgvemElT2wcTGicrseaV7BBZ7pXkVVhxL3U2w/640?wx_fmt=png&from=appmsg&randomid=ojx44uux)
+![Image](images/640_a79c250c6bb1.png)
 
 ## 七、NVIDIA Megatron-LM
 
@@ -231,7 +231,7 @@ PS：本文的一作 Deepak Narayanan 也是上述 Microsoft PipeDream-Flush 的
 - 1F1B：模型被分为 4 个 Stage，Device 1 包含 Layer (0,1,2,3)，Device 2 包含 Layer (4,5,6,7)，Device 3 包含 Layer(8,9,10,11)，Device 4 包含 Layer(12,13,14,15)。
 - Interleaved 1F1B：模型被分为 8 个 Stage，Device 1 包含 Layer (0,1,8,9)，Device 2 包含 Layer (2,3,10,11)，Device 3 包含 Layer(4,5,12,13)，Device 4 包含 Layer(6,7,14,15)。可以看出，相当于将模型切分为 8 个 Stage，但是交替放在 4 个 Device 上，下图中深色代表前 4 个 Stage（Layer 0-7），浅色代表后 4 个 Stage（Layer 8-15）。以此就可以实现更细力度的调度，减少 Bubble。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaibDbmYkDQichKjavhpRvKwkaN7XWmeOR0gDEqDNgjKRxflsB616qeCV9tTLa2gnxkKWFMIdINw9bw/640?wx_fmt=png&from=appmsg&randomid=ffhkswis)
+![Image](images/640_5ccbd7d43838.png)
 
 如下图所示为 1 个 Mini Batch（8 个 Micro Batch）详细的调度过程，其中红色数字表示 Layer ID，白色箭头表示调度顺序。可以看出：
 
@@ -240,7 +240,7 @@ PS：本文的一作 Deepak Narayanan 也是上述 Microsoft PipeDream-Flush 的
 - Memory-Imbalanced：在执行 M1 Layer(14,15) 的 Backward 之前，Device 4 只用缓存 M1/M2/M3/M4 Layer(0,1) 以及 M1 Layer(8,9) 对应的中间 Activation，比 Device 1 少很多，这也就导致 Memory 不均衡的问题。
 - Communication-Inefficient：Interleaved-1F1B 带来的另外一个问题 Communication 的增加，1F1B 时模型分为 4 个 Stage，在 Forward 中只需要 3 个 P2P 通信，而 Interleaved-1F1B 将其划分为 8 个 Stage，Forward 中就需要 8 个 P2P 通信；Backward 的通信也会类似增加，整体来说通信量明显增加。当然，通过充分的 Overlap 也可以避免增加的通信量对训练效率的影响。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaibDbmYkDQichKjavhpRvKwk2PboKiax2rDhxppbtrfblkLZZ7BbJutRibUz36kFm8mvreAQ4xJ2QLRw/640?wx_fmt=png&from=appmsg&randomid=b1omtexr)
+![Image](images/640_5d32aa360eed.png)
 
 综上，Interleaved-1F1B 相比 1F1B 可以降低 Bubble 率，虽然会多占用一些内存，但依然优于 GPipe；然而，Interleaved-1F1B 也会加剧 Memory 不均衡的问题，并且会增加更多的通信量。
 
@@ -250,15 +250,15 @@ PS：Interleaved-1F1B 也有个约束条件，Mini Batch 中 Micro Batch 的个�
 
 如下图 Figure 11 所示，作者首先验证了标准 1F1B 的扩展能力，其中模型包含 24 个 Transformer Layer，共 12.1B 参数量。可以看出，当 Mini Batch Size 比较小（8）的时候随着 PP Stage 个数增加，性能损失比较严重；当 Mini Batch Size 比较大（128）的时候随着 PP Stage 个数增加模型性能并没有受到太大影响。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaibDbmYkDQichKjavhpRvKwknZia4SwefqPt3RI8gMVsHudp9n7PgPbLymLgJOgAPsAfecX4tzePRKQ/640?wx_fmt=png&from=appmsg&randomid=sgsmydn8)
+![Image](images/640_6500ef84be32.png)
 
 此外，作者也使用 175B 模型（96 层） 96 个 GPU 对比了原始 1F1B 和 Interleaved-1F1B 的性能差异。如下图 Figure 12 所示，提出的 Interleaved-1F1B 有比较明显优势，但是随着 Mini Batch Size 的增加（Micro Batch 个数增加），这种差异也在逐渐缩小，但是两者的性能也都有所提升。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaibDbmYkDQichKjavhpRvKwkDqf99IMpzia6mtdsJAHfHOethIBypgHjWNOdSw3cRPuAJVDKVSaNMaA/640?wx_fmt=png&from=appmsg&randomid=1azezkp5)
+![Image](images/640_da3e185fcb42.png)
 
 最后，作者也使用 162.2B 模型在 64 个 GPU 对比了 TP 和 PP 组合的方案。如下图 Figure 13 所示，在 TP=8，PP=8 时性能最优，两头时最差，这也证明了单独使用 TP 或 PP 可能不是最优方案：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaibDbmYkDQichKjavhpRvKwkicOARGFhtP1foiaZZwjQSZN52qiba9ohVDQ8K0oSKicpFT3YVUoXUABtAg/640?wx_fmt=png&from=appmsg&randomid=09jupp4v)
+![Image](images/640_c01b36af580f.png)
 
 ## 八、Sea Zero-Bubble
 
@@ -274,20 +274,20 @@ Zero Bubble 的核心思路是将 Backward 分为两个部分，一部分计算�
 
 如下图 Figure 1 所示，作者将 Backward 分成两个部分，一部分计算输入的梯度，一部分是计算权重的梯度。这里计算输入的梯度有明确的依赖关系，也是链式法则不断传递的基础；而计算权重的梯度却没有明确的依赖，甚至可以滞后很多。此外，三个红色部分计算量相当，这也就是为什么之前 1F1B 或者 Interleaved-1F1B 中 Backward 的长度为 Forward 的 2 倍。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaibDbmYkDQichKjavhpRvKwkmE0IRDQpSfutCKiaqPvnxQ2Oq3sJTOHXiaLfy8ZsutmobFiafdeMEaicNg/640?wx_fmt=png&from=appmsg&randomid=pl5qtzm3)
+![Image](images/640_44a5ec6c89b5.png)
 
 如下图所示为 1F1B 和 本文的 ZB-H1、ZB-H2 的区别，其中 1F1B 中 Backward 没有拆分为两个部分，所以长度时 Forward 2 倍；本文的 ZB 里 Backward 分成了 B 和 W，因此 F、B、W 的长度相同，表示计算 Latency 相当。
 
 - ZB-H1：B 的计算 Latency 更短，也就可以前置，W 的计算没有明显的依赖关系，可以滞后，这样也就提供了更小化 Bubble 的可能。
 - ZB-H2：可以进一步的将 W 的计算滞后，并使用其他 Micro Batch 的 F 和 B 前置来填充 Bubble。只要 Device 里面的所有 Micro Batch 的 W 完成就可以立即开始 Optimizer Step 来更新模型参数，并且 Device 之间不用同步更新。然而，滞后 W 也就意味着相应的 Activation 不能释放，因此 ZB-H2 需要占用更多的内存空间。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaibDbmYkDQichKjavhpRvKwk3HmHia2iadnx82hhz1M2W3290xXvMpQ1HeCh3ztu4efKvbFHQBp4KO9g/640?wx_fmt=png&from=appmsg&randomid=x5xovuns)
+![Image](images/640_8b4a55511ecf.png)
 
 ### 8.3 结果
 
 如下图 Table 4 所示，作者使用不同的模型和 GPU 数目对比了不同的方案，其中 1F1B-I 指的是 Interleaved-1F1B，ZB-2p 和 ZB-1p 为本文提出的方案。可以看出，在几乎不增加内存占用的情况下 ZB-1p 比 1F1B 有一定的优势；如果允许使用更多内存，ZB-2p 的优势会更加明显。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaibDbmYkDQichKjavhpRvKwkUo7JtqqicGFna089qia0O5Zc6cTp2Y302GZIlytseSjNFp0sM1tFU3jg/640?wx_fmt=png&from=appmsg&randomid=b0uqwloh)
+![Image](images/640_75be6f846dc2.png)
 
 ## 九、LLaMA 3.1 Pipeline Parallelism
 
@@ -302,7 +302,7 @@ Zero Bubble 的核心思路是将 Backward 分为两个部分，一部分计算�
 - 在大规模训练中，可以使用比 PP Stage 更少的 Micro Batch，以便满足 Batch Size 的要求。
 - 也可以使用更多的 Micro Batch，以便隐藏 P2P 通信。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaibDbmYkDQichKjavhpRvKwkoM4bGVkH78Sl1EjAAv05ibRdJFBAutbzWhzibPKkgon3hxwEWLCPotHA/640?wx_fmt=png&from=appmsg&randomid=0oulu7db)
+![Image](images/640_77c4dbd65680.png)
 
 为了实现更好的负载均衡，作者在 PP 的第一个和最后一个 Stage 减少了一个 Transformer Layer。
 
@@ -314,7 +314,7 @@ Zero Bubble 的核心思路是将 Backward 分为两个部分，一部分计算�
 
 如下图 Figure 6 所示为 [2211.05100] BLOOM: A 176B-Parameter Open-Access Multilingual Language Model 训练（176B）采用的分布式并行方案：8DP 12PP 4TP，比较清晰的说明了怎么结合几种分布式并行方案。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaibDbmYkDQichKjavhpRvKwk4bfeCaRSkhv4pb8pvUicoub3tXhmzibmxETGV1CUg0QliaLFWCkIC9sRA/640?wx_fmt=png&from=appmsg&randomid=gkwbgtgy)
+![Image](images/640_43392a057aa6.png)
 
 ## 十一、参考链接
 

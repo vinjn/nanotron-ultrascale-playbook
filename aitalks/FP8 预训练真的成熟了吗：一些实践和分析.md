@@ -38,17 +38,17 @@ PS：当然，作者也强调了使用 FP8 进行 LLM 推理是完全没问题�
 
 作者使用微软开源的 https://github.com/Azure/MS-AMP.git（作者使用的是 v0.3.0，当前最新的为 v0.4.0）来进行 FP8 训练验证。如下图 Figure 5 所示，作者使用 8 个 H100 GPU 进行实验，其中 MS-AMP 仅使用 O1 优化，其在 GPT-2 124M 和 LLaMA 120M 上都有比较严重的收敛性问题，在 LLaMA 120M 上使用 FP8 训练甚至无法收敛
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg4Do4UO5yLyGibRmGkM2LtYXiblPtfLcQSMSRichQf60wZFXGefsTmsVmQmpOtwOeffMM4A55m2tia0Q/640?wx_fmt=png&from=appmsg&randomid=0pv2s9hv)
+![Image](images/640_469ce3a318e2.png)
 
 #### 2.2.2 降低 Bit 数实验
 
 如下图 Figure 6 所示，使用 E8M3、E8M4 和 E8M5 来训练 TinyLLaMA 120M 模型，依然会出现 Loss 不收敛的问题：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg4Do4UO5yLyGibRmGkM2LtYVRM629z6b10IGNkvoB4s60rnib94iapTX9kEqCicZOoU4QGQRKX9iaibQzw/640?wx_fmt=png&from=appmsg&randomid=pj3dpboo)
+![Image](images/640_9a27e70d0a17.png)
 
 如下图 Figure 7 所示，进一步使用 E8M3、E8M4、E8M5 和 E8M6 训练 LLaMA 7B，在 E8M5 和 E8M6 时才能保证相对的稳定性：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg4Do4UO5yLyGibRmGkM2LtYDKHjhSZOguZ0wEKPSOf4RFsoKdfiaB3tmBWB1VvyCAfwyTS9zFo3lRQ/640?wx_fmt=png&from=appmsg&randomid=sre35oju)
+![Image](images/640_080299976f2f.png)
 
 ## 三、Megatron-LM FP8 训练验证
 
@@ -62,11 +62,11 @@ PS：当然，作者也强调了使用 FP8 进行 LLM 推理是完全没问题�
 
 如下图所示为一个 1B 模型使用 FP8 训练和 BF16 训练的 loss 对比，总共训练了 21K 个 Step，其 BF16 的 loss 基本上和 FP8 相当，并且收敛趋势完全一致。当然，我们也发现 FP8 的 loss 始终会比 BF16 高一点：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_jpg/zhVlwj96tTg4Do4UO5yLyGibRmGkM2LtYbDxQH8icRibXrAFQ8U6iax3jg6gwkayumYMCP18FfBp95Qk2GFpG8libmA/640?wx_fmt=jpeg&from=appmsg&randomid=mohj91oa)
+![Image](images/640_6e2f4ebbc1c3.jpg)
 
 如下图所示，我们的结论与 Benchmarking Large Language Models on NVIDIA H100 GPUs with CoreWeave (Part 1) | Databricks Blog 中的结论基本一致：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg4Do4UO5yLyGibRmGkM2LtYFRgtabs46ymqVGVFQ81OKTeVTxycHWcQN8XNyGonyDLibj3ctDzXC8A/640?wx_fmt=png&from=appmsg&randomid=ni19tyr8)
+![Image](images/640_81e07b7a05a6.png)
 
 除了 1B 模型之外，我们还验证了 345M 模型和 13B 模型，结论基本与上述一致。
 
@@ -76,9 +76,9 @@ PS：当然，作者也强调了使用 FP8 进行 LLM 推理是完全没问题�
 
 如下图所示，Benchmarking Large Language Models on NVIDIA H100 GPUs with CoreWeave (Part 1) | Databricks Blog 中 1B，3B 和 7B 模型的 FP8 训练相比 BF16 的训练加速比也只有 1.2x-1.3x：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg4Do4UO5yLyGibRmGkM2LtYzFEAU6S5oQes5rylzibzjVXrCJMmxL30zXBaafhlliaUovqpI1c6SnPw/640?wx_fmt=png&from=appmsg&randomid=31abrh0j)
+![Image](images/640_7f947f749496.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg4Do4UO5yLyGibRmGkM2LtYqWcF0cUIic5XHNG9HrWx7EoltJYTACJBVAUJn0PSxziaAkib2cia7iajwng/640?wx_fmt=png&from=appmsg&randomid=nntukand)
+![Image](images/640_635b42946a6d.png)
 
 为了对比不同配置下的性能，我们使用 Transformer-Engine 构建了一个 1 层的 Transformer Block 进行速度对比，同样在 8*H100 上验证，采用 8TP，具体示例可以参考 Getting Started — Transformer Engine 1.8.0 documentation。
 
@@ -88,19 +88,19 @@ PS：当然，作者也强调了使用 FP8 进行 LLM 推理是完全没问题�
 - 蓝色：表示加速比大于 1 并且小于 1.3，通常是模型相当比较大或者 Batch Size 比较大。
 - 绿色：表示加速比大于 1.3，同时是模型很大或者 Batch Size 很大。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg4Do4UO5yLyGibRmGkM2LtYAJxKxjjzYPcYboVt60HRU1cyd2QFeSgWAQBFnh6fJ8r6gD5TXK2s6Q/640?wx_fmt=png&from=appmsg&randomid=0lz9o8jn)
+![Image](images/640_975e0899b611.png)
 
 如下图所示为 Seq Length 为 2048 的情况：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg4Do4UO5yLyGibRmGkM2LtY8BHTWZrSZiaKJDZAeujqUpb0tfbPYKj2jhibDoSiaTPoUjcaa2bHZHfMw/640?wx_fmt=png&from=appmsg&randomid=hz6dd1o7)
+![Image](images/640_75aab4ff7092.png)
 
 如下图所示为 Seq Length 为 4096 的情况：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg4Do4UO5yLyGibRmGkM2LtYicmpDl0Ol6GQwe5pzhFUgManQEIe4WXYWadtOp1WsQEHIaJY19X9fCQ/640?wx_fmt=png&from=appmsg&randomid=8ox92bdb)
+![Image](images/640_f29f60d937b7.png)
 
 如下图所示为 Seq Length 为 8192 的情况：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg4Do4UO5yLyGibRmGkM2LtYFxrv60GElRaS77IUQY221qI5HRySSO1J8QKC7rsz1RNAcibzYZXpx0w/640?wx_fmt=png&from=appmsg&randomid=qvo7o7cl)
+![Image](images/640_d3b7b1dedda8.png)
 
 从上述结论可以看出，要想获得比较大的加速比，通常需要具有比较大的模型或者比较大的 Batch Size、Seq Length。当然，也并不是说 Seq Length 越大越好，可以看出，Seq Length 为 8K 是其加速比反而不如 4K。此外，也可以看出，大部分加速比不超过1.5x，甚至很多不超过 1.3x。（在实际使用中最好经过一些充分的分析和实验）
 
@@ -110,7 +110,7 @@ LLM 预训练的代价很高，比如可能需要上千个 GPU 训练几个月�
 
 为了解决上述问题，零一万物在 零一万物面向万卡集群的 AI Infra 建设 中提到了一个 Trick 的方法。如下图所示，每隔一段时间就会 Load FP8 的 Checkpoint 并使用 BF16 进行训练，验证 Loss 是否和 FP8 训练的 Loss 一致。如果出现不一致的情况，就会使用 BF16 的训练代替 FP8，并在一段时间后继续使用 FP8 训练。最终作者获得了 1.3x 的吞吐提升，不过并没有说明这个提升是纯粹的 FP8 相比 BF16 还是也包含了 BF16 的校验预算。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg4Do4UO5yLyGibRmGkM2LtY6B0qtEG6ibDNJhCZ4GY7c3sIclXkJjUrHKTCjMu9CWjqJlt1RPaF1iaQ/640?wx_fmt=png&from=appmsg&randomid=jtrqjs9x)
+![Image](images/640_e7b9cbc31d8e.png)
 
 ## 四、参考链接
 

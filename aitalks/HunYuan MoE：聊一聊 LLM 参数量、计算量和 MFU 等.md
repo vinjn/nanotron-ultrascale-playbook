@@ -8,11 +8,11 @@
 
 最近在看腾讯最新混元大模型的 Paper 时（[2411.02265] Hunyuan-Large: An Open-Source MoE Model with 52 Billion Activated Parameters by Tencent [1]），看到了如下关于计算 Budget 的公式
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjmQOVyGhApjtooEYKwzVcIu70KN508CY2PtGCickkaWzJkAnlmW35iaI13C1h9FCk2JYZBVr73N1zg/640?wx_fmt=png&from=appmsg&randomid=3dl9b380)
+![Image](images/640_d84aeb70bb7e.png)
 
 由于我们的工作中也会经常根据计算资源 Budget 评估 LLM 预训练时间，而该公式与我们平常的计算方式不太一致；此外，如下图所示，我们也看到很多文章中将上述公式中的第二项理解为长序列情况下 Attention 的额外计算开销，而将 6ND -> 9.6ND 看成 Router 引入的开销，与我们的计算结论也非常不一致，因此本文中我们简单回顾一下相关内容。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjmQOVyGhApjtooEYKwzVcI3HT3pSeaMM9nmYfS6ib8VZl1zibKRvicGpwaY2lffrff1IvibBQFWtjgVQ/640?wx_fmt=png&from=appmsg&randomid=gfca4nhs)
+![Image](images/640_9ec8e0054aad.png)
 
 本文中的很多内容我们在之前的文章中已经介绍过，具体可以参考：
 - [LLaMA 3 技术报告解读：全面梳理 LLM 相关技术栈](http://mp.weixin.qq.com/s?__biz=Mzk0ODU3MjcxNA==&mid=2247487405&idx=1&sn=647217f38d505bbe15619217f17d20fb&chksm=c364c8e8f41341fee131bb89fbf0f82bc48b7fe731865e12bcba0cff356dfc14807a2762b955&scene=21#wechat_redirect)
@@ -30,7 +30,7 @@
 - MHA 蓝框：在 MHA 的最后还有一个矩阵乘操作，对应的 Wout 维度依然为 d x d。
 - FFN 绿框：在标准 Transformer 的 FFN 中有两个 Linear 层，先升维再降维，对应的 Weight 矩阵 W1 和 W2 的大小都是 dFFN x d，并且标准的 dFFN 为 4d，也就是说 FFN 处两个权重矩阵的参数量为 8d x d。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjmQOVyGhApjtooEYKwzVcImnHr2pfmqykvAAEe8K8QiacoqgWzgdBX7rY8txDP7adj5I7GUibsnibrw/640?wx_fmt=png&from=appmsg&randomid=v4la4zol)
+![Image](images/640_e218334f44d2.png)
 
 综上，在标准的 Transformer 模型或者 LLaMA 系列（MHA）中，如果忽略词表、Embedding、LayerNorm 等参数后，总参数量为（所有 Transformer Block）：
 
@@ -42,11 +42,11 @@ N = nlayer *(nmha + nffn) = nlayer *(3d*d + d*d + 8d*d) = 12*nlayer*d*d
 
 在 LLaMA 等模型中在 FFN 中会使用 SwiGLU 激活，这也就导致其会额外多了一个权重矩阵，如下图所示：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjmQOVyGhApjtooEYKwzVcIfo59Ueibf5C9OznMq1mWgyff10uutztCMbm0nLsUSfry1JcW1BH9Y7g/640?wx_fmt=png&from=appmsg&randomid=jnmvsq43)
+![Image](images/640_81b3ef1abd77.png)
 
 在 LLaMA-1 的 Paper（[2302.13971] LLaMA: Open and Efficient Foundation Language Models [3]）中作者提到，使用 SwiGLU 后将 dFFN 从 4d 降低到了 8d/3。这样 3 个权重矩阵的参数量还是 8d，总的参数量依然可以使用 12*nlayer*d*d 预估。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjmQOVyGhApjtooEYKwzVcIqQMrSQicbliasv1b5XrgqPwGibmkOWEticwAXlbqvGyJJTKqPCwZwB8wrQ/640?wx_fmt=png&from=appmsg&randomid=v861c1k1)
+![Image](images/640_894211566669.png)
 
 #### 2.2.2 GQA
 
@@ -54,29 +54,29 @@ N = nlayer *(nmha + nffn) = nlayer *(3d*d + d*d + 8d*d) = 12*nlayer*d*d
 
 在 LLaMA 2 的 Paper（[2307.09288] Llama 2: Open Foundation and Fine-Tuned Chat Models [4]）中，作者提到，为了保持使用 GQA 和使用 MHA 的总参数量保持不变，对于 GQA 模型，会将 FFN Dim 维度乘以 1.3（PS：不确定 1.3 是怎么来的）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjmQOVyGhApjtooEYKwzVcI3aETVOTorq0iaTPdCPXbRC8U9U7u8sMpDI7eJSXM9gy97wRXUsMxwoQ/640?wx_fmt=png&from=appmsg&randomid=fcnzaioz)
+![Image](images/640_413e7ace4f97.png)
 
 比如 LLaMA 2 70B 的 d 为 8192，dFFN 为 28672，如下图所示，大概计算方式为（512 对齐）：
 
 int(int(8192*8/3*1.3+512-1)/512)*512=28672
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjmQOVyGhApjtooEYKwzVcI373yb2pKQicKMj2A8qLwAhPGGH2yx35Rvd42xyUqYBZqFvCCco9P1zg/640?wx_fmt=png&from=appmsg&randomid=3g69ucp9)
+![Image](images/640_a0b324c9ffa5.png)
 
 比较奇怪的的是 CodeLLaMA 34B 中使用了 GQA，但并未乘以 1.3（虽然 LLaMA 2 34B 未开源，但 LLaMA 2 34B 与 CodeLLaMA 34B 一样，也就是说 LLaMA 2 34B 中也未乘以 1.3）。如下图所示，其中 d 为 8192，dFFN 为 22016，大概计算方式为（512 对齐）：
 
 int(int(8192*8/3+512-1)/512)*512=22016
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjmQOVyGhApjtooEYKwzVcIPehMsqlWkTkoRIIrpsmwiaUpT85xh4yYMWDXwWoTiaob6D83OHDhxeng/640?wx_fmt=png&from=appmsg&randomid=scjhau3d)
+![Image](images/640_6665427f24fb.png)
 
 其实关于 dFFN 的数值在 LLaMA 3.1 早期的技术报告中也闹过乌龙，如下图 Table 3 所示，其直接将 dFFN 写成为 3d/2：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjmQOVyGhApjtooEYKwzVcIPO3adUo7M94ZiaBaDs1fK2BKvmcyzPOJIvH28sZBebVGWw46jTEXicmw/640?wx_fmt=png&from=appmsg&randomid=9bh4aetm)
+![Image](images/640_e350d93f97ad.png)
 
 如下图 Table 3 所示，Meta 在 Arxiv 上的 Paper（[2407.21783] The Llama 3 Herd of Models [5]）中已经修正了这个问题，比如对于 8B 模型，d 为 4096，dFFN 为 14336，大概计算方式为（512 对齐）：
 
 int(int(4096*8/3*1.3+512-1)/512)*512=14336
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjmQOVyGhApjtooEYKwzVcIbibSXCvlXuibq0r8hFcFZp4hfOJlB7HEH3o2jxeU7sbg3z8quicibrEs5w/640?wx_fmt=png&from=appmsg&randomid=ktxx8j25)
+![Image](images/640_22a26f71016c.png)
 
 #### 2.2.3 LLaMA 3
 
@@ -101,11 +101,11 @@ N = nlayer *(2d*d + 2d*d*kv/h + 3d*dFFN)+2*Vocab*d
 - MHA Attention（绿色方块）：2 x (l x d/h x l + l x d/h x l) x h = 4 x d x l x l。需要说明的是，如果是 Decoder（LLM），由于 Causal Mask 的存在，此处的计算量应该减半，也就是 2 x d x l x l。
 - FFN 绿框：W1 和 W2 对应的计算量为 2 x (dFFN x d x l) 和 2 x (d x dFFN x l)。LLaMA 的 SwiGLU 类似。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjmQOVyGhApjtooEYKwzVcImnHr2pfmqykvAAEe8K8QiacoqgWzgdBX7rY8txDP7adj5I7GUibsnibrw/640?wx_fmt=png&from=appmsg&randomid=46c13uny)
+![Image](images/640_60f098c73bdd.png)
 
 也可参考 [2302.14017] Full Stack Optimization of Transformer Inference: a Survey 中的 Table 2，其中列出了相应矩阵乘操作的 Dim，也就可以推出对应的计算量：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjmQOVyGhApjtooEYKwzVcI9oibsu7V0icXIWiblZmCDZmgxIXhX0PAm3O1kEreqspSPnygmloZIEMJQ/640?wx_fmt=png&from=appmsg&randomid=kntpai1n)
+![Image](images/640_ca21e5bb62a0.png)
 
 综上，在标准的 Transformer 模型或者 LLaMA 系列（MHA）中，如果忽略词表、Embedding、LayerNorm 等模块，总计算量为（所有 Transformer Block）：
 
@@ -127,7 +127,7 @@ PS：其实不管模型中是否使用 GQA，是否使用 SwiGLU 或者像 LLaMA
 
 在 Scaling Law 的原始 Paper（[2001.08361] Scaling Laws for Neural Language Models [6]）中也有类似的计算公式，如下图 Table 1 所示，可以看出其推导结论与上述我们的计算方式也基本一致，只不过红框中为每个 Token 的计算量：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjmQOVyGhApjtooEYKwzVcI4UUgYVVOBrOU4HxdfVowcYFXDFH4dFTODjY90HeKSseYR58akhZQ7w/640?wx_fmt=png&from=appmsg&randomid=hw889w70)
+![Image](images/640_cd2006db4fab.png)
 
 假设数据集中总共包含 D 个 Token，对于序列不是特别长的场景，所有 Token Forward的计算量可以近似为 C=2*N*D。
 
@@ -135,7 +135,7 @@ PS：其实不管模型中是否使用 GQA，是否使用 SwiGLU 或者像 LLaMA
 
 模型的训练包含 Forward 和 Backward 过程，如下图 Figure 1 所示，Backward 过程实际上包含两部分，一部分是对输入的梯度（链式法则），一部分是对权重的梯度。其实这两部分主要的计算量都是矩阵乘法，并且大小与 Forward中的大小一致，因此往往会直接近似 Backward 的计算量为 Forward 的 2 倍。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjmQOVyGhApjtooEYKwzVcILh9ZtLFSibO2V6jiah5EicScjZp4TNiavOAyLPia6jeC8icMErNTxZeKy7uw/640?wx_fmt=png&from=appmsg&randomid=cns5z1pw)
+![Image](images/640_74cdbee2cb71.png)
 
 综上，训练总的计算量（参数更新计算量比较小，这里先忽略）为：
 
@@ -149,7 +149,7 @@ C = 2*Forward + Backward = 8*N*D。
 
 MoE（Mixture of Experts）与标准 Transformer 模型的不同在于：MoE 模型将 Transformer 模型的 FFN Block 替换为 MoE Block，其中 MoE Block 由多个 Expert 组成，每一个 Expert 都是标准的 FFN，实际计算时每个 Token 都会经 Router 选择 1 个或多个 Expert，然后执行类似 FFN 的计算。如下图所示（图片来自 A Visual Guide to Mixture of Experts (MoE) [8]）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjmQOVyGhApjtooEYKwzVcIrYCkrrgy4nmiaL3U6dzEkb86yiaoLP6Qxy7mLHBd6nuBRAYbT6cqicibicg/640?wx_fmt=png&from=appmsg&randomid=w3xwto01)
+![Image](images/640_73993d870f17.png)
 
 由于 Router 的计算量通常很小，常常可以忽略。如果不考虑 Router 引入的计算量，由于上述每个 Expert 实际上与非 MoE 模型的 FFN 一样，因此也可以用同样的方式推导出训练时每个 Token 的计算量依然为 C=6*N*D，只不过这里的 N 不再是整个模型的参数量，而是每个 Token 激活的参数量。
 
@@ -160,7 +160,7 @@ MoE（Mixture of Experts）与标准 Transformer 模型的不同在于：MoE 模
 - cf：表示除 Router 之外的计算量与参数量的比值，也就是我们上述得到的 6。
 - cr：表示 Router 的计算量与参数量的比值，对于比较简单的 Router，通常为 6-20。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjmQOVyGhApjtooEYKwzVcIN3Mibe2oIiaYx72mTOjUSrmSLicL2CEvnFofTRvHqZCVe7wZbc69tw3pQ/640?wx_fmt=png&from=appmsg&randomid=y327oufu)
+![Image](images/640_2bc401a29923.png)
 
 从上述介绍也可以看出，通常 E*G 远小于 dmodel，因此也就可以忽略 Router 处的计算量。
 
@@ -181,13 +181,13 @@ MoE（Mixture of Experts）与标准 Transformer 模型的不同在于：MoE 模
 
 64*(2*6400*6400+2/20*6400*6400+3*2*6400*18304)+128512*6400=51.3B
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjmQOVyGhApjtooEYKwzVcILFI1J3K95hPL6zMyzHDlWib75ib5vPIFfUGtZGKOHHAh5plhnPNU4CqA/640?wx_fmt=png&from=appmsg&randomid=74r9xsar)
+![Image](images/640_5396346fb00c.png)
 
 ### 2.7 Hunyuan MoE 计算量
 
 我们重新回顾 Hunyuan MoE 中的计算量 C，如下图 Table 1 所示为 Hunyuan MoE 的模型配置。如下图所示，作者提到其序列长度可以达到 8K，32K，256K。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjmQOVyGhApjtooEYKwzVcIu70KN508CY2PtGCickkaWzJkAnlmW35iaI13C1h9FCk2JYZBVr73N1zg/640?wx_fmt=png&from=appmsg&randomid=xbtkukj3)
+![Image](images/640_8d4b3cdcdb01.png)
 
 这里以最短的 8K 序列长度为例。由于我们之前计算过，每个 Token 在 Attention 处忽略的计算量为 2*nlayer*nctx*d，相应可以得出 Attention 额外的计算量为：
 
@@ -218,7 +218,7 @@ nctx = 3.59N/6/6400/64 = 74938 = 73K
 - 第二行的 2 表示将 Attention Block 和 FFN Block 都分别看成两组，比如 Attention 中 K 和 V 是一对，Q 和 Out 是一对，Attention 的 Q x K 和 Score x V 是一对。
 - 第三行的 2 表示矩阵乘法中的乘和加，如果从单个 Token 单个矩阵乘的视角，计算量就是参数量的 2 倍。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjmQOVyGhApjtooEYKwzVcI47HYSJhkv8HPkiaf7QDLVGqNEgILdoc3GnN3daxM4XqJTKbISXP7kEQ/640?wx_fmt=png&from=appmsg&randomid=a715maqr)
+![Image](images/640_609d0af32559.png)
 
 ## 三、LLM 训练效率&训练预估
 
@@ -231,7 +231,7 @@ nctx = 3.59N/6/6400/64 = 74938 = 73K
 
 如下所示为 Maximizing training throughput using PyTorch FSDP [11] 中 Meta 在 LLM 训练时的 MFU 和 HFU。对于 LLM 训练任务而言，通常在 A100/A800 GPU 集群中，MFU 可以达到 50%+，甚至接近 60%；而在 H100/H800 GPU 集群中， MFU 往往不超过 50%。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjmQOVyGhApjtooEYKwzVcIIKlelibLM47BGj2dZyhqYCibkhdBA82pjRSiaxq0UY547KVDzl3OZm5sQ/640?wx_fmt=png&from=appmsg&randomid=4uvl4mwk)
+![Image](images/640_2226dabf37c7.png)
 
 ### 3.2 175B 训练实际预估
 
@@ -255,11 +255,11 @@ nctx = 3.59N/6/6400/64 = 74938 = 73K
 
 其中一个原因可能是其提到的多达 466 次的训练中断，其中包括 47 次有计划中断，以及 419 次的预期外中断。在非预期中断中，78% 是硬件问题，例如 GPU 或物理机其他组件的异常，而 GPU 相关问题占到 58.7%。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjmQOVyGhApjtooEYKwzVcIZTmibwOYFibOnLl5tc62FjLnyulmDribjL4HuBCeQcDicicLIO0QWBdiaHqQ/640?wx_fmt=png&from=appmsg&randomid=m2oplwst)
+![Image](images/640_a9d33a2ff1c3.png)
 
 另一个可能的原因是不同训练阶段使用了不同规模的 GPU 和数据量。比如，如下图 Table 4 所示涉及到 3 种不同的配置：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjmQOVyGhApjtooEYKwzVcIbycwria6pED17dicGq9hSbr28FSve7zL8no0nmYSetuEZMibPh33No3Dg/640?wx_fmt=png&from=appmsg&randomid=8nkic02f)
+![Image](images/640_aa655de684e7.png)
 
 但上述配置并不能与作者介绍的 405B 模型预训练阶段对应。比如，作者提到，在训练的早期阶段使用比较小的 Batch Size以提高训练稳定性，然后会增加 Batch Size 以提高训练效率。具体来说：
 
@@ -272,7 +272,7 @@ nctx = 3.59N/6/6400/64 = 74938 = 73K
 
 其实很多 Paper 中也会简单提到其训练模型规模、训练资源、时长、MFU 等指标，但往往一笔带过，如下所示为一些示例：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjmQOVyGhApjtooEYKwzVcI2lMjcHD8EEAlE23iba7lTxicPNfxTm8zZnKHHSicPgHnPmuSAFGkGSfdA/640?wx_fmt=png&from=appmsg&randomid=ryqw2ku8)
+![Image](images/640_99a03922b562.png)
 
 以上图中 Nemotron-4 340B 的相应配置可以预估出对应的训练时长，可以看出与实际时长非常接近：
 

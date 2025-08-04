@@ -33,7 +33,7 @@
 
 我们之前对投机解码（Speculative Decoding）方案做过比较多的介绍，从 Parallel Decoding 到 Google 的 Speculative Decoding，再有 SpecInfer、Medusa、Lookahead Decoding，以及最近阿里的 Lookahead。最近看到也有一篇关于 Speculative Decoding 的综述文章 [2401.07851] Unlocking Efficiency in Large Language Model Inference: A Comprehensive Survey of Speculative Decoding，如下图Figure 3 所示：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaurWZjZ8rlRBqXQlJ1lXWRhaW0nOI7jxYQYeicocH99TAMkE8oibsnuRGFIqk38oF5eonD4BArzoXg/640?wx_fmt=png&randomid=kzj8gg3x)
+![Image](images/640_863ba1a037c0.png)
 
 这里我们也对投机解码相关工作进行总结，更多的是汇总我们之前接触过的或开源的方案，并对各种方案进行比较。
 
@@ -46,15 +46,15 @@
 - Prefill：根据输入 Tokens（Recite, the, first, law, of, robotics） 生成第一个输出 Token（A），通过一次 Forward 就可以完成，在 Forward 中，输入 Tokens 间可以并行执行（类似 Bert 这些 Encoder 模型），因此执行效率很高。
 - Decoding：从生成第一个 Token（A） 之后开始，采用自回归方式一次生成一个 Token，直到生成一个特殊的 Stop Token（或者满足用户的某个条件，比如超过特定长度） 才会结束，假设输出总共有 N 个 Token，则 Decoding 阶段需要执行 N-1 次 Forward，这 N-1 次 Forward 只能串行执行，效率很低。另外，在生成过程中，需要关注的 Token 越来越多（每个 Token 的生成都需要 Attention 之前的 Token），计算量也会适当增大。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_gif/zhVlwj96tTjt3FwFLA5MaoVRPfcsfSz0fbOMNSVvxvzFI0IfKBf8M3UKdabPUoGEXpV6HrPQAKFv2A5cMj8aeQ/640?wx_fmt=gif&randomid=2bd938a9)
+![Image](images/640_6a497b03b2d7.gif)
 
 ### 2.2 KV Cache
 
 如下图所示，在 LLM 推理中最关键的就是下图中的 Multi-Head Attention，其主要的计算集中在左图中灰色的 Linear（矩阵乘）和 Scaled Dot-Product Attention 中的 MatMul 矩阵乘法：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaurWZjZ8rlRBqXQlJ1lXWRvyWTcwqzI2CnSzy3BDiaYF3q2TNYTt0tic7RRGQmFgbuQyFfqvFicgkCQ/640?wx_fmt=png&randomid=dvkc0c03)
+![Image](images/640_02768f7f7d68.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaurWZjZ8rlRBqXQlJ1lXWRLGc3HblALOWiaTMWec5N9YicTDIR935Nje9lG6xgqyf2rtHVtNk69AMA/640?wx_fmt=png&randomid=i192f3v9)
+![Image](images/640_5241ea3faf63.png)
 
 如上右图中的 Mask 是一个下三角矩阵，也是因为这个下三角矩阵实现了 LLM Decoder 的主要特性，每个 Token 都只能看到当前位置及之前的 Token。
 
@@ -66,7 +66,7 @@
 
 在 Decoding 阶段 Token 是逐个生成的，上述的计算过程中每次都会依赖之前的结果，此时最简单的思路就是 Cache 之前计算过的中间结果，在计算当前 Token 时直接从 Cache 中读取而不是重新计算，如下图所示，上面是没有 Cache 的情况，下面是有 Cache 的情况：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_gif/zhVlwj96tTiaurWZjZ8rlRBqXQlJ1lXWRlUL344xGr1CwaGQatZOCiamw6Vx54OeCTiclibweX3V8CEthHFqR4vX7g/640?wx_fmt=gif&randomid=p3wwqmhr)
+![Image](images/640_c950ba94fcd8.gif)
 
 如下表所示，在 T4 GPU 上以 GPT2 模型为例验证有无 Cache 对推理时延的影响，其加速效果非常明显，因此也成为 LLM 推理的标配：
 
@@ -82,7 +82,7 @@
 
 除此之外，Transformer 模型中的另一个关键组件 FFN 中主要也包含两个矩阵乘法操作，但是 Token 之间不会交叉融合，也就是任何一个 Token 都可以独立计算，因此在 Decoding 阶段不用 Cache 之前的结果，但同样会出现矩阵乘矩阵操作降级为矩阵乘向量。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaurWZjZ8rlRBqXQlJ1lXWRcsAQDWQEGY6oR76U34QXhFMDNjac6Yz2iafuxGbMzCuRoMZ8MwWcQkg/640?wx_fmt=png&randomid=ykiuiehq)
+![Image](images/640_1fba6f664c11.png)
 
 矩阵乘向量操作是明显的访存 bound，而以上操作是 LLM 推理中最主要的部分，这也就导致 LLM 推理是访存 bound 类型。
 
@@ -91,13 +91,13 @@
 - 三角表示 Prefill 阶段：假设 Batch size 为 1，Sequence Length 越大，计算强度越大，通常都会位于 Compute Bound 区域。
 - 圆表示 Decoding 阶段：Batch size 越大，计算强度越大，理论性能峰值越大，通常都会位于 Memory Bound 区域。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaurWZjZ8rlRBqXQlJ1lXWRGQxt8K17135T0aUZsqicAbsp8gKfHTa1U07eLleo3HAsicEqWVdicL0wA/640?wx_fmt=png&randomid=rhtfqxzk)
+![Image](images/640_a13bc0f9a026.png)
 
 ### 2.4 Decoding 阶段优化
 
 如下图 Figure 4 所示，Prefill 阶段在比较小 Batch Size 下可以获得比较大的计算强度，相应的吞吐也很高；而 Decoding 阶段需要比较大的 Batch Size 才能获得相对高的计算强度及吞吐（图片来自 [2308.16369] SARATHI: Efficient LLM Inference by Piggybacking Decodes with Chunked Prefills ）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaurWZjZ8rlRBqXQlJ1lXWRCrv6BLiazHyFKGXrL28uzeP4I5c08g5zgkdUtGJ5gfpxHlW1pTibCh9g/640?wx_fmt=png&randomid=06fg1gjt)
+![Image](images/640_5ced2a5879d6.png)
 
 针对 Decoding 阶段计算强度比较低的情况，有两种优化的思路：
 
@@ -106,7 +106,7 @@
 
 如下图所示为 Batch size 为 1 和 512 时 LLM 中几个主要 OP 的计算耗时，可以看出，将 Batch size 从 1 增加到 512，计算量增加 512 倍，但是其整体时间只增加为原来的 3 倍左右（图片来自 openppl-public · GitHub），如果平均每次验证通过 5 个 Token，那么总的 Decoding Step 数目将降为 1/5，总的 Decoding 时间变为原来的 3/5（忽略其他部分开销），那么即可以实现单一请求的加速：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaurWZjZ8rlRBqXQlJ1lXWRxVyvic5ibpYHicNI8KUVIFHJIK11XCI6EGNbeo0mk1qBcXE3QjYia4icMag/640?wx_fmt=png&randomid=qdlw5wix)
+![Image](images/640_ea848129d0a1.png)
 
 实际的生成环境中可能要综合考虑上述的两种优化思路，比如如果不同用户间 Continuous Batching 已经达到比较大的 Batch Size，各种矩阵运算接近或超过 Roofline 的交叉点，那么再使用 Speculative Decoding 并不会有什么收益，这一点也是当前提到投机采样最容易被忽略的。
 
@@ -142,7 +142,7 @@ Parallel Decoding 的第一个工作是 2018 发表在 NIPS 上的 Blockwise Par
 
 假设上一步生成了 10 个 Token，在第 5 个 Token 出不一致，那么就可以将前 4 个 Token 和输入合并，然后开始下一次生成。还是用前两步的例子，因为第三组 car 和 bus 不一致，因此只接受 in 和 the，则下一次迭代的输入为 I saw a dog ride in the。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaurWZjZ8rlRBqXQlJ1lXWRKuopcRj20fNIMsf5xXUTOojicmhshh4UxmbBXDojh1NJVEQKblAQibBA/640?wx_fmt=png&randomid=z27woavr)
+![Image](images/640_63bde01b6f41.png)
 
 如下图 Figure 3 所示为模型的实现方式，在模型的最后一个 Transformer Decoder 层额外的加几个 head，分别为 p2，...，pk：
 
@@ -150,11 +150,11 @@ Parallel Decoding 的第一个工作是 2018 发表在 NIPS 上的 Blockwise Par
 - 在 Blockwise Parallel Decoding 的 Verify 阶段，需要上一步中生成的 K 个 Token 里选择符合要求的最长前缀，因为可以一次生成多个 Token（<=K），所以可降低整体生成的步数，也就帮助降低整体时延。
 - 在 Blockwise Parallel Decoding 的 Accept 阶段，因为只接受第一个不一致的 Token 之前的 Token，并且验证时使用的就是原始模型 p1 ，这也就保证了最终结果是与原始序列预测的结果是完全一致的（与 Greedy Decoding 结果完全一致）。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaurWZjZ8rlRBqXQlJ1lXWR1zzicG5UKQPsjRC3S3OuSLHeXAVvtfZXB8jxjr5XaqDW8wcByjk57yA/640?wx_fmt=png&randomid=or8gbzhc)
+![Image](images/640_f8cfb465e65b.png)
 
 并行验证过程如下所示，经过一次前向推理即可验证获得新的 in、the、car 三个 Token：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaurWZjZ8rlRBqXQlJ1lXWR5RfQH9M3zibZmS3UOsHKBHFQeAXOIpN4voNewmxDtG0nJDhJNBZs9Lw/640?wx_fmt=png&randomid=vcb070qu)
+![Image](images/640_40b9e52adfc7.png)
 
 综上所述，由于 Predict 阶段 p1 和 Verify 阶段都使用的原始模型，因此在理想情况下（每次生成的 K 个 Token 都能接受），总的解码次数从 m 降低到 2m/K。
 ### 3.3. 评估结果
@@ -168,11 +168,11 @@ Parallel Decoding 的第一个工作是 2018 发表在 NIPS 上的 Blockwise Par
 - Fine Tuning ▲：表示不冻结 backbone，使用原始数据，对应的平均接受 Token 数相对增大，最大为 3.01
 - Both ◆：表示不冻结 backbone，使用蒸馏数据，对应的平均接受 Token 数明显增大，最大有 4.95，BLEU 得分相应提高
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaurWZjZ8rlRBqXQlJ1lXWRxpiccVGb5FlCQ7AxuyJibADl5kIP6ldPl4aCBJShomqEpQTGOxeWAZlw/640?wx_fmt=png&randomid=f7ikx70p)
+![Image](images/640_27a733e2f425.png)
 
 对应上述的机器翻译任务，当 k=8 时，对应的平均接受 Token 数为 4.7，相应的整个任务的加速比达到 3.3 倍。如下图所示：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaurWZjZ8rlRBqXQlJ1lXWROrZBGdJxIx52z5Hv08cAuDZmujfG9pZ2nlFaw0YuKN06uTLic9icQHTw/640?wx_fmt=png&randomid=jc1fv93h)
+![Image](images/640_f4e463680be7.png)
 
 ## 四、投机解码（Speculative Decoding）
 
@@ -188,11 +188,11 @@ Google 和 Deepmind 于 2022 年提出投机采样方案 Fast Inference from Tra
 2. 使用目标模型 Mp 来并行的评估上一步 Mq 生成的 Token，接受能够满足同一分布的 Token
 3. 从调整后的分布中生成一个额外的 Token（根据第一个出错 Token 之前的 Token 生成），来修复第一个出错的 Token，如果所有 Token 都被接受，则额外新增一个新生成的 Token，以此来保证每次至少生成一个新的 Token。这样，即使在最坏情况下，目标模型相当于完全串行运行，运行次数也不会超过常规模式直接串行运行目标模型的次数；当然，也很可能能够生成更多的 Token，最多可以达到 𝛶+1，这取决于Mp 和 Mq 的相似度。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaurWZjZ8rlRBqXQlJ1lXWRELKYL0YxIsILtlVWl0CpHCZZjI9L8WHRF6trOsxibtVhXN5BqOrq69g/640?wx_fmt=png&randomid=egw43swq)
+![Image](images/640_d2d86a54febf.png)
 
 如下图 Figure 5 所示，作者提供了一个简单的示例，包含不同的 𝛶（验证的 Token 数目），其中紫色为执行目标模型 Mp 的 decoder，蓝色为执行近似模型 Mq 的 decoder，黄色和橙色为调用 encoder。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaurWZjZ8rlRBqXQlJ1lXWRYd6QvpdyAZ81LHdBXU7wej8QteQMrWe29ibBaVCSsG4xPfJgwUFA54w/640?wx_fmt=png&randomid=99rutmi2)
+![Image](images/640_2a74afc5323e.png)
 
 ### 4.3. 评估结果
 
@@ -211,7 +211,7 @@ Google 和 Deepmind 于 2022 年提出投机采样方案 Fast Inference from Tra
 
 结果如下 Table 2 所示，最小的近似模型 T5-Small（75M）获得最高的加速比（模型很小，推理最快，而且模型生成质量相比 Base 模型没有下降太多，𝛼 表示高效模型的质量与目标模型的接近程度），比如 T5-Small 在 EnDe 任务上，当 temp=0 时获得 3.4 倍加速，temp=1 时获得 2.6 倍加速：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaurWZjZ8rlRBqXQlJ1lXWRpqCH5gfS7Rmjog9UznicoIOBxbhZ4WCD5Uh2ia4KCDo8BDSicgmFCOoTA/640?wx_fmt=png&randomid=svf2j3x3)
+![Image](images/640_64a8f22addcf.png)
 
 如下所示为 Huggingface 官方的测试结果（Assisted Generation: a new direction toward low-latency text generation）：
 - Assistant Model
@@ -232,7 +232,7 @@ SpecInfer（[2305.09781] SpecInfer: Accelerating Generative Large Language Model
 
 作者评估显示，相比现有的 LLM 服务框架（23.05 以前），SpecInfer 分布式推理性能可以提升 1.3 - 2.4 倍，如果使用 offload 机制，可以提升 2.6-3.5 倍。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaurWZjZ8rlRBqXQlJ1lXWRTjChTdXQLqZy7ZcAibzqaOlGckFEhJxh8qv52u6ic1P7HskmhpzalnuA/640?wx_fmt=png&randomid=pbsi45x2)
+![Image](images/640_71d2450f5960.png)
 
 ### 5.2. 实现细节
 
@@ -251,17 +251,17 @@ SpecInfer 的另一个主要工作是设计了 Tree Based Parallel Decoding 机�
 - Sequence-based Decoding：最简单、直观的方案为并行处理 3 个子序列（一个子序列可以经过一次 LLM decoding step 完成），此方式会导致极大的浪费，比如每个子序列都计算并保留了 t2 的 key 和 value 的 Cache。
 - Tree-based Parallel Decoding：通过 Attention Mask 的方式，一次验证所有的 Token，计算量小，空间占用也少。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaurWZjZ8rlRBqXQlJ1lXWRiboPTic05MDyAdPbvOSEoR7UaS4XlMquvHWS2wkdZWEoX7f5w5kzEu4Q/640?wx_fmt=png&randomid=m9aju01z)
+![Image](images/640_9ddcaab8669e.png)
 
 ### 5.3. 评估结果
 
 作者验证了端到端分布式推理性能，在 OPT-30B、LLaMA-30B 和 LLaMA-65B 上比较了 SpecInfer 和不同推理框架的性能，比如 vLLM，Huggingface Text Generation Inference（TGI）以及 FasterTransformer。所有模型都是在 2 个 4 x A10 GPU 的机器上分布式运行，机间使用 Pipeline 并行，机内使用 Tensor 并行，使用的是半精度计算。vLLM 和 TGI 不支持流水线并行，也不支持多机，因此这两个框架在单机运行。如下图 Figure 7 所示，提升还是很明显的，在单节点相比现有系统提升 1.3 - 2 倍，在 2 节点提升 1.4 - 2.4 倍：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaurWZjZ8rlRBqXQlJ1lXWR1OHNZMRGQHnLibytCNFYuIibE3y0mNrkicZrgwD8b2ZZxibL3nnQrlFsmQ/640?wx_fmt=png&randomid=4i783ngs)
+![Image](images/640_94fa21008ac1.png)
 
 如下图 Table 1 所示，作者使用 LLaMA-160M 作为 SSM，使用 LLaMA-7B 作为 LLM 验证了 Token 的接受率，其中 Token 树中有 16 个 Token，随着 SSM 数量增加（1->5），平均接受 Token 数从 2.92 增加到 3.58，平均接受率在 1/5 左右。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaurWZjZ8rlRBqXQlJ1lXWRibAeTIkazhJ8JkiaKZOj3TIH3ib75nc0iaZxs4Pc9sEo4a65z4DpDfxDXQ/640?wx_fmt=png&randomid=n2xp81rp)
+![Image](images/640_6abefc706a12.png)
 
 ## 六、Medusa
 
@@ -275,11 +275,11 @@ Medusa（[2401.10774] Medusa: Simple LLM Inference Acceleration Framework with M
 
 如下图所示，Medusa 也是在 LLM 的最后一个 Transformer Layer 之后保留原始的 LM Head，然后额外增加多个 Medusa Head，获得多个候选的 Token 序列，经过一次 Decoding Step 即可完成验证。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaurWZjZ8rlRBqXQlJ1lXWRYKMS1ZxYXUswibPnj9nrIIn0RAoPOCLWoAT7VianNJI6s9P17A70vo2g/640?wx_fmt=png&randomid=m02jm06i)
+![Image](images/640_32a96404b17e.png)
 
 Medusa 中的 Attention Mask 矩阵如下图所示，相当于 Head 1 在下一个位置生成 2 个可能的 Token（It 和 I），Head 2 在下下一个位置生成 3 个可能的 Token（is，’ 和 the），这样下一个位置和下下一个位置就有了 2 x 3 = 6 种可能的候选序列，如下图左侧所示，而其对应的 Attention Mask 矩阵如右侧所示：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaurWZjZ8rlRBqXQlJ1lXWRX6akKnN9jPy2hBn7YpmdZvNrlibfdLseOuia2cqXibZEGxdjUc7gXe6mw/640?wx_fmt=png&randomid=trlv6lku)
+![Image](images/640_e8ca142de42b.png)
 
 那么 Token 树中有多少个 Token 呢？如上图所示的 Token 树中有 2 + 2 x 3 = 8 个 Token。假如有 3 个 head，第一个 head 有 3 个候选 Token，第二个 head 有 5 个候选 Token，第三个 head 有 7 个候选 Token，也就意味着将有 3 x 5 x 7 = 105 个候选 Token 序列，合并成 Token 树后将有 3 + 3 x 5 + 3 x 5 x 7 = 123 个 Token。这将极大的增加计算量，因为计算量基本与待验证 Token 的数目成正比，也就是说为了确定 3 个 Token（3 个 head），计算量扩大了 123/3 = 41 倍。虽然说 LLM 推理阶段当 Batch size 比较小时 GPU 是明显的 IO bound，可以利用空闲的算力，但也不意外着可以无限制的增加计算量。
 
@@ -287,11 +287,11 @@ Medusa 中的 Attention Mask 矩阵如下图所示，相当于 Head 1 在下一�
 
 为了模拟真实场景的设置，作者使用 MT bench 来进行评估，从下图的结果可以看出，Medusa-1 通过比较简单的设置即可获得 2.18x 和 2.33x 的加速，并且 33B 的模型速度和原始方案的 13B 模型速度相当；而 Medusa-2 进一步提升速度，可以加速 2.83x。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaurWZjZ8rlRBqXQlJ1lXWR6OcVn8hfpAuflBfOLxK0EfTSGJ19Ms3ibHxS8xmB54Ih2eGOibhRBicKg/640?wx_fmt=png&randomid=q3pv7eis)
+![Image](images/640_364f3f33a8ad.png)
 
 作者同样针对不同的验证 Token 数目进行了验证，如下图所示，当待验证 Token 数为 50-100 时获得最大的速度，但是其加速比只有 2.5-3x。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaurWZjZ8rlRBqXQlJ1lXWRSNWJyVmhFib09yRIu6tKkic0RUJUszgcA4JqMAkfOzb6ZWYqxl4xb8Fw/640?wx_fmt=png&randomid=0hu8rcwg)
+![Image](images/640_aaab3b106f48.png)
 
 ## 七、REST（基于检索）
 
@@ -303,21 +303,21 @@ REST（[2311.08252] REST: Retrieval-Based Speculative Decoding）和 Medusa 是�
 
 其思路比较简单，首先使用输入的 Prompt 检索数据库（可以自定义），然后使用检索出的结果构建草稿 Token 树，最后和 Medusa 一样使用 Tree Attenion 通过一次 Decoding 阶段验证：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaurWZjZ8rlRBqXQlJ1lXWRyJGP1NqunlQub3FpxjlPvdliccQsg7bxkBH5LkWG5YoGzwtPebYZWBg/640?wx_fmt=png&randomid=yoof36oy)
+![Image](images/640_3e9b7887d876.png)
 
 ### 7.3. 评估结果
 
 如下图 Table 1 所示，作者使用 HumanEval 和 MT-Bench 对提出的 REST 进行了评估，在 CodeLlama 模型上可以获得 2.26-2.36x 的加速，在 Vicuna 模型上可以获得 1.62-1.77x 的加速：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaurWZjZ8rlRBqXQlJ1lXWRWBTTDRMMOExWhQ7t2nn4aM8kvMO7ic4QaUKeblrVdBQyVBY7Ofnp5qA/640?wx_fmt=png&randomid=gshgali1)
+![Image](images/640_840104d4e09c.png)
 
 如下图 Figure 2 所示，作者验证了知识库大小对平均接受 Token 数的影响，可见知识库越大，接受的 Token 越多，但 25GB 的知识库平均也只接受 2.6 左右 Token：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaurWZjZ8rlRBqXQlJ1lXWR3JWjLxMtELIqWcgfWZ8LOx9HM4m5MXrxicsBs8znTZUBopCiaUI1aD4A/640?wx_fmt=png&randomid=ay045ais)
+![Image](images/640_f8e23ac5c061.png)
 
 如下图 Figure 3 所示，作者也验证了草稿 Token 数目对平均接受 Token 数目的影响，可见草稿 Token 越多，平均接受 Token 数目越高。但 50 个草稿 Token 也只接受 2.6 左右，200 个草稿 Token 只接受 2.8 左右，性价比相对比较低：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaurWZjZ8rlRBqXQlJ1lXWRMX7DVettMGp5TXHzYibksxnXfKqeDeTTFicQTsazuQl01HhHT0Ec5sicA/640?wx_fmt=png&randomid=gpb52qaf)
+![Image](images/640_4db2f776392f.png)
 
 ## 八、前向解码（Lookahead Decoding）
 
@@ -327,7 +327,7 @@ Lookahead Decoding（Break the Sequential Dependency of LLM Inference Using Look
 
 如下为一个使用前向解码加速 LLaMA-2-Chat 7B 生成的示例，可以看出，标准 Autoregressive Decoding 生成速度为 34.83 tokens/s，Lookahead Decoding 的生成速度为 60.69 tokens/s，几乎是原来的 2 倍，并且生成的结果完全一样，图中蓝色表示猜中的 Token：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_gif/zhVlwj96tTjGdkjp9ZNBuZeMcCmvm4D2KvQ7JGiaNfcp8S7XmSmPz3gzReicxibFgTjCqE0cYPZroRqFe73h3N2jQ/640?wx_fmt=gif&randomid=wgdcewh9)
+![Image](images/640_169af64f44fc.gif)
 
 一个 Decoding Step 中大概包含如下几个步骤：
 
@@ -353,7 +353,7 @@ Lookahead 的目的是生成新的 N-Grams，该过程由两个参数定义的�
 - 随着解码的进行，轨迹中最早的 Token 会被删除，以保持 N 和 W 的恒定。
 - 需要说明的是，当 N=2 时，Lookahead 解码等价于 Jacobi 解码。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaurWZjZ8rlRBqXQlJ1lXWR8Q8paoBSFcIn4KmQ5bB12RAL1gjoEuRViakKiclMCf8AbyqbXzQVDumQ/640?wx_fmt=png&randomid=107ynw2y)
+![Image](images/640_ae9c20a6e6ec.png)
 
 #### 8.2.3. Verify
 
@@ -371,7 +371,7 @@ LLM 解码主要受内存带宽限制，因此可以在一个 Step 内合并 Loo
 - 如下图左上角中虚线框内为对应的 Lookahead 分支，原来一次 decoding 只需执行 “0”，现在多了虚线框内其他的 W*(N-1) - 1 个 Token，也就是计算量是原来的 W*(N-1) 倍。加上其中新生成的 Token 就可以用于构建下一次 Verify 分支的候选序列
 - 如下图做下部分实线框内为对应的 Verify 分支（对应 G 个 N-Gram 候选），其中的 4-Gram 的第一个 Token 都会对应 “0”，因此相当于计算量为原来的 G*(N-1) 倍。会用于更新下一次 Lookahead 分支的序列。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaurWZjZ8rlRBqXQlJ1lXWRmlXq7OpQ5eic84eVjGicDTEmdBMxrSsEdgib7lbtoDxibcgsAnjOIVDZIg/640?wx_fmt=png&randomid=rht11z89)
+![Image](images/640_74bec11ea3eb.png)
 
 ### 8.3. 评估结果
 
@@ -379,7 +379,7 @@ LLM 解码主要受内存带宽限制，因此可以在一个 Step 内合并 Loo
 
 如下图所示，作者进一步验证了不同的 W 和 N 对效率的影响，从中可以看出，当 N 足够大，比如为 11 时，随着 W 增加，几乎可以线性降低解码步数。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaurWZjZ8rlRBqXQlJ1lXWRic6ZofjEuDmKglAibgpsric24NoVdo39fic1wYgW1bSfgCflt9ia0eT3ichA/640?wx_fmt=png&randomid=1igyzeun)
+![Image](images/640_af92a91a5398.png)
 
 #### 8.3.2. 代价和局限性
 
@@ -388,7 +388,7 @@ LLM 解码主要受内存带宽限制，因此可以在一个 Step 内合并 Loo
 - 适合的场景：算力存在极大浪费的情况，比如使用 A100 GPU，当 batch size 为 1 的情况下，是明显的 IO bound。只有 batch size 达到 64 以上甚至 100 以上才能充分发挥算力，此时增加的计算量正好可以充分发挥 GPU 的算力。
 - 不适合的场景：当我们提供 LLM 推理服务或者离线计算场景，本身的 batch 已经比较大（在线服务 Continuous batching），比如达到 16 或者 32 的情况，此时给 Lookahead Decoding 留下的空间就很小，意义不大。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaurWZjZ8rlRBqXQlJ1lXWRKianFVXu8JrMYibhlTWngI1K79ZFvWDnkyKicibccVXasKdkOjLbAt9cbQ/640?wx_fmt=png&randomid=15z43v8p)
+![Image](images/640_17186bca6a8d.png)
 
 ## 九、EAGLE（基于特征）
 
@@ -416,33 +416,33 @@ EAGLE 提供的是无损加速，不涉及对原始 LLM 的微调（但会增加
 
 其中的 Draft model 的 Embedding 层、LM Head 以及 Sampling 都来自原始的 LLM，而 Auto-regression Head 包含一个 FC Layer（bs, seq len, 2xhidden dim -> bs, seq len, hidden dim 降维，输入的维度因为 Concat 导致维度变长） 和一个 Transformer Decoder Layer。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaurWZjZ8rlRBqXQlJ1lXWR2KIibiaibALlRlrlbDhC76l8Gia8iau0RC1VHN9IwJiaotHscFjKTrDYpGeg/640?wx_fmt=png&randomid=7w70gm15)
+![Image](images/640_f51484342cd2.png)
 
 与其他投机采样方案的差异如下图所示，可以看出，其相比 Medusa 待验证的树更稀疏（可以避免一些无效的生成，比如 I am begin），相应待验证的 Token 也更少：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaurWZjZ8rlRBqXQlJ1lXWRUgkiaPBG0iamhibIzFA0vIKeCib5kU8hTwnTSsgKL5icJZR8OibLDy38kEbw/640?wx_fmt=png&randomid=nmtas03q)
+![Image](images/640_1d4b85104e19.png)
 
 ### 9.3. 评估结果
 
 如下图所示，在 MT-bench 上，EAGLE 比基线 Decoding 快 3 倍，比 Lookahead 快 2 倍，比 Medusa 快 1.6 倍。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaurWZjZ8rlRBqXQlJ1lXWRsy38jnV62drww3GGN9ibvWlgsUjyYtzVove9DnHF0TZyvBnpJcHScsw/640?wx_fmt=png&randomid=28bojcnj)
+![Image](images/640_d358c1fd4f7a.png)
 
 EAGLE 中作者采用固定的 3 个 Draft Forward，也就是待验证的 Token 最多为 3 层，相应一次验证通过的最大 Token 数为 3+1=4。为了验证平均接受 Token 数和加速比，作者验证了序列模式（without Tree Attention）和树模式（with Tree Attention）的差异。
 
 如下图 Figure 9 所示为两种模式在 MT-bench 上的加速比，可以看出，树模式（with Tree Attention）因为每次验证的 Token 是序列模式的超集（每次 3 个 Token -> 每次 10 个 Token），因此加速比更高（访存瓶颈，增加的延迟比较小），但提升相对有限：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaurWZjZ8rlRBqXQlJ1lXWRb0GibQmZ23xgPH58FKF3XKrqvtkjJEkmCkOyH3NUu5WpKyIQmibmibmcw/640?wx_fmt=png&randomid=ruanym97)
+![Image](images/640_3511018a101d.png)
 
 如下图所示，作者在 MT-bench 上同样对比了两种模式下的平均 Token 接受数，可以看出，树模式（Tree）的平均 Token 接受数接近 4，而序列模式（Chain）也有 3 左右的平均接受 Token 数。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaurWZjZ8rlRBqXQlJ1lXWR9jFZ9YJwds5Tp5rDJSXQ3u11asPzlwSkGUSrtxgTAnw7Q3YYfNlVAw/640?wx_fmt=png&randomid=3xf2h9dx)
+![Image](images/640_159c3ed8a2bc.png)
 
 当然，使用树模式会明显增加验证阶段的计算量，由 Chain 模式验证 3 个 Token 变为 Tree 模式验证 10 个 Token，而接受的 Token 数只增加 0.6-0.7 左右，需要综合考虑 Roofline 确定使用何种方案。当然，使用 Chain 模式也能获得 2.2-2.7x 的加速。
 
 除此之外，作者也进一步验证了 EAGLE 与 Batching 的结合，可以看出，随着 Batch Size 的增加，相应的加速比会适当降低，这也符合我们之前的优化结论（此外这里用的 Sampling Temperature 为 0，增加后加速比会进一步降低）。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaurWZjZ8rlRBqXQlJ1lXWRSJwl0abecsibHBFvxy1YgDLnnADibI6dhOeCLQiavrJiakCgBeFRvY1VLA/640?wx_fmt=png&randomid=20ruc5nc)
+![Image](images/640_b9a3e30c6bfe.png)
 
 ## 十、阿里 Lookahead（针对 RAG 等）
 
@@ -456,25 +456,25 @@ LLM 受训练语料的限制，无法感知最新的内容，比如 LLM 训练�
 
 整体的思路和之前的投机采样方案类似，主要就是待验证 Token 的来源，作者从 Prompt 构建待验证 Token 序列，与单序列相比，多序列可以提升接受率，Token 前缀树可以进一步降低成本。如下图 Figure 2 所示，第二行验证了 6 个 Token 只接受了 3 个，而第三行同样验证了 6 个但接受了 4 个。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaurWZjZ8rlRBqXQlJ1lXWRV07DiaCtF6ibCyFf0GPn8XGfMASbXCP4P34wG5SBNaFziaFT25Yx5uXXg/640?wx_fmt=png&randomid=rudf5qre)
+![Image](images/640_39f1ba0479db.png)
 
 具体来说，是通过设计了如下图 Figure 3 所示的 Mask 来实现一次验证多个 Token 序列或者 Token 前缀树，这种思路在之前的投机采样方案 SpecInfer 和 Medusa 等也有使用：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaurWZjZ8rlRBqXQlJ1lXWRW70v0RXvmAUdRxVjeXzZW8zqG9UUGxcsxM2eevwX4kib5nu2ibhLnqrQ/640?wx_fmt=png&randomid=fzrdjtu5)
+![Image](images/640_1332b6cc7c01.png)
 
 ### 10.3. 评估结果
 
 推理加速结果如下图 Table 4 所示，可见在 AntRAG 上很明显，达到 5 倍，在 Dolly 相对差点，也有 2 倍。其中的 Baseline 使用的是 Huggingface 的 Transformer 库（性能可能比较低，比如 vLLM 或 TensorRT-LLM 在这个数据上的性能如何？），LLMA 为微软发布的方案（GitHub - microsoft/unilm: Large-scale Self-supervised Pre-training Across Tasks, Languages, and Modalities），而 Lookahead(Parallel) 上面介绍的多分支的方案，Lookahead(Hierarchical) 为前缀树的方案：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaurWZjZ8rlRBqXQlJ1lXWRrqQmtiaAiaf862PfagOc2LxLdiatVv7ZImqZmV4HdkVYcR6WFicMyvZFyA/640?wx_fmt=png&randomid=jqv7ql30)
+![Image](images/640_71099a8a2d84.png)
 
 作者在 GitHub 上也提供了其他模型在 Dolly-15k 和 GSM-8k 上的测试结果，提升同样只有 2 倍左右，其中 decoding length（生成 Token 长度）为 64，branch length（并行验证的 Token 数） 为 8：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaurWZjZ8rlRBqXQlJ1lXWRauGI2ITbK0bxYdg0IxyFtduEvrOfQ4JgcNpHlpteckrIACMHDtdY5A/640?wx_fmt=png&randomid=1py4jfxx)
+![Image](images/640_24d0005b443f.png)
 
 如下图所示为不同 decoding length 和不同 branch length 下的 EDL（Effective Decoding Length，接受的 Token 数），可以看出，branch length 越长，接受的 Token 数越多。当 branch length 为 30-40 时，接受的 Token 数在 9-12，基本可以达到 1/4，冗余计算相比之前的方案少了很多。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaurWZjZ8rlRBqXQlJ1lXWRRcgwWibp6mYfBxooMIX5oAtKTBoqcBYvNPMwoicsPThBsibc6V9dAT03g/640?wx_fmt=png&randomid=btrawq3t)
+![Image](images/640_298e5ddf9247.png)
 
 ## 十一、其他优化方案
 
@@ -484,13 +484,13 @@ LLM 受训练语料的限制，无法感知最新的内容，比如 LLM 训练�
 
 如下图 Table 2 所示，本文方案相比传统投机采样进一步加速 40%-50%：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaurWZjZ8rlRBqXQlJ1lXWRa77YAxXuqjEyMKhFlm6rtzabgUZbLBpzGGXno0qKWKVjnS6QWUo9ug/640?wx_fmt=png&randomid=n0onpipw)
+![Image](images/640_f78ba7a018fa.png)
 
 ### 11.2. DistillSpec
 
 [2310.08461] DistillSpec: Improving Speculative Decoding via Knowledge Distillation 中作者采用蒸馏方案来实现草稿模型与原始 LLM 的进一步对齐，在 Greedy Decoding 等采样方案下相比传统投机解码（Standard SD）方案可以获得 10-45% 的加速，
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaurWZjZ8rlRBqXQlJ1lXWRq981VZZzdvqcjWLGFd3wV7e3A5icwyE3BRTDkNGyLZ4X7yHjJ2Ka9mg/640?wx_fmt=png&randomid=7qno2lc7)
+![Image](images/640_6508001b381e.png)
 
 如果可以接受有损 Decoding，那么该蒸馏方案可以进一步提升解码速度，将解码延迟降低 6-10x，并且损失比较小。
 
@@ -513,7 +513,7 @@ LLM 受训练语料的限制，无法感知最新的内容，比如 LLM 训练�
 
 如下图 Figure 3 所示，既然可以根据输入序列预测下一个 Token，那么也就可以根据同样的序列预测下下一个，下下下一个 Token，只是准确率可能会低一些而已，这样就可以在 Decoding Step 的同时额外生成一个候选序列，下次 Decoding Step 来验证即可：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaurWZjZ8rlRBqXQlJ1lXWR1zzicG5UKQPsjRC3S3OuSLHeXAVvtfZXB8jxjr5XaqDW8wcByjk57yA/640?wx_fmt=png&randomid=hs0139qu)
+![Image](images/640_be02b8e4c3e3.png)
 
 #### 12.2.2. 小模型生成
 
@@ -539,13 +539,13 @@ LLM 受训练语料的限制，无法感知最新的内容，比如 LLM 训练�
 - Token 接受率：平均接受的 Token 数 / 平均验证的 Token 数，接受率越高，无效的计算越少。如果采用有损方案，该值通常可以增加。
 - 加速对比：加入投机采样后的整体生成速度 / 原始的生成速度。如果采用有损方案，该值通常可以增加。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaurWZjZ8rlRBqXQlJ1lXWRfDWqj1PtXgU9NvNAib615TBQ4QSK5JMzjoIyJKkHibENU4FTqIpBaYkg/640?wx_fmt=png&randomid=ahi17g5l)
+![Image](images/640_f91858dcb0e0.png)
 
 ### 12.4. 约束和限制
 
 如下图 Figure 2 所示为投机采样相关方案的演化过程，其相关方案还在不断提出，当我们在进行投机采样方案选型时要充分考虑各种因素。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaurWZjZ8rlRBqXQlJ1lXWRodWJCzvDv2K8Hic2OfHzYqkuLAPleToUF33ZSnCvdVAJyUHHF58RoKw/640?wx_fmt=png&randomid=6yrtysiq)
+![Image](images/640_670b03d60b75.png)
 
 #### 12.4.1. 加速比和计算量的平衡
 
@@ -555,7 +555,7 @@ LLM 受训练语料的限制，无法感知最新的内容，比如 LLM 训练�
 - 绿球区域：存在 Memory Bound，但计算强度已经比较大，离算力峰值不远，此时留给投机解码的空间相对比较小，比如 Online Inference 场景使用了 Continuous Batching 后。
 - 红球和蓝球：位于 Compute Bound，此时增加计算量计算时延也会明显增加，使用投机解码基本不会有什么收益。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaurWZjZ8rlRBqXQlJ1lXWRISVzG0fxF7hGFfuCRiadyWA3YdnqFibUqmTBRlIyFOsIryYTkVBzHD5g/640?wx_fmt=png&randomid=k9ek6al4)
+![Image](images/640_8d135109dcd0.png)
 
 #### 12.4.2. 实现的复杂度
 

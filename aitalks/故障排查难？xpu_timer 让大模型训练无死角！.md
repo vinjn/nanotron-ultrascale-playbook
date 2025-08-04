@@ -32,7 +32,7 @@
 1. 大部分场景下训练 hang 住是 nccl 操作导致，通常情况只需要记录矩阵乘与集合通讯即可；
 2. 针对单机出现性能下降（ECC，MCE），只需要记录矩阵乘即可，同时分析矩阵乘也可以查看用户的矩阵形状是否科学，发挥出 tensorcore 的最大性能，各个框架实现矩阵乘时直接使用 cublas。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_jpg/ZRiaNYvFqgia9wpqicHSt6gJXlo0sDmrtHfpOHmNaOHZYPjNSBoqCmM5N46ErBU2USDjndALZsWjJRFmqPNzeoGoA/640?wx_fmt=other&from=appmsg&randomid=pf0swi5c)
+![Image](images/640_a30f3f26e1a2.jpg)
 
 因此我们设计在 kernel launch 层进行截获，运行时设置 LD_PRELOAD 即可对关注的操作进行 tracing。该方法只能用于动态链接的情况，目前主流的训练框架均为动态链接。针对 NVIDIA 的 GPU，我们可以关注如下符号：
 1. ibcudart.so
@@ -52,7 +52,7 @@
 
 Workflow
 
-以 PyTorch 为例，Launch Thread 为 torch 主线程，working thread 为 library 内部的工作线程。这里截获上述描述的 7 个 kernel![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/ZRiaNYvFqgia9wpqicHSt6gJXlo0sDmrtHfFK23dwsM0yAxFrNowCGQ4tpc2dK3HtrsxicVPmia8rHicP9JFdNic7FxqA/640?wx_fmt=png&from=appmsg&randomid=2r2crm5j)
+以 PyTorch 为例，Launch Thread 为 torch 主线程，working thread 为 library 内部的工作线程。这里截获上述描述的 7 个 kernel![Image](images/640_a87f5033a93f.png)
 
 使用方法&效果
 
@@ -123,7 +123,7 @@ other data {'dump_path': '/root/timeline', 'dump_time': 1715304873, 'dump_
 
 ```
 
-之后会在对应的 timeline 文件夹中增加如下文件![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/ZRiaNYvFqgia9wpqicHSt6gJXlo0sDmrtHfoibOtVVMUcPoddp5OTYqJIuhVibLgInKbP8AAMWuCAPUgQwnI1lNUahg/640?wx_fmt=png&from=appmsg&randomid=19baknk5)
+之后会在对应的 timeline 文件夹中增加如下文件![Image](images/640_dd312eaf1d2f.png)
 
 之后在这个文件下下运行 xpu_timer_gen_trace_timeline
 ```
@@ -137,17 +137,17 @@ xpu_timer_gen_trace_timeline 
 
 ### **一个 llama-recipes 32 卡 sft 分析的 case**
 
-timeline 大致如下，每个 rank 会展示 matmul/nccl 两行，所有 rank 都会展示。注意，这里是没有前向/反向信息的，大致可以用时长来判断，反向是前向的 2 倍![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/ZRiaNYvFqgia9wpqicHSt6gJXlo0sDmrtHfKicJI81BZszBQ31678AKK4u0P6HgyFFLLZvr9w4DyYsoWSAQl3nX0RA/640?wx_fmt=png&from=appmsg&randomid=m6vw9ces)
+timeline 大致如下，每个 rank 会展示 matmul/nccl 两行，所有 rank 都会展示。注意，这里是没有前向/反向信息的，大致可以用时长来判断，反向是前向的 2 倍![Image](images/640_beda0c4f4259.png)
 
-前向 timeline，大约 87ms![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/ZRiaNYvFqgia9wpqicHSt6gJXlo0sDmrtHfZr3wLFfHIvGTATT7ruaSfxTnTqqibAqyLIee0KCickqxpSrEbtVrzywQ/640?wx_fmt=png&from=appmsg&randomid=19hx88ha)
+前向 timeline，大约 87ms![Image](images/640_fcd3970d269e.png)
 
-反向 timeline 大致 173ms![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/ZRiaNYvFqgia9wpqicHSt6gJXlo0sDmrtHfPM0E2L2nRfibxXJUZ3TWGRbTjORZrxdboXvd2leeIsGOFh1iajPELnbw/640?wx_fmt=png&from=appmsg&randomid=5w7xr841)
+反向 timeline 大致 173ms![Image](images/640_3ed3ce14c959.png)
 
 一共 48 layer，共耗时(173+87)*48 = 12480ms，再加上 lmhead， embedding 等其他操作，约 13s，整体时间是对的上的。并且通过 timeline 发现通讯时间远远大于计算时间，可以确定是通讯导致的瓶颈。
 
 hang住栈分析
 
-用 pip 安装好包后，可以通过命令行工具进行分析，默认 kernel 超过 300 秒后会打印具体的栈信息，svg 图拖到 chrome 中即可观看，分别使用 pstack/py-spy 来打印对应的栈，打印结果在训练进程的 stderr 中。如果通过 conda 安装了 gdb，会使用 gdb 的 python api 来获取栈，可以获取到 lwp 名字，默认安装的 gdb8.2 有时候获取不到，conda gdb 默认地址为 /opt/conda/bin/gdb以下为一个 2 卡模拟 NCCL 超时的栈：![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/ZRiaNYvFqgia9wpqicHSt6gJXlo0sDmrtHfy1rjsh05oMUULrhbptgvyqzK2YbGtPdngPVsWVexcOuQCvp3MPn5Fg/640?wx_fmt=png&from=appmsg&randomid=k0pw169d)
+用 pip 安装好包后，可以通过命令行工具进行分析，默认 kernel 超过 300 秒后会打印具体的栈信息，svg 图拖到 chrome 中即可观看，分别使用 pstack/py-spy 来打印对应的栈，打印结果在训练进程的 stderr 中。如果通过 conda 安装了 gdb，会使用 gdb 的 python api 来获取栈，可以获取到 lwp 名字，默认安装的 gdb8.2 有时候获取不到，conda gdb 默认地址为 /opt/conda/bin/gdb以下为一个 2 卡模拟 NCCL 超时的栈：![Image](images/640_e8f316c03a3e.png)
 
 ### **以下为一个单机 8 卡 llama7B sft 训练的例子**
 
@@ -157,7 +157,7 @@ xpu_timer_stacktrace_viewer --path /path/to/stack
 
 ```
 
-在合并栈时，我们认为相同的 callpath 可以合并，也就是这个 stacktrace 完全一致，因此卡在主线程的地方大多会一样，但是如果有一些 loop，活跃的线程，打印的栈顶可能会不一致，但是在底层运行的会是相同的栈，比如 python 栈中线程都会卡在 _bootstrap@threading.py 上，另外火焰图的 samples 数没有任何意义。当检测到 hang 后，所有的 rank 生成对应的 stacktrace 文件（rank1 suspend 了，所以没有），每个文件中包含了 python/c++ 的完整栈。![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/ZRiaNYvFqgia9wpqicHSt6gJXlo0sDmrtHfhDQf57ANX8GiaaTOUAcAIiakBpUHeUMwU5XxejichLt6ib42ABnfCxM8hw/640?wx_fmt=png&from=appmsg&randomid=ixjhurf8)
+在合并栈时，我们认为相同的 callpath 可以合并，也就是这个 stacktrace 完全一致，因此卡在主线程的地方大多会一样，但是如果有一些 loop，活跃的线程，打印的栈顶可能会不一致，但是在底层运行的会是相同的栈，比如 python 栈中线程都会卡在 _bootstrap@threading.py 上，另外火焰图的 samples 数没有任何意义。当检测到 hang 后，所有的 rank 生成对应的 stacktrace 文件（rank1 suspend 了，所以没有），每个文件中包含了 python/c++ 的完整栈。![Image](images/640_c2ab721a93f9.png)
 
 合并后的栈如下所示，用不同的颜色区分栈的类别，在 python 栈上可能只有青色和绿色：
 1. 青色是 CPython/Python
@@ -165,7 +165,7 @@ xpu_timer_stacktrace_viewer --path /path/to/stack
 3. 绿色是 Torch/NCCL
 4. 黄色是 C++
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/ZRiaNYvFqgia9wpqicHSt6gJXlo0sDmrtHfCowKGk8OrwHLficBDCCelQYMqicWDvPe8iciaOurzIuaehqiafAwfEaZC2g/640?wx_fmt=png&from=appmsg&randomid=uj81bvek)
+![Image](images/640_5312d307a25c.png)
 
 Python 栈如下，其中蓝色的框图为具体的栈，命名规则为：func@source_path@stuck_rank|leak_rank
 1. func 当前函数名，如果 gdb 获取不到会显示 ??
@@ -173,9 +173,9 @@ Python 栈如下，其中蓝色的框图为具体的栈，命名规则为：func
 3. stuck_rank 代表哪些 rank 的栈进入到这里，连续的 rank 号会被折叠为 start-end，如 rank 0,1,2,3 -> 0-3
 4. leak_rank 代表哪些栈没有进入到这里，这里 rank 号同样会被折叠
 
-所以图中的含义为 rank0，rank2-7 都卡在了 synchronize 下，1 rank 没有进来，因此可以分析 rank1 有问题（实际被 suspend 了）。这个信息只有在栈顶才会被添加![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/ZRiaNYvFqgia9wpqicHSt6gJXlo0sDmrtHf3PhKQt6teIia0QwdCt4BfGRKmicb0o8g2DRTDSOBhaRwiaCKSJnj5icYicg/640?wx_fmt=png&from=appmsg&randomid=m3p3g0wj)
+所以图中的含义为 rank0，rank2-7 都卡在了 synchronize 下，1 rank 没有进来，因此可以分析 rank1 有问题（实际被 suspend 了）。这个信息只有在栈顶才会被添加![Image](images/640_4ef61a779745.png)
 
-与之对应的可以看到 cpp 的栈可以看到主线程卡到了 synchronize 中，最终卡到了 cuda.so 中的获取时间上，同样是只有 rank1 没有这个栈可以认为 __libc_start_main 所在的栈代表进程的 entrypoint![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/ZRiaNYvFqgia9wpqicHSt6gJXlo0sDmrtHf7icsknNJH4882U1y1uqmcsIib7bpuZ3egX3QaPFmN68kqoo4iapAbOWhw/640?wx_fmt=png&from=appmsg&randomid=obmn43d9)
+与之对应的可以看到 cpp 的栈可以看到主线程卡到了 synchronize 中，最终卡到了 cuda.so 中的获取时间上，同样是只有 rank1 没有这个栈可以认为 __libc_start_main 所在的栈代表进程的 entrypoint![Image](images/640_6697a539312c.png)
 
 通常，可以认为栈最深的链路只有一个，如果出现了分叉，证明不同的 rank 卡在了不同的链路上。
 
@@ -186,11 +186,11 @@ timeline 中不像 torch 的 timeline 有 callstack，对此在生成 timeline �
 - 红色的是 matmul 操作
 - 青色的是 Python 栈
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/ZRiaNYvFqgia9wpqicHSt6gJXlo0sDmrtHfrETbLfVX8WN4kkDj5xDUYTwqFy3In2Uv5bXXXo70Uv7MxZbjaW2V3A/640?wx_fmt=png&from=appmsg&randomid=gec1rgyt)
+![Image](images/640_4ffd8f95a2e8.png)
 
 Grafana大盘展示
 
-## ![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/ZRiaNYvFqgia9wpqicHSt6gJXlo0sDmrtHfGJrgdImJNicA8Ju9Ixymgm2wHN4Sxz0gfC5nFDJSLicXEwOrhwRiaLFew/640?wx_fmt=png&from=appmsg&randomid=cddhq8z8)
+## ![Image](images/640_cfc7231d6d73.png)
 
 未来计划
 
@@ -215,7 +215,7 @@ https://github.com/intelligent-machine-learning/dlrover
 
 [【在线回放】NVIDIA GTC 2024 大会 | 如何降低 AI 工程成本？蚂蚁从训练到推理的全栈实践](http://mp.weixin.qq.com/s?__biz=MzkyNzQyMjkxNQ==&mid=2247488218&idx=1&sn=fe36e0b0e9ed85fb9895878aafe273b3&chksm=c2291276f55e9b6053ba8549e6ae7b0abda97dafe54ed310ed30353bd6a3ab6ee8a8bd65082c&scene=21#wechat_redirect)
 
-![Image](https://mmbiz.qpic.cn/mmbiz_png/ZRiaNYvFqgia9MI7jwaicAymicVCNF9yI7BhhrcaRbN2EqNYzEv9mg4UAUpS4rVqevTCAJkQib3mI4ZqZ9vSicibBOORw/640?wx_fmt=other&wxfrom=5&wx_lazy=1&wx_co=1&tp=webp&randomid=mdnmsq9g)
+![Image](images/640_7af410265a0d.webp)
 
 点击「阅读全文」，在 GitHub 关注 DLRover
 

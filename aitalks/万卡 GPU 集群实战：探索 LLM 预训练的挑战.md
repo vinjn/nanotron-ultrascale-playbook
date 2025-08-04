@@ -46,11 +46,11 @@
 
 对于现在广泛采用的 Decoder Only LLM 而言，通常可以根据其模型参数量和 Token 数以及训练资源预估出训练时长。具体来说，每个 Token 的 Forward 计算量大约为 2 倍的参数量，如下所示，其中 W 是模型参数量：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiahianL128gdcE934BIibUeYnHvhdsxQ9Oxe1ibpic2yshYicooJWGJ2ic76M6wJNUNE2KiaibGzG4QRsEwLg/640?wx_fmt=png&from=appmsg&randomid=w0n5frj5)
+![Image](images/640_c727d069087e.png)
 
 考虑到大部分情况下总的计算量与 Forward 计算量的比例接近 3:1，因此可以根据每个 Token 的计算量预估出训练中的计算量约为（与论文 [2001.08361] Scaling Laws for Neural Language Models 中结论一致）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiahianL128gdcE934BIibUeYn6O3Qvp2mIILDicqw212NSxkudT4W0GTmwuuicgfaic5nemMM4ALGrNLwg/640?wx_fmt=png&from=appmsg&randomid=sdhllpmv)
+![Image](images/640_87ac258ae5f8.png)
 
 根据每个 Token 计算量和计算资源可以大概预估出训练的总时长，其中 MFU 表示 Model FLOPS Utilization，是广泛采用的用于衡量分布式训练效率的指标：
 
@@ -66,7 +66,7 @@ Ctoken =8 * W
 
 在 [2205.05198] Reducing Activation Recomputation in Large Transformer Models 中作者对 Activation 重计算进行了优化，基本还能保持 3:1 相关的比例，所以后续还是以 3:1 为准。如下图 Table 4 所示：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiahianL128gdcE934BIibUeYnZPXQziceibOiaFmHdrsYnyn4D4dxRAUnKmicYumEiapkpbybHlicicvR1jcug/640?wx_fmt=png&from=appmsg&randomid=pd684u18)
+![Image](images/640_8410a464f7e1.png)
 
 ### 2.2 显存占用
 
@@ -98,7 +98,7 @@ LLM 由于模型比较大，通常单个 GPU 甚至单机都无法装下，需�
 - PP：将模型按照层次切分，不同 GPU 上可以放置一部分的层，通常需要切分尽可能的均衡。由于 Transformer 模型（Decoder）每一层参数量和计算量是固定的，因此相对比较好切分。不过也需要考虑开始的 Token Embedding 和最后 lm_head 中的 World Embedding，因此也有论文中会在第一个 PP 和 最后一个 PP 时让 Transformer Layer 少一点，以便更加的均衡（[2210.02414] GLM-130B: An Open Bilingual Pre-trained Model 中的 PP 为 8，共 70 层，中间各 9 层，起始各 8 层）。PP 的通信量相对比较小，因此常常会放在不同的机器上。
 - TP：将模型的某个部分，比如一个 PP 切片对应的几层切分到多个 GPU 上，这样一般就会将一个 Tensor 划分到不同的 GPU。其通信量更大，因此往往会将 TP 放在单个机器内部，可以充分利用机内的 NVLink 高速带宽。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiahianL128gdcE934BIibUeYnuibc1Mib3uicwkicY3C4yj1CSOkwIq0mLXZWAAuXlLlAJTlicrUwYItayVA/640?wx_fmt=png&from=appmsg&randomid=cleg6eke)
+![Image](images/640_ac80d67966bd.png)
 
 上图中采用的是 8DP 12PP 4TP 方案，因此需要的 GPU 为 8*12*4=384。
 
@@ -110,13 +110,13 @@ LLM 由于模型比较大，通常单个 GPU 甚至单机都无法装下，需�
 - Zero-2：除了优化器状态外，进一步切分梯度。
 - Zero-3：进一步切分模型参数。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiahianL128gdcE934BIibUeYnwia2VZa2mxFypGZL1wbxHClbiaAR6aIXEpB8ibB8sddzta6Uc9wHu2E1Q/640?wx_fmt=png&from=appmsg&randomid=d1qtz85m)
+![Image](images/640_9ef88a836b2a.png)
 
 #### 2.3.3 EP
 
 现在混合专家（Mixture of Expert，MoE）模型也越来越多，其参数量进一步增加，因此在训练 MoE 模型时通常也会进一步引入专家并行（Expert Parallelism，EP），简单来说是将不同的专家放在不同的 GPU 上，不过也可以和其他切分方案结合。如下图 Figure 6 所示，可以将 2 个专家 E0 和 E1 分别切分，放到 4 个 GPU 上，每个 GPU 上只有 1/4 个专家：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiahianL128gdcE934BIibUeYnlkBnadVIElr8TN1UCgAudq0hRCk8gIw50icS7F44XSltQbzC6NrcBZw/640?wx_fmt=png&from=appmsg&randomid=b2wuylne)
+![Image](images/640_c308f500dfac.png)
 
 #### 2.3.4 SP
 
@@ -124,21 +124,21 @@ LLM 由于模型比较大，通常单个 GPU 甚至单机都无法装下，需�
 
 如下图 Figure 1 所示，ColossalAI SP 的主要思路是将序列数据切分为更小的子序列，然后将这些子序列分到不同的 GPU 中并行处理。例如，一个长度为 L 的序列，可以将其分成 N 个长度为 L/N 的子序列，然后分别在 N 个 GPU 上进行处理：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiahianL128gdcE934BIibUeYnOKWKFv1oSBM1bT6N2nc707a3Dsdn2RQRZRJm5v3F20CJiakOaPGfvbw/640?wx_fmt=png&from=appmsg&randomid=scuxl9c8)
+![Image](images/640_85392835d23c.png)
 
 由于序列之间是有依赖关系的，因此需要如下图 Figure 2 所示的 Ring Self-Attention 机制来通信，保证计算结果的等价：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiahianL128gdcE934BIibUeYnJydJZ9tice6zC7A0JAaI2YGuRYwV9la09niaicGAfNYlvbKQiaxYt8gtQw/640?wx_fmt=png&from=appmsg&randomid=a6hfnube)
+![Image](images/640_7cf64adf722a.png)
 
 如下图 Figure 5 所示为 Megatron-LM SP，其主要是为了解决 TP 中无法分摊的显存。作者分析后发现 LayerNorm 和 Dropout 的输入输出没有被分摊到不同的 GPU。实际上它们在不同的 Token 上并没有依赖关系，因此可以按照 Sequence 维度进行切分，不同 GPU 只保留序列的一部分，也只计算这一部分：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiahianL128gdcE934BIibUeYnA1Oqn0dXcbIHZZxTk1BumG8EyRJSkBDVFSV6CCduacYpVzbiaJXP7Iw/640?wx_fmt=png&from=appmsg&randomid=vtwf9uae)
+![Image](images/640_e47efbc2cfb1.png)
 
 #### 2.3.5 CP
 
 在 Megatron-LM 中还有上下文并行（Context Parallelism，CP），实际上就是 ColossalAI SP，也就是按照输入序列进行切分。如下图所示为 Megatron-LM 中 TP 和 CP 的组合，其中 AG/RS 表示 Forward 为 All Gather，Backward 为 Reduce Scatter；RS/AG 表示前向为 Reduce Scatter，反向为 All Gather。具体可参考 Context parallelism overview - NVIDIA Docs：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiahianL128gdcE934BIibUeYn9ecNZOwdpqzvvX4LBgnSQWKq5or6IZQNiagzrP41ict0mNJF1OvVEfxQ/640?wx_fmt=png&from=appmsg&randomid=94jrmsep)
+![Image](images/640_9f8aacec5e0a.png)
 
 ### 2.4 GPU 故障
 
@@ -164,11 +164,11 @@ OPT-175B 模型是在 992 个 80GB A100 GPU 上训练的，每个 GPU 达到了 
 
 实际上 11-06 就正式启动了训练任务，但是到 11-11 期间尝试了各种方案依然不太符合预期。如下图所示（来自 OPT/chronicles/10_percent_update.md），从 11-06 启动任务到 11-11 期间总共触发了 10 次重启，每种不同的颜色都代表一次重启。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiahianL128gdcE934BIibUeYnrzz8icwpA6tNx59OawXnetwz0YmdyB86RGVtRIm5Ean0VLvBmxxmB6Q/640?wx_fmt=png&from=appmsg&randomid=e4w60om4)
+![Image](images/640_e1e939f2c196.png)
 
 经过讨论，作者决定从头再来，配置与 OpenAI 对齐。如下图所示，11.XX 为之前配置，12.XX 为对齐之后的配置，真正的训练从 11-11 正式开始：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiahianL128gdcE934BIibUeYnlV2LIJeiaYmsKkz5XzoceCyDEa5032qhb3yxnC9fWcLTL3xBZqHMepQ/640?wx_fmt=png&from=appmsg&randomid=vcs5d9eq)
+![Image](images/640_4f1aa9fc06b1.png)
 
 除了上述配置导致的重训之外，大量的硬件异常也需要相应的重启，在 OPT-175B 模型训练中经常遇到的硬件异常包括：
 
@@ -198,13 +198,13 @@ Bloom 训练使用了 48 台 8 * A100 80G 机器，共 384 GPU，另外也有 4 
 
 其训练的 TFLOPs 如下图所示（注意其中红框的 TFLOPs 下降，后面会介绍）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiahianL128gdcE934BIibUeYnS7wI400wBR08gYcH1T2pyYrvFVXiaZO9RRgCvJLoH6L8TnFAL6ELDtw/640?wx_fmt=png&from=appmsg&randomid=7gwirxbn)
+![Image](images/640_bfcc12eae6f7.png)
 
 ### 4.2 分布式并行方案
 
 Bloom 训练使用了 Megatron-DeepSpeed 训练框架，其结合了 Megatron-LM 和 DeepSpeed 的优势。如下图 Figure 6 所示为训练中采用的分布式并行方案：8DP 12PP 4TP，此外作者也使用了 ZeRO-1。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiahianL128gdcE934BIibUeYns92uUGKVlfoj7XGRPIOTFSeS7cDsn6qic5FNbosfdIL6r9zmicntV9Bw/640?wx_fmt=png&from=appmsg&randomid=14mxdm0j)
+![Image](images/640_4d7150738005.png)
 
 ### 4.3 监控&容错
 
@@ -230,13 +230,13 @@ Falcon-180B 是由阿联酋的科技创新研究院（TII）开发，拥有 180B
 
 对于张量并行（TP），考虑到 Falcon-180B 采用了 GQA，对应的 KV head 为 8，因此采用了 8TP 的方案。也就是每个 KV head 分配到 1 个 GPU 上，所以 8TP 完全在单机内通信，可以重复利用机内的高速 NVLink 带宽。针对 MLP Layer 中的两个矩阵乘法，作者同样采用了先列切，再行切的方案，这样在两个子矩阵乘法之间不用进行通信。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiahianL128gdcE934BIibUeYnLq4aibjzZ5GapYFicQlPiaCIb1C4tnFzpsytwWabtyIiat8S1RGb5LiannA/640?wx_fmt=png&from=appmsg&randomid=58crjim4)
+![Image](images/640_f05e90c4cfa5.png)
 
 对于流水线并行（PP）：作者同样进行了 PP 的切分，使用的 PP 为 8，也就是模型按层切分为 8 个切片。为了减少 PP 中的 Bubble，作者采用了 [2006.09503] Memory-Efficient Pipeline-Parallel DNN Training 的 1F1B 方案。此外，作者也尝试了 [2104.04473] Efficient Large-Scale Language Model Training on GPU Clusters Using Megatron-LM 中的 Interleaved-1F1B 方案，当每个 DP 中 Micro-Batch 较小时，Interleaved-1F1B 会有一定收益，但是当 Micro-Batch 比较大时，并没有获得收益。
 
 如下图 Figure 4 所示，上图是常规的 1F1B，下图是 Interleaved-1F1B。Interleaved-1F1B 是对 1F1B 的改进，通过更灵活的调整不同 Micro Batch 的 Forward 和 Backend 的顺序，可以进一步减少 Bubble，当然，其调度也更加复杂：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiahianL128gdcE934BIibUeYnt4ibSZmibcHSAJoSiax8h2gmN0xJnWyL0GxuuL5Gm9rzibias9pvaBC74Dg/640?wx_fmt=png&from=appmsg&randomid=3j4vh7qi)
+![Image](images/640_28b8486aea26.png)
 
 除了上述的 1F1B 优化外，为了减少通信量，作者也使用了所谓的 Scatter-Gather 优化。也就是：
 
@@ -244,7 +244,7 @@ Falcon-180B 是由阿联酋的科技创新研究院（TII）开发，拥有 180B
 2. 然后通过 P2P 通信传输到下一个 PP 切片对应的 GPU 上（跨机通信）。
 3. 最后，下一个 PP 切片的所有 GPU 通过 All Gather 来获取全量激活（同机 NVLink）。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiahianL128gdcE934BIibUeYn8eYkRqwurlgejicqdulywuf7yxIgn1fR3hGib0us3BE4IeDqKEwmqxQg/640?wx_fmt=png&from=appmsg&randomid=eg8cibbg)
+![Image](images/640_b8865e843a88.png)
 
 对于序列并行（SP）：作者已经使用了 ZeRO 和 FlashAttention 来优化显存占用，进一步尝试 SP 时并没有明显提升，甚至略有下降，因此并未采用 SP。
 
@@ -266,7 +266,7 @@ Falcon-180B 是由阿联酋的科技创新研究院（TII）开发，拥有 180B
 
 如下图所示，是 Bloom 中遇到的毛刺现象：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThSnwPmDfO9R755lGic9ZdQL4C9IQB7W7v1pzX8jueVsgNvicQKC8JnmfEUf4yuKEGj1icDvVkkp52xw/640?wx_fmt=png&from=appmsg&randomid=vx0dv46t)
+![Image](images/640_c0876709e3b8.png)
 
 关于训练损失出现毛刺的情况，[2210.02414] GLM-130B: An Open Bilingual Pre-trained Model 和 bigscience/train/tr8b-104B/chronicles.md at master 中都有一些讨论和实验，这里不再展开。
 
@@ -274,7 +274,7 @@ Falcon-180B 是由阿联酋的科技创新研究院（TII）开发，拥有 180B
 
 字节在今年 2 月份发表了 [2402.15627] MegaScale: Scaling Large Language Model Training to More Than 10,000 GPUs，其中详细介绍了万卡 GPU 训练 LLM 的各种挑战和非常全面的优化手段。如下图 Table 2 所示，其最终在 3072 GPU 上实现了 59.1% 的 MFU，在 12288 GPU 上也实现了 55.2% 的 MFU，相比 Megatron-LM 明显提升。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiahianL128gdcE934BIibUeYnp3ic04wibqF7kx7QzzyRNItN02koD4GAAh0dRWc3SfN7dkjyvtwZY54g/640?wx_fmt=png&from=appmsg&randomid=ggd329lf)
+![Image](images/640_cab274bfbb4c.png)
 
 ### 6.1 优化手段
 
@@ -302,7 +302,7 @@ Falcon-180B 是由阿联酋的科技创新研究院（TII）开发，拥有 180B
 2. 一旦识别到异常机器，将其驱逐，并将通过测试的同等数量的健康机器加入集群。除此之外，还提供了用户接口，允许用户手动识别并驱逐异常机器。
 3. 机器恢复完成之后，将从最近的 Checkpoint 恢复训练。作者也对 Checkpoint 的保存和恢复过程进行了优化，以最大限度减少对训练进度的影响。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiahianL128gdcE934BIibUeYnSSBehUsTRHZtuFsh3yHjx6rLJQuhtAJrXQ63pmWxAmkDYER7s9SJBQ/640?wx_fmt=png&from=appmsg&randomid=x4c869f7)
+![Image](images/640_0484e2710dfc.png)
 
 通过上述的守护进程，可以收集详细的信息用于数据分析。其心跳信号包括 IP 地址，Pod 名字，硬件信息等，还包含当前的训练进度信息。除此之外，训练进程的 stdout/stderr 日志也会被收集，以便进行实时的聚合、过滤和分析。如果识别到 warning 或 error 等关键字，Driver 将实时的上报这些诊断信息。最后，RAMA 的流量指标也会包含在内，以便更好的识别网络利用率和通信效率。为了增强对训练稳定性和性能的监控，字节开发了一个精确到毫秒级的监控系统，以便进行更全面的评估。
 
@@ -317,11 +317,11 @@ Falcon-180B 是由阿联酋的科技创新研究院（TII）开发，拥有 180B
 
 在训练过程中，作者还发现 MFU 会随着训练的迭代逐步下降，但是单独测试机器的性能又没有发现明显的差异。为了诊断这些问题，作者开发了一个性能剖析工具，其会记录每个训练 Executor 中关键代码片段的执行时间。与 torch profiler 和 Megatron-LM timer 不同，作者的工具基于 CUDA events，可以最大程度减少对 CUDA 同步的需求，从而避免性能下降。通过 profiler 工具，作者发现训练过程中有 0.5% 的机器性能较差，驱逐这些机器后 MFU 变得很稳定。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiahianL128gdcE934BIibUeYnqFUakTBia0EODfPzjKpiaia79TBkiclQg9YypShO9DgWdhAy3mNBwO5iaQQ/640?wx_fmt=png&from=appmsg&randomid=w9rq37nl)
+![Image](images/640_08a6298a633b.png)
 
 此外，通过可视化工具，还可以显示不同的分布式视图，比如 DP，PP，TP。如下图 Figure 8 所示显示了 PP 的数据依赖关系：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiahianL128gdcE934BIibUeYneam92jgPX9qqjfcHeibXaVWZ4f1mebd3BicfREpdmibw18sNNNFQvG7lg/640?wx_fmt=png&from=appmsg&randomid=0812ckgz)
+![Image](images/640_0167e2386893.png)
 
 除了以上的问题外，作者也经常遇到网络抖动问题。网络抖动会导致训练停止或训练速度下降。经历多次网络抖动作者总结了两个经验教训：
 
@@ -330,7 +330,7 @@ Falcon-180B 是由阿联酋的科技创新研究院（TII）开发，拥有 180B
 
 除了 NCCL_IB_TIMEOUT 之外，也可以关注 NCCL_IB_RETRY_CNT 的配置，表示重试次数，默认配置为 7 即可。奇怪的是，NCCL 官方文档并没有介绍 NCCL_IB_RETRY_CNT 的范围，不过其对应的值为 3bit 数值，最大也就是 7，不确定超过 7 后会怎么处理，可以参考如下图所示的 issue NCCL only use RDMA_WRITE/READ why it still got opcode 0 error 12 err · Issue #902 · NVIDIA/nccl · GitHub：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiahianL128gdcE934BIibUeYnLGrQnrmibm01UBjVMcVwPuYXv8OjQ7RfFSyicrQh4cgsCCtkNnPd4WDg/640?wx_fmt=png&from=appmsg&randomid=dozibe5y)
+![Image](images/640_2323629796c6.png)
 
 ## 七、DLRover
 
@@ -348,15 +348,15 @@ DLRover 中，作者也提到在蚂蚁的 GPU 训练集群中，一个月内单�
 - 检测到异常机器后会驱逐并找到新的机器替换。
 - 重新检测正常后重启任务，加载最新的 Checkpoint 继续训练。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiahianL128gdcE934BIibUeYnPv6UQcJRjzib9OSqwoCID1hSfjVicTib3SeYe1Amd1DCBiaibB14QCnQT4A/640?wx_fmt=png&from=appmsg&randomid=xq8vlzcs)
+![Image](images/640_40129e1aceaf.png)
 
 其机器检测流程如下图所示，会在每个 GPU 上启动一个子进程来进行轻量级的检测任务，包括一些简单的矩阵乘法计算和 All Gather 任务。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiahianL128gdcE934BIibUeYnicqbz7lnGWhQaMUBJdZnVRYTEAdiajjPibnFq0ZKiaFeEl1lH0pMPdpfFg/640?wx_fmt=png&from=appmsg&randomid=vkl79qhy)
+![Image](images/640_0a4c0ee72f73.png)
 
 如下图所示，在进行检测时，job master 会将节点两两划分为多个 Group，然后在 Group 内运行 All Gather 任务，并将结果上报给 job master。如果 Group 中有节点检测失败，则此 Group 会被划分为潜在故障机。然后开启第二轮测试，将故障机器和正常机器再次重组为 Group，以此就可以发现故障机器。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiahianL128gdcE934BIibUeYnjL03yqSico60sUDkgjN69Iscff8t2Dj2LP58YyUpsyxU27arWnFH0Cw/640?wx_fmt=png&from=appmsg&randomid=lw1u16ix)
+![Image](images/640_c56397c66360.png)
 
 ### 7.3 Flash Checkpoint
 
@@ -370,7 +370,7 @@ DLRover 中，作者也提到在蚂蚁的 GPU 训练集群中，一个月内单�
 
 DLRover 重新实现了 TorchElastic 的 ElasticAgent，以便实现更好的弹性能力。如下图所示，当训练任务失败并且资源不足时，可以驱逐异常机器并较少资源继续训练。当资源数目满足后，会重新扩容并继续训练：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiahianL128gdcE934BIibUeYnFrzRvicUtNH9hsicL4f7Npo3w2UxeSQB4a3hZyUibFRHM6kndgpicEJtNQ/640?wx_fmt=png&from=appmsg&randomid=i9j6j3am)
+![Image](images/640_3c7199a642c8.png)
 
 ### 7.5 Profiling 工具
 

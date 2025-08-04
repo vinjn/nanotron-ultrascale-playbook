@@ -14,7 +14,7 @@ VAE 系列图像生成模型综述可参考：
 
 [1. 文生图模型演进：AE、VAE、VQ-VAE、VQ-GAN、DALL-E 等 8 模型](http://mp.weixin.qq.com/s?__biz=Mzk0ODU3MjcxNA==&mid=2247485323&idx=1&sn=4408ac639f54f87c62cb64503cc2e9d9&chksm=c364c0cef41349d8f7a0c2d388b3de7bdfef049c8024b09e382e20a8e337e7c7acbca7b0a8e7&scene=21#wechat_redirect)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZXoICooURItV5oGzHkoXbXf44QIiaUicgo7UIYvXnXHglX6qUGgFxTUfg/640?wx_fmt=png&from=appmsg&randomid=oj4r3bup)
+![Image](images/640_8ef375090f09.png)
 
 ## 二、引言
 
@@ -32,7 +32,7 @@ Diffusion 模型的第一篇工作是 [1503.03585] Deep Unsupervised Learning us
 - 使用 Transformer 作为 Diffusion 模型，用于特征生成
 - 使用 U-Net 作为上采样模型，比如 64x64 -> 256x256，256x256 -> 1024x1024，并且往往是多级上采样
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZnqibcwwRhbqjuw4g4Ao9WwGDlQhexELekIdoMnFaU0BZicCaLrNW8SicA/640?wx_fmt=png&from=appmsg&randomid=krky0s0d)
+![Image](images/640_4214804d590b.png)
 
 ### 2.2. 图像生成评估指标
 
@@ -53,7 +53,7 @@ FID 的计算方法包含两个步骤：
 - 首先，通过模型提取真实图像和生成图像的特征向量。
 - 然后，计算这两个特征向量分布之间的 Frechet 距离，也就是均值和协方差的 Frechet 距离。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZPVpWV5sicvDXAEeibyRGQ5pQod2IDTKrp1RRjZKbaADeLWk8B7vMlNlg/640?wx_fmt=png&from=appmsg&randomid=tps4ps8d)
+![Image](images/640_c75f760f03b2.png)
 
 在实际使用中，通常使用 IS 来评估真实性，使用 FID 来评估多样性。
 
@@ -63,25 +63,25 @@ FID 的计算方法包含两个步骤：
 
 扩散模型包含两个过程：前向过程（Forward Process，也称为扩散过程 Diffusion Process）和逆向过程（Reverse Process）。无论是前向还是逆向，都是一个马尔科夫链形式（Markov Chain），其中前向过程是不断地向图片中添加高斯噪声，逆向过程是不断地去除高斯噪声，重建图像。对应的论文为：[2006.11239] Denoising Diffusion Probabilistic Models。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZRHUpI8iaOeKulIrMA7CiafYKLtf18kDLz0bnYicRU9ewKicbJbAssHEjgg/640?wx_fmt=png&from=appmsg&randomid=8v00lb8f)
+![Image](images/640_640d62211794.png)
 
 ### 3.2. 扩散过程
 
 如上图 Figure 2 所示，扩散过程就是从右向左（X0 -> Xt-1 -> Xt -> XT）不断添加高斯噪声的过程。总共包含 T 步，其中 t-1 到 t 步的扩散可以表示为：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZerMPlLvLpWynIwJcIxyBC4PKOSfK1B3czsAPP2reia98zGicHAduPTkg/640?wx_fmt=png&from=appmsg&randomid=thqd7ns3)
+![Image](images/640_f1ccbada31c4.png)
 
 其中 βt 表示 t 步对应的方差，在论文中作者称为 Variance Schedule，在有些工作中也称为 Noise Schedule。βt 介于 (0, 1) 之间，并且通常会随着 t 的增加而增大，也就是 β1 < βt-1 < βt < βT。
 
 如下图所示，整个扩散过程可以表示为：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZ36BtcpiaRKians4cIYzFEl01511CurPibL6mxKERiaZqZnq08ewjIM2xlw/640?wx_fmt=png&from=appmsg&randomid=qine3pb6)
+![Image](images/640_b36a903e1627.png)
 
 其中 q(x1:T|x0) 一般称为近似后验（Approximate Posterior）。此外，Variance Schedule 可以通过重参数化（Reparameterization）技术学习，也可以是固定的，DDPM 中作者采用预先定义好的线性 Variance Schedule，具体来说，β1=0.0001，βT=0.02，然后在此之间线性切分。
 
 扩散过程的一个重要特性为：已知 x0，可以直接采样任意时刻 t 加噪声的图像 xt，如下图所示，其中，αt=1-βt：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZ2AliaXX1KXGFNwVazkIIWrYrLaETiac7ic6YiaQic3bOHBH3CyFUpxj6bZQ/640?wx_fmt=png&from=appmsg&randomid=sivcxrhp)
+![Image](images/640_8e88dbf87b63.png)
 
 如上所示，可以看出，任意时刻 t 的 xt 可以看做是原始图像 x0 和随机噪声 ε0 的线性组合，并且组合系数的平方和为 1。同时，也就可以使用更直接的 t 定义 Variance Schedule。此外，这一特性在后续的训练过程中非常有用。
 
@@ -89,29 +89,29 @@ FID 的计算方法包含两个步骤：
 
 如上图 Figure 2 所示，逆向过程就是从左向右（XT -> Xt -> Xt-1 -> X0）不断去除高斯噪声的过程。如果知道每一步的分布 p(xt-1|xt)，那么就可以从随机噪声 XT 中逐渐恢复真实的图像 X0。对应的联合分布为：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZUkeM50tNs7DzqKMzekwpHiaIYWRAfGgSHw8cvGnNib3jIlribNIbKwIAQ/640?wx_fmt=png&from=appmsg&randomid=6pqvmyns)
+![Image](images/640_047869c6fdc6.png)
 
 其中第 t 步的分布 p(xt-1|xt) 为：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZm7LTLv8EkfTB1UORLZlnibM3IRibbxr8uTpicXfnpKRuEVZTGnbKoLYQg/640?wx_fmt=png&from=appmsg&randomid=inox3vva)
+![Image](images/640_3674d6015bbd.png)
 
 上述过程可以理解为，将 xt 作为输入，预测相应高斯分布的均值和方差，再基于预测的分布进行随机采样，得到 xt-1，直到生成最终的图片。
 
 相应的可以推导出对应的均值和方差（此处不再推导，可以参考原文或者其他解读），可以看出，此处的方差对应一个常数：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZSB2ITKLX5NJY2UTOEicsYMLfTVPDp1dCNupZTXED03Y43thRWImy7qg/640?wx_fmt=png&from=appmsg&randomid=en08ajmp)
+![Image](images/640_baa392ef192d.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZB2N6V5gMn5zUFlbBhfC8NUslmh7zO4nAgtM8ruW5tuqRfn5gB3MeLA/640?wx_fmt=png&from=appmsg&randomid=pl49alnr)
+![Image](images/640_3ee23bcecdf9.png)
 
 ### 3.4. 模型训练
 
 最终的优化目标如下所示，表示希望模型学习到的均值 μθ(xt, t) 和后验分布的均值 μt(xt, x0) 一致：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZEMIerDWy1YwooGhze4JKSiakkwU5Oa6PiaYONicYHpq4213b3bAwsu10Q/640?wx_fmt=png&from=appmsg&randomid=121ye8v1)
+![Image](images/640_508aa58d53b9.png)
 
 不过 DDPM 论文中说明相比预测均值，预测噪声更加方便（有了噪声之后直接减去噪声即可实现去噪的目的），因此进一步得到最终的优化目标（包括重参数化等）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZaoNjGfahF7MPibPibvA54cUP05shpicFkYQicSbydhNY6E0qRY5oLkKY0Q/640?wx_fmt=png&from=appmsg&randomid=we7ecajh)
+![Image](images/640_b0645e1d1338.png)
 
 其中，εθ 表示需要拟合的模型。
 
@@ -125,7 +125,7 @@ DDPM 对应的优化目标很简单，相应的训练过程也很简单，如下
 6. 损失为：生成的随机噪声与模型预测噪声的差值
 7. 重复 1-4，直到收敛
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZM89oDcQzaQorG9mc7uSicGrUn6tbOB4IcwneABhmDa2IfvT03gRJdxQ/640?wx_fmt=png&from=appmsg&randomid=9564a6gy)
+![Image](images/640_12a758e36068.png)
 
 ### 3.5. 图像生成
 
@@ -139,7 +139,7 @@ DDPM 对应的优化目标很简单，相应的训练过程也很简单，如下
 6. 添加噪声（对应蓝框），这一部分可以参考 [1503.03585] Deep Unsupervised Learning using Nonequilibrium Thermodynamics P12。
 7. 结束迭代，返回结果 X0
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZTlt4l1AbDeUWAq9lpZGibPAwB5BGSFJ0II0FZB0Zo5MrGRPMGwzXUfA/640?wx_fmt=png&from=appmsg&randomid=uhjalkht)
+![Image](images/640_98dbfc5e16db.png)
 
 ### 3.6. 代码实现
 
@@ -147,21 +147,21 @@ DDPM 对应的优化目标很简单，相应的训练过程也很简单，如下
 
 首先会使用 sinusoidal embedding 对时刻 t 进行编码：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZibEkbn4v2XgLr9ibupFaEDRmTiaGhO4kkHib9UIBU6HN4VwY0B3ICjILiaw/640?wx_fmt=png&from=appmsg&randomid=u595t52n)
+![Image](images/640_9cdf1abe94fd.png)
 
 其模型采用 U-Net 结构：
 
 - 时刻 t 的 embedding 会先经过两个 Dense 层，然后在每一个 resnet_block 中与 h 相加（类似 position embedding，黑色部分）
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZABlBDsHR9n8CASIfwCWhFdnEZVpGAKscHcSKGeah2zRNJkZiadA3qTw/640?wx_fmt=png&from=appmsg&randomid=0wdqjfyh)
+![Image](images/640_87f437a30eee.png)
 - 和常规 U-Net 一样，在 Downsampling 和 Upsampling 中还会通过 Skip Connection 连接（下图中蓝色部分）
 - 在部分 Stage 间还会引入 Attention Block（下图绿色部分）
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZAq9yzvIeegosLHmV7wAm24dSzyS0KoygJE9qqlhyiarzQoSTKlRqV0Q/640?wx_fmt=png&from=appmsg&randomid=6gf5xnt0)
+![Image](images/640_520fcb9e92b0.png)
 
 如下所示为采样生成过程：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZVphQJibnowTfoqd9yhgSiaKicZLwwHTmB9icRn02UAnvQg3v91QKFbnLSg/640?wx_fmt=png&from=appmsg&randomid=7jhuvknv)
+![Image](images/640_dd7e0aaad6f4.png)
 
 ## 四、Improved DDPM（IDDPM）
 
@@ -173,37 +173,37 @@ IDDPM 对应的论文为：[2102.09672] Improved Denoising Diffusion Probabilist
 
 如下图所示，在 DDPM 中，作者将方差设置为常数，并且实验发现在两种极端情况下获得了相似的结果。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZ9ibqkam8x0vicTia2MqJEvgWqJqOTumzevBnvBVS2AFHmQmckPv4IAP7g/640?wx_fmt=png&from=appmsg&randomid=chqxnrlx)
+![Image](images/640_2c5233f81335.png)
 
 而 IDDPM 中，作者认为其生成效果差不多，并不代表对对数似然没有影响，并通过实验进行了一些验证，也同时提出了可学习的方差（模型会额外输出一个向量 v，用于预测方差）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZ85bOVa7n7GRfKgPeiaia95sFCfXdJzWchMCK816HOcZeZWq3VoOAm78A/640?wx_fmt=png&from=appmsg&randomid=ziqgvlcm)
+![Image](images/640_cd7705156d28.png)
 
 并把其加入到损失中，对应 λ=0.001，主要是避免 Lvlb 对 Lsimple 影响太大：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZhbCPeKnJ040IHdXnCajmag5ujEeFzy2C93e0LvMlicCcHlwJZL0SGsg/640?wx_fmt=png&from=appmsg&randomid=qagkw4dv)
+![Image](images/640_093fff5d85ac.png)
 
 其中，Lvlb 表示变分下界损失（variational lower bound），如下所示：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZqb6b1IGpWwUHuLO5wbJ4SkNLMzZGk3rSJiadG8cKQLspLrNhbEuMFbA/640?wx_fmt=png&from=appmsg&randomid=csqsi7l8)
+![Image](images/640_63733f05444b.png)
 
 ### 4.3. 加噪方案
 
 IDDPM 作者认为 DDPM 的加噪方式会导致早期阶段加噪过快，因此提出了 cosine schedule 的加噪方式，公式如下所示：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZ3YkbAibKgdTBSqic32vr2T166A4e2ZvpRd0lT5lSkRAIEKEeibS5icvwpw/640?wx_fmt=png&from=appmsg&randomid=w933zvni)
+![Image](images/640_e13c6924af4b.png)
 
 如下图 Figure 3 和 Figure 5 所示，本文的 cosine schedule 加噪（Figure 3 下部分）更加缓慢：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZo5ibad0NHEt91jnsDbVicBknX1LrOicEhEGEsWhlFKXUiahbTBZ6aF7KjQ/640?wx_fmt=png&from=appmsg&randomid=x3c32q23)
+![Image](images/640_6399fbad52d0.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZHE8hnciaQic7lFnDeKUwJTeHGuTbMW5IfhxydOriaia8xfLsNzcLOTGKog/640?wx_fmt=png&from=appmsg&randomid=dj0jrq3o)
+![Image](images/640_f1e7af39ea62.png)
 
 ### 4.4. 减少梯度噪声
 
 IDDPM 的作者发现优化 Lvlb 比较困难，可能是因为梯度噪声比较大，因此采用了重要性采样方案，如下图 Figure 6 所示为相应的对比实验，绿色为加了重要性采样后的损失，稳定了很多：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZzNaMy6dkkQFUblfX90rdhbQscGR7sUd9ldtFiaUQmagqn7oTuNFIwSg/640?wx_fmt=png&from=appmsg&randomid=ndm0fxvg)
+![Image](images/640_2f9acfd2f0c1.png)
 
 ## 五、Diffusion Model Beat GANs
 
@@ -226,7 +226,7 @@ IDDPM 的作者发现优化 Lvlb 比较困难，可能是因为梯度噪声比�
 - 在上采样和下采样激活时使用 BigGAN 的 residual block
 - 在 residual connection 中采用 1/sqrt(2) 的缩放
 
-如下图 Table 1 所示为不同配置的影响，可以看出，使用更多的 Attention 头、在多个分辨率使用 Attention 以及采用 BigGAN 的 residual block 获得了最好的结果：![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZ79psmRobst7I9nkXdBGHtpDYbXbQVD5VfU1cMyibbHjUxzWVepmWqYw/640?wx_fmt=png&from=appmsg&randomid=5dx0fg7q)
+如下图 Table 1 所示为不同配置的影响，可以看出，使用更多的 Attention 头、在多个分辨率使用 Attention 以及采用 BigGAN 的 residual block 获得了最好的结果：![Image](images/640_bf8ba9556cc0.png)
 
 ### 5.3. Classifier Guidance
 
@@ -234,19 +234,19 @@ IDDPM 的作者发现优化 Lvlb 比较困难，可能是因为梯度噪声比�
 
 如下图 Table 4 所示为有无条件、有无类别引导的结果：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZX2Ft5vtLnUheaqN3ckodbEUPfCFdqyiaicJibYAfB8ezrW2MbpmOJNP2w/640?wx_fmt=png&from=appmsg&randomid=4eplc3j6)
+![Image](images/640_d400129130a5.png)
 
 ### 5.4. Upsampling Diffusion Model
 
 本文中，作者同样训练了上采样扩散模型，分别将分辨率从 64x64 扩展到 256x256，以及从 128x128 扩展到 512x512，具体模型配置如下所示：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZkBZvSc5p43x9BsOaDG32FicqJuN7zASyRpmP10sDkniaHQ0A1O1WqJfA/640?wx_fmt=png&from=appmsg&randomid=qcwfd2bh)
+![Image](images/640_c5e28a58ae47.png)
 
 ### 5.5. 结果
 
 如下图 Table 5 所示，作者对比了本文方案的效果与之前模型的效果，其效果已经超越之前效果很好的 StyleGAN2，这也是本文标题的来源，此外，作者把本文的模型称作 ADM，在后续的工作中也会使用：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZveHUmXboosm0icsMn7gzOw1bjNerR3QJy4C9Cwd0mqhTGefOPuDZaZQ/640?wx_fmt=png&from=appmsg&randomid=oe2c3l4l)
+![Image](images/640_7ee72c8e952e.png)
 
 ## 六、Classifier Free Guidance
 
@@ -266,24 +266,24 @@ Classifier Free Guidance 的核心思想为：不是沿着图像分类器的梯�
 
 训练过程中如下图所示，随机的移除条件，也就相当于无条件生成（通常有条件生成和无条件生成都是同一个模型，或者说共享模型权重）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZf4mds8ppibYNZKJsq8kWiapzU4BgqoZDzC2coSiaiauppSawHT2TD9kK3g/640?wx_fmt=png&from=appmsg&randomid=azy2fnkn)
+![Image](images/640_53e209b3fd0e.png)
 
 如下图所示，生成过程中同时使用有条件和无条件生成，并使用权重 w 来控制两者的强度：
 
 - w 越大，有条件生成作用越大，图像越真实（IS 分数越高）
 - w 越小，无条件生成作用越大，图像多样性越好（FID 分数越低）
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZbpQxMJnInNrzCqbPHhdCz7kubqickFVCln0nF4iaWRQ4n3SZicuG4FpNw/640?wx_fmt=png&from=appmsg&randomid=ldpr0ea5)
+![Image](images/640_0847f6f59239.png)
 
 ### 6.3.示例
 
 如下图 Table 1 所示，w 越小，FID 分数越低，也就是多样性越好，w 越大，IS 越高，也就是质量越高：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZ7sFuZyAhGKqZicBQYyskIIrRibKGsuxDwdOMqnZQwJBvpnsYYH687qZA/640?wx_fmt=png&from=appmsg&randomid=129si96z)
+![Image](images/640_52fc36ee3a9c.png)
 
 如下图 Figure 1 所示，左侧为无条件生成，右侧为 w=3.0 的有条件生成，可以看出右侧相似性比较高，也就是多样性差点，但是质量更高：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZicqwrVleCXHnGPhLx2gDzpSXZDhAIpJN8IbUAtSLMctPKPwAAuib4gXg/640?wx_fmt=png&from=appmsg&randomid=t12sa74l)
+![Image](images/640_8d0fe0174e30.png)
 
 ## 七、GLIDE
 
@@ -315,7 +315,7 @@ GLIDE 主要包含两个子模型：
 
 与 Classifier Free 中的类别引导类似，作者在训练中会随机的令文本条件为空。在采样生成时，模型输出可以沿着有条件方向进一步外推，而远离无条件方向，如下所示，其中 s 为引导尺度因子（s >= 1）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZUbEFEm39OF3b3dt6s2ktyg1icZKII4sickc5SAiaJ8V2FSbicnm71K3nsA/640?wx_fmt=png&from=appmsg&randomid=u2tu81se)
+![Image](images/640_7aeccf8db04d.png)
 
 Classifier Free 方案有两个好处，首先，其允许单个模型在引导期间利用自己的知识，而不用额外训练一个小的分类模型。此外，对于难以用分类器预测的信息（如，文本）进行条件处理时，可以简化引导。
 
@@ -329,7 +329,7 @@ Classifier Free 方案有两个好处，首先，其允许单个模型在引导�
 
 如下图所示为一些示例，可以看出 GLIDE 生成的结果更加真实，质量更高：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZ4EibnaMiawNpgxK7V34ywgKNGrnQ6Uyv9iaKdib61MUO2jzj2eiaGRcakAA/640?wx_fmt=png&from=appmsg&randomid=1ubskjgf)
+![Image](images/640_0ce0dd1d3599.png)
 
 ## 八、DALL-E 2
 
@@ -355,7 +355,7 @@ DALL-E 2 的模型并没有开源，不过开源社区的工作者参考论文�
 - prior：用于从文本 embedding zt 生成图像 embedding zi。
 - decoder：用于从图像 embedding zi 生成最终图像（文本条件为可选项）。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZTicLWTxEZSQia9Ily1p2KD6Mzp65RlwibwcPDMyNtYEvk8Y59Ftic3ruJQ/640?wx_fmt=png&from=appmsg&randomid=d6248z9w)
+![Image](images/640_7513731fbac6.png)
 
 ### 8.3. Decoder
 
@@ -396,35 +396,35 @@ Decoder 模型是 3.5B 的 GLIDE 模型，具有相同的结构和不同的超�
 
 对应的超参如下所示：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZVShYh5yFyYTBhsVXbHb2LLQMHiaeBM28fV9gjEMonkj0GJrNETYc1sA/640?wx_fmt=png&from=appmsg&randomid=loqdrzrs)
+![Image](images/640_e539c4a37c19.png)
 
 ### 8.6. 应用场景
 
 如下图 Figure 3 所示，可以根据输入图片生成大量风格类似图片，并且保持主要元素相同，不太关键的信息各不相同：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZmzicMGaNqQaK1bNZZ9LVwkNWhVcS10KMT8sbOBKicUOxfVrYw10X9VnQ/640?wx_fmt=png&from=appmsg&randomid=1oe58k60)
+![Image](images/640_684ceb1819c0.png)
 
 如下图 Figure 4 所示，可以用于图像内插，输入两张图像，生成跨两幅图像内容的图像：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZurpttYPrY2fxdUT1SgK3aGmws8vdTcaQxCxh1eZrjEpEIiaoBeVZwuQ/640?wx_fmt=png&from=appmsg&randomid=abswuedt)
+![Image](images/640_3e216a201f7d.png)
 
 如下图 Figure 5 所示，出来图像和图像内插外，还可以实现图像和文本间的内插：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZZeM6ZsYFXGMRTS5ZVW3Vx7rYPFdcWP19Q5kCiaWWUHonCqUCrya7Wibg/640?wx_fmt=png&from=appmsg&randomid=ae1fcpwk)
+![Image](images/640_1d694ce403f9.png)
 
 ### 8.7. 局限性
 
 如下图 Figure 15 所示，模型还比较难将物体和属性结合起来，可能会混淆不同物体的颜色（最左侧提示为 “生成一个红色方块在蓝色方块之上”），此外也可能无法更好的重建相对的大小关系（作者猜测有可能是使用了 CLIP 模型的缘故）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZGzoMBlSIQF4eibdenvpXujYbN3mNbWJRAGzrGel5ZURy6tytjLeQesw/640?wx_fmt=png&from=appmsg&randomid=24ig1w0i)
+![Image](images/640_bb4272db6b2a.png)
 
 如下图 Figure 16 所示，作者同样发现模型不能很好的在图像上生成正确的文本（可能是因为 BPE 文本编码的问题）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZnksjMsRvbA355SQZQSusnGyXE50OozT1sic80BmfVugNNPrW4BoKnww/640?wx_fmt=png&from=appmsg&randomid=68sg2cu0)
+![Image](images/640_49092e6d6e3c.png)
 
 如下图 Figure 17 所示，模型可能无法生成复杂的、包含很多细节的图片：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZiaeQGA1kYn4Mpv14ic25tqHiacibav3am3m0t0Ie1l9VYZZiabGubQBqszw/640?wx_fmt=png&from=appmsg&randomid=l39akl19)
+![Image](images/640_f7a508758615.png)
 
 ## 九、DALL-E 3
 
@@ -436,7 +436,7 @@ DALL-E 3 是 OpenAI 新的文生图模型，作者发现传统的文生图模型
 
 如下图所示为一个示例，其指令遵循能力确实很强大：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZRHC78RibALol9UmSpw6U0PXcFNa9qgiaOWLTsIT1ibuQyPdQgMVgtjiaTQ/640?wx_fmt=png&from=appmsg&randomid=r8evzpzb)
+![Image](images/640_2697c33cc258.png)
 
 ### 9.2. Image Captioner 模型
 
@@ -444,11 +444,11 @@ DALL-E 3 是 OpenAI 新的文生图模型，作者发现传统的文生图模型
 
 CoCa 模型的思路比较简单，在 CLIP 模型的基础上额外增加一个 Multimodal Text Decoder，训练中除了 CLIP 的对比损失（Contrastive Loss）外，也相应增加了描述损失（Captioning Loss）。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZCrw0OEtGhwbzsYzpB7voeRyxribzW16877EjDTQfVxO5MPSu8hMx0mw/640?wx_fmt=png&from=appmsg&randomid=kvv3kkk7)
+![Image](images/640_427c0ecf9c10.png)
 
 如下图所示为 CoCA 模型的配置，至于 OpenAI 训练的 Captioner 模型配置并没有具体介绍：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZkN0hSQukLQVibQUGayRU4CydrJHtvNuAzHq30aESX9bXYZJIE7Z9QyQ/640?wx_fmt=png&from=appmsg&randomid=ye8h38wv)
+![Image](images/640_a33b5f3571d6.png)
 
 ### 9.3. Image Captioner 微调
 
@@ -459,23 +459,23 @@ CoCa 模型的思路比较简单，在 CLIP 模型的基础上额外增加一个
 
 如下图所示为相应的结果，其中 Alt Text 为 Ground Truth，SSC 为短描述生成结果，DSC 为详细描述生成结果。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZT30acRKu75F4ibOlfI6y5BEv6ltum9LvTN0vCnUiafj2WMPL1DLOibftw/640?wx_fmt=png&from=appmsg&randomid=zhcyh42s)
+![Image](images/640_c35ac6b819e9.png)
 
 ### 9.4. Image Captioner 评估
 
 作者进一步验证了详细描述对模型指令跟随能力的影响。作者采用 CLIP score 作为评估标准，也就是使用 CLIP 分别提取图像和文本描述的 embedding，然后计算相似性得分。如下图所示，左侧为使用 Ground Truth 文本训练模型的效果，右侧为混合了详细描述后训练的评估结果，可以看出 CLIP score 得到明显改善：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZl55vERNs9GITgjtZNUfnkn3JAiad1BZ0ztbKMUdLhoH2Dx7LIlweZFA/640?wx_fmt=png&from=appmsg&randomid=sgj04t3s)
+![Image](images/640_18e79b8fb722.png)
 
 那么混合多少的 Ground Truth 和详细文本描述比较合理呢？作者进一步实验验证，发现混合 95% 的详细文本描述获得了最好的效果：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZpD4Yd5TQKJpHpanhPzib0QM9U9iakw4Ztib7ZBXDA5QiaMjiaZYGnCCeIkw/640?wx_fmt=png&from=appmsg&randomid=ocd14h8k)
+![Image](images/640_73b402e59e09.png)
 
 ### 9.5. DALL-E 3 指令跟随评估
 
 作者进一步评估了不同模型的指令遵循能力（不涉及图像质量），如下图 Table 1 所示，DALL-E 3 获得了最好的效果，并且提升非常明显：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZJUvkMT6kDWibTJ8LSsMYZ67MkgeAQQUrF0Os0TgjkldIPh3o2tnb6Sg/640?wx_fmt=png&from=appmsg&randomid=bbo5qxmf)
+![Image](images/640_3275cc3f7301.png)
 
 ### 9.6. 模型结构
 
@@ -487,11 +487,11 @@ CoCa 模型的思路比较简单，在 CLIP 模型的基础上额外增加一个
 - 时间步长条件：采用 GroupNorm，并学习了 scale 和 bias。
 - 文本条件：使用 T5 XXL 作为 text encoder，然后将输出的 embedding 和 xfnet 进行 Cross Attention。在 OpenAI 的 Paper 中并没有找到 xfnet 相关介绍，不过在 GLIDE 的开源代码里确实有 xf model。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZicOB9yicqaCF2hAZf29GCNvIkTpSKnicWR7QOZA80lTbE3BOfeANlDhUw/640?wx_fmt=png&from=appmsg&randomid=kvzqw3hh)
+![Image](images/640_6c18397aac46.png)
 
 如下图所示，作者同样训练了一个 latent decoder，可以用来提升图像细节，比如文本和人脸。其同样是参考 Stable Diffusion 的实现。不过这个 diffusion decoder 采用的是 DDPM 中描述的空间卷积 U-Net，此外，也基于 [2303.01469] Consistency Models 的蒸馏策略将去噪步数降低到 2 步，极大降低推理代价。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThQOWibFko5h7diaTZuQ6wLOZv3ADgnxNCicjnzoib3kNxvbfXsMDWoVWkUcsuFBfqmS4zicp4aXRk5rSQ/640?wx_fmt=png&from=appmsg&randomid=1b6ycdvj)
+![Image](images/640_8878e27d027a.png)
 
 ## 十、参考链接（Reference）
 

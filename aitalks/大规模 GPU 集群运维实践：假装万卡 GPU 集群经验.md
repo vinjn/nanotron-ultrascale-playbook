@@ -134,11 +134,11 @@ TIPS：
 
 比如，可以尝试找到监控中首先出现异常的 Worker。通常表现为监控数据首先降为 0，或者没有相应数据。如下图所示，红框处 Worker 的监控指标首先消失（通常意味着 Worker 首先被终止）。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgn0OYo4jdSLa0WxQUFYE7H7R48DEgv6Y1tK1sbROrPB5YhPT9xn0cOVqEbZia4FbiblO5ouic1Yicic8g/640?wx_fmt=png&from=appmsg&randomid=uqtrydnd)
+![Image](images/640_d71ee631ce3a.png)
 
 TIPS：可以使用 PromQL 的 count_over_time 指标来协助快速识别异常 Worker。count_over_time 主要用于计算给定时间区间内某个指标的样本数量，可以帮助分析一段时间内事件的发生次数。如下图所示，某个 Worker 首先出现异常，数据点开始丢失，其对应的 count_over_time 指标就会首先出现下降趋势，进而可以直接定位出现异常的 Worker：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgn0OYo4jdSLa0WxQUFYE7HOhDicTQX5Ta3l5m7qKNJgWbR55ZetIicKue2RcdQHwrrZxahRrs8wD1A/640?wx_fmt=png&from=appmsg&randomid=2wcur8ph)
+![Image](images/640_4aa5a4b9c580.png)
 
 ## 三、GPU 利用率指标
 
@@ -148,7 +148,7 @@ TIPS：可以使用 PromQL 的 count_over_time 指标来协助快速识别异常
 
 对应 DCGM 的 DCGM_FI_PROF_GR_ENGINE_ACTIVE，表示在一个时间间隔内 Graphics 或 Compute 引擎处于 Active 的时间占比。Active 时间比例越高，意味着 GPU 在该周期内越繁忙。该值比较低表示一定没有充分利用 GPU，比较高通常意味着 GPU 硬件繁忙，但不代表计算效率高。如下图所示，表示几个 GPU 的 Utilization 到了 80%-90% 左右：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgn0OYo4jdSLa0WxQUFYE7HvzCFbiayvsBdmyU1yGBqcGoB4ovV1zkjFo4IA72PFA4g7feFtBLvvRA/640?wx_fmt=png&from=appmsg&randomid=bpvtehn9)
+![Image](images/640_4fcd92bd2f10.png)
 
 其实更早之前的 Utilization 指标为 DCGM_FI_DEV_GPU_UTIL，只是因为其局限性现在往往会使用 DCGM_FI_PROF_GR_ENGINE_ACTIVE，更多说明也可以参考：Question about DCGM fields · Issue #64 [4]。
 
@@ -162,7 +162,7 @@ TIPS：可以使用 PromQL 的 count_over_time 指标来协助快速识别异常
 
 如下图所示为几个 GPU 的 SM Active，可见只有 60% 左右，还有一定提升空间：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgn0OYo4jdSLa0WxQUFYE7H03ePMqdAJq7mgnzHTVlm3sticqR6fHrlWicCib5sObgcKKDTKTvicqebOw/640?wx_fmt=png&from=appmsg&randomid=2c34doox)
+![Image](images/640_80fedadd1bc1.png)
 
 ### 3.3 GPU SM Occupancy
 
@@ -170,7 +170,7 @@ TIPS：可以使用 PromQL 的 count_over_time 指标来协助快速识别异常
 
 如下图所示为几个 GPU 的 SM Occupancy，只有 20% 多：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgn0OYo4jdSLa0WxQUFYE7HZic6AzK2T3u7tW5Y3VN53NbY8q3X3p6cyk6H9tMuPw28fQ1HfSWyrMA/640?wx_fmt=png&from=appmsg&randomid=z7ol5ilt)
+![Image](images/640_f9c97452be69.png)
 
 ### 3.4 GPU Tensor Active
 
@@ -181,7 +181,7 @@ TIPS：可以使用 PromQL 的 count_over_time 指标来协助快速识别异常
 - 整个时间间隔内，N/2 个 SM 的 Tensor Core 都以 50% 的利用率运行，该值为 25%。
 - 整个时间间隔的 80% 时间内，N/2 的 SM 的 Tensor Core 都以 50% 的利用率运行，该值为 20%。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgn0OYo4jdSLa0WxQUFYE7H9Kmia3SqEMvKvibEgWxO15rmheiaKOdsHHAH9yQ7tLTnjeSrePb2KzX3Q/640?wx_fmt=png&from=appmsg&randomid=8a9p5gaa)
+![Image](images/640_6db45d6eca4a.png)
 
 ## 四、GPU 异常
 
@@ -191,11 +191,11 @@ Xid Error 是 NVIDIA GPU 在运行过程中遇到的一种硬件或驱动层面�
 
 如下图所示为一些常见的通常由用户应用程序导致的错误：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgn0OYo4jdSLa0WxQUFYE7HGVnpVTAwWkf7YpyMbSUOZqfWlRrrPEV2Fm2arKv15cFSU5CYn2AicZw/640?wx_fmt=png&from=appmsg&randomid=q3zhwd1i)
+![Image](images/640_6755ab1a5169.png)
 
 如下图所示为一些常见的通常由硬件导致的错误，往往需要重置 GPU 或者报修：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgn0OYo4jdSLa0WxQUFYE7HWS6J1lszOpcBgvm77cXyIwKuenG7tMAQbpQlJLKCyZnvvHWQD9xwZw/640?wx_fmt=png&from=appmsg&randomid=bf6iedcs)
+![Image](images/640_a9d858012672.png)
 
 TIPS：这些异常通常会在 dmesg 中，可以通过监控 dmesg 日志实现一系列的自动运维机制。
 
@@ -203,7 +203,7 @@ TIPS：这些异常通常会在 dmesg 中，可以通过监控 dmesg 日志实�
 
 Xid Error 31 表示 GPU Memory Page Fault，通常是应用程序的非法地址访问，极小概率是驱动或者硬件问题。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgn0OYo4jdSLa0WxQUFYE7HjUkJVfO8N1Urdpzg9W8fNCgPhZNU4yjrFGPic8mk8XDqHicOnuhR56vA/640?wx_fmt=png&from=appmsg&randomid=8ygobky9)
+![Image](images/640_9c9028242295.png)
 
 在节点侧的日志中体现为 “MMU Fault”、“Fault is of type FAULT_PDE ACCESS_TYPE_VIRT_READ” 等信息；用户侧通常展示为 “CUDA error: an illegal memory access was encountered” 等信息。
 
@@ -213,7 +213,7 @@ Xid Error 31 表示 GPU Memory Page Fault，通常是应用程序的非法地址
 
 Xid Error 79 表示 GPU has fallen off the bus，意味着 GPU 出现了严重的硬件问题，无法从总线上检测到，也就是常说的掉卡。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgn0OYo4jdSLa0WxQUFYE7Htlfn6FR0jiajJr3NrdTXNr7ydd0VXdY0yY8iaMJE8cnzE9SWT3AYa9vw/640?wx_fmt=png&from=appmsg&randomid=qr5mu3w3)
+![Image](images/640_47ef23be9080.png)
 
 在节点侧的日志中经常展示为 “GPU has fallen off the bus”。同时使用 nvidia-smi -L 也可以看到相应的 “Unable to determine the device handle for gpu xxx: Unknown Error”。此问题也可能会伴随着 NVSwitch 的错误（Sxid Error）一起出现，比如出现：“SXid（PCI：xxx）: 24007, Fatal, Link 44 sourcetrack timeout error (First)”。
 
@@ -223,9 +223,9 @@ Xid Error 79 表示 GPU has fallen off the bus，意味着 GPU 出现了严重�
 
 Xid Error 48 表示 GPU 出现了不可纠正的 ECC Error，通常是硬件问题，需要终止 GPU 上的相关进程并重置 GPU。也经常会与 63/64 和 94/95 一起出现：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgn0OYo4jdSLa0WxQUFYE7HLwQGqC1odv3UpboSjAB6j4Ahu7muUKia8PUPKWfmHJfsuodDbBvMusw/640?wx_fmt=png&from=appmsg&randomid=6z917530)
+![Image](images/640_b7ab06cac07b.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgn0OYo4jdSLa0WxQUFYE7HPVdkuVKJA9ZYDY4RkibT1Miat1QViaPF9jjEwJZudo9wkEv3pEO0PU48w/640?wx_fmt=png&from=appmsg&randomid=qckmli2w)
+![Image](images/640_c9b069997b7d.png)
 
 在节点侧的日志中经常展示为 “An uncorrectable double bit error” 或 “Row Remapper”；在用户侧通常也会展示相应信息 “CUDA error: uncorrectable ECC error encountered”。
 
@@ -233,11 +233,11 @@ Xid Error 48 表示 GPU 出现了不可纠正的 ECC Error，通常是硬件问�
 
 Xid Error 119/120 表示 GSP RPC Timeout / GSP Error，通常是 GPU 的 GSP（GPU System Processor）组件运行状态异常，也可能会和 Xid Error 109 一起出现：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgn0OYo4jdSLa0WxQUFYE7Ha7yt6aZoYTUgrArVIDyVibxibicvFbbbiccTwSmRqkkFDenyfKU9hrdoIA/640?wx_fmt=png&from=appmsg&randomid=byebas07)
+![Image](images/640_9dced5340f43.png)
 
 可以选择关闭 GSP，避免 GSP 出现的一系列问题。使用 nvidia-smi 可以查看是否关闭 GSP。如下图所示，如果有对应版本号则表示开启，如果对应为 N/A 则表示已经关闭：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgn0OYo4jdSLa0WxQUFYE7HV93NW5JN7fEZU3xJ2XiaKj8tmDJVlQpgmOWcgkEKmEHAMK2qbgzgfZg/640?wx_fmt=png&from=appmsg&randomid=tuhq27ss)
+![Image](images/640_b5a6fd6f2c77.png)
 
 在节点侧的日志中经常展示为 “Timeout after 6s of waiting for RPC response from GPUx GSP!”，与此同时也可能伴随 Xid Error 109；在用户侧的日志中经常展示为 “CUDA error: unspecified launch failure” 等。
 
@@ -255,7 +255,7 @@ PCIe 降速是非常常见但又容易被忽略的问题，其相应的也可能
 
 此时也可能会对应网卡的 CNP Slow Restart 数量增多。CNP Slow Restart 指标可以参考 roce_slow_restart_cnps：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgn0OYo4jdSLa0WxQUFYE7HyEG1cC9RjTKOqF6drL25BesHPgoAmftTESUhF7WJgOIcJEibU1CK2qQ/640?wx_fmt=png&from=appmsg&randomid=rcqb9flx)
+![Image](images/640_60d02252ea4b.png)
 
 ### 5.2 网卡抖动
 
@@ -283,7 +283,7 @@ TIPS：此时也可能会出现同一任务中，降频后的 GPU 的 SM Active 
 
 如下图 Figure 6 所示，字节在 [2402.15627] MegaScale: Scaling Large Language Model Training to More Than 10,000 GPUs [5] 中也提到过慢节点的问题。当然其也提到有些慢节点不是一直导致任务降速，而是在训练中逐渐降速。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgn0OYo4jdSLa0WxQUFYE7HxKibLoia13ibYiaBiavnA8CupLawOWGVdzB6BMeFrPw0TCiaYW01pc5QFZqA/640?wx_fmt=png&from=appmsg&randomid=qnesxkdx)
+![Image](images/640_09081c5abe44.png)
 
 可以使用 Prometheus + Node Exporter 收集 CPU、GPU、PCIe 带宽指标，定位慢节点，但是可能很不显著。也可以结合 “通信时间分布图” (比如 NCCL 中的 send/recv) 来发现潜在的慢节点。
 
@@ -307,7 +307,7 @@ Meta 在 [2410.21680] Revisiting Reliability in Large-Scale Machine Learning Res
 - 故障率稳定阶段（中期）：随着时间推移，故障率会稳定下来，进入一个恒定阶段，此阶段的故障往往比较随机。主要故障对应绿色直线。
 - 故障率上升阶段（晚期）：当集群接近其生命周期末期时，由于系统中组件逐渐磨损、老化，导致故障更加频繁，这个阶段也通常称为“磨损故障”期。主要故障对应橙色曲线。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgn0OYo4jdSLa0WxQUFYE7H0iane21fe0tdOeYn96J9ao1UEjVnpnEywAeGdQicP1m1uD5CwRSdxoFQ/640?wx_fmt=png&from=appmsg&randomid=ivyuiu79)
+![Image](images/640_88ed48d9ec84.png)
 
 ## 六、性能问题
 
@@ -321,11 +321,11 @@ Meta 在 [2410.21680] Revisiting Reliability in Large-Scale Machine Learning Res
 
 我们遇到过任务周期性降速的问题，起初怀疑过 DataLoader 和 Checkpointing 的问题，也怀疑过节点有周期性任务导致，依次都被排除；也进一步排查了 CPU、GPU、网络等均未发现明显问题；最终发现某个 Rank 中 Python 的垃圾回收机制会导致一直持有 GIL，进而导致当前 Rank 成为 Straggler，拖累整个训练任务。当任务规模比较大时，多个 Rank 在一段时间内陆续成为 Straggler，进而放大该问题的影响范围：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgn0OYo4jdSLa0WxQUFYE7HSEEgB8vvx5FfX2fSZjojNIq3icGtdLQjMfKxgoHtUApMGVEicILdDMww/640?wx_fmt=png&from=appmsg&randomid=ekk4fnl3)
+![Image](images/640_21e7dc4a93cc.png)
 
 解决上述问题的方法也比较简单粗暴，比如 Megatron-LM 中有主动 GC（Garbage Collect） 的选项（Megatron-LM/megatron/training/training.py [7]）。如下图所示，可以在一定的 Step 后所有 Rank 同时主动 GC，这样就可以将所有 Rank 的 GC 放在同一时间，降低对整个任务的影响：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgn0OYo4jdSLa0WxQUFYE7HyD7mltC509hic9YicB56w9PhAkoTu0HTIobW7CbaOONsbktxKTrjUnDw/640?wx_fmt=png&from=appmsg&randomid=7j4122xv)
+![Image](images/640_2b75334c1cc2.png)
 
 ### 6.3 调度问题导致降速
 
@@ -348,7 +348,7 @@ TIPS：集群的交付验收阶段通常会有一系列的准入测试，比如�
 
 如下图所示，在早期阶段，我们发现一个多 GPU 的任务性能不符合预期，在查看监控后发现只有一个 GPU 的 SM Active 比较高，其他 GPU 对应的 SM Active 比较低。定位后发现用户强制使用了非分配的 GPU，出现抢占问题，驱逐相应任务后速度恢复正常。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgn0OYo4jdSLa0WxQUFYE7HICf4bOgEhUv8LZmYK6ibHAicOco9W5icOQzoaoYSX9SL7etQ4CictyeORg/640?wx_fmt=png&from=appmsg&randomid=xlg4tyqw)
+![Image](images/640_8cf4df98914c.png)
 
 TIPS：通常会使用 CUDA_VISIBLE_DEVICES 和 NVIDIA_VISIBLE_DEVICES 来限制进程或容器中 GPU 的可见性；也可以通过 NVIDIA_DRIVER_CAPABILITIES 环境变量精细化控制容器内可以使用的 GPU 功能，比如如果设置不当可能导致 GPU 进行视频编解码的异常。
 
@@ -360,7 +360,7 @@ TIPS：通常会使用 CUDA_VISIBLE_DEVICES 和 NVIDIA_VISIBLE_DEVICES 来限制
 
 在 https://github.com/huggingface/transformers-bloom-inference/issues/16 [9] 也有提到类似问题：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgn0OYo4jdSLa0WxQUFYE7H2zP7ttYKLSdjokjRcv8WFPsia8wVmybVed2VGCqrqv2MRqpTVgOSMQQ/640?wx_fmt=png&from=appmsg&randomid=63vfzdo1)
+![Image](images/640_f843a4662002.png)
 
 ### 7.2 GPU OOM - 任务自身问题
 
@@ -368,7 +368,7 @@ GPU OOM 是训练中非常常见的问题，并且由于监控采集存在一定
 
 为此，可以尝试从日志中查看，如下图所示，PyTorch 会打印比较详细的 OOM 日志，通常包含 “OutofMemoryError: CUDA out of memory” 信息，并且显示当前进程已经使用了多少显存（“this process has 79.24GiB memory in use”），尝试申请多少显存（“Tried to allocate 3.38 GiB”）等信息：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgn0OYo4jdSLa0WxQUFYE7HmzdUKGDysleBI5sZRXN6lfMdd8ka7wRibkpsWatia5Tst5JWtUhMuxiag/640?wx_fmt=png&from=appmsg&randomid=e76fj3hq)
+![Image](images/640_f6ef3efe0085.png)
 
 当然，偶尔也会对应 NCCL 的 OOM，对应 “NCCL WARN CUDA failure 2 ‘out of memory’” 信息。如果是在保存 Checkpoint 这种明确的位置，可以适当的添加 torch.cuda.empty_cache() 来规避。
 
@@ -400,13 +400,13 @@ TIPS：相对 GPU 的 OOM 而言，Host Memory 的 OOM 通查更容易发现和�
 
 PyTorch 的分布式训练中，任务初始化阶段 Master 会占用一个端口，以便其他 Worker 与其通信，对应 MASTER_ADDR 和 MASTER_PORT。如果端口已经被占用，则会出现绑定失败的问题。相关环境变量如下所示，可以参考 Distributed communication package - torch.distributed — PyTorch 2.6 documentation [11]：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgn0OYo4jdSLa0WxQUFYE7HEu3BD0tAyXKmkyXGo6TrmiaxtxAopqqoLlkg6GicK08HFB92ozniaOuaQ/640?wx_fmt=png&from=appmsg&randomid=kznpxszl)
+![Image](images/640_ad3608b68717.png)
 
 如果未正确使用指定的 MASTER_PORT，则可能出现端口占用的问题，出现 “The server socket has failed to bind to [::|::xxx]”、“Address already in use” 等信息。
 
 在 PyTorch 的分布式训练中，Master 负责绑定端口，其他 Worker 与其建立连接。比如使用 HuggingFace accelerate 启动任务，由于使用方式问题，导致其他 Worker 也去尝试绑定 MASTER_PORT，则会出现 “ConnectionError: Tried to launch distributed communication on port xxx, but another process is utilizing it.” 相关信息。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgn0OYo4jdSLa0WxQUFYE7HsPrx10xib0UAM2obCEFkpYnrpfGudRntwsQN2gQhXV0zXLYQnxWEdCA/640?wx_fmt=png&from=appmsg&randomid=tq6bbzl2)
+![Image](images/640_59e5ad28ea2a.png)
 
 ### 8.2 PyTorch 初始化 Timeout
 
@@ -414,11 +414,11 @@ PyTorch 初始化阶段除了端口被占用外，另一个常见的问题是 �
 
 如下图所示，PyTorch 分布式训练中，起始阶段其他 Worker 与 Master 建立连接的默认超时时间是 300 秒：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgn0OYo4jdSLa0WxQUFYE7Hnicpibg8NicYsXrqM9zhXDz66jJJBUozK8iaSl6jqicOX5icQsIUib24iaJ3BA/640?wx_fmt=png&from=appmsg&randomid=m1zpyzu9)
+![Image](images/640_d4ae55003c88.png)
 
 可以通过 PyTorch 的 dist.init_process_group 来控制，如下图所示，不过有些框架中可能没有暴露这个接口：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgn0OYo4jdSLa0WxQUFYE7HKmT4mLIb9eCtlFlRnn7rty8vH1tslq2RBlERiaYkR1DfgicpLMcs2ekw/640?wx_fmt=png&from=appmsg&randomid=a91yv306)
+![Image](images/640_a4ae616caeae.png)
 
 这一问题常见有如下几个原因：
 
@@ -433,7 +433,7 @@ TIPS：为了更好的定位此类问题，可以在调用 torchrun 之前打印
 
 我们多次遇到用户使用 PyTorch 训练时出现类似如下的错误，日志中有 “Message truncated” 异常：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgn0OYo4jdSLa0WxQUFYE7Hh98FT8dejgnCchAG23XahsX2clRdgdKEC7wI6s7XoRIj78NgicfDcGA/640?wx_fmt=png&from=appmsg&randomid=q01t4wlz)
+![Image](images/640_8f09dde7a379.png)
 
 这个是 NCCL 2.20.x 版本的 Bug，已经在 2.21+ 版本修复，具体可以参考：[BUG] NCCL2.20.5 meets "Message truncated : received 1024 bytes instead of 256" error while 2.18.5 not · Issue #1273 · NVIDIA/nccl · GitHub
 
@@ -447,11 +447,11 @@ TIPS：为了更好的定位此类问题，可以在调用 torchrun 之前打印
 
 训练中 NCCL Hang 住或 Timeout 的问题也是非常常见的问题。如下图所示，NCCL Hang 住的典型特征是 GPU_Util 为 100%，而 GPU_SM_Active 或 GPU_Tensor_Active 指标接近于 0。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgn0OYo4jdSLa0WxQUFYE7HC9cAkx6gL6XxKdF384fGKlDF4qaSTnJF2aOLwSIsiav04BGGuqgB7hg/640?wx_fmt=png&from=appmsg&randomid=kguj5btq)
+![Image](images/640_56ba53ca0d60.png)
 
 NCCL 通信的默认 Timeout 为 30min 中，上述问题通查会在 30min 后异常退出，如下图所示：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgn0OYo4jdSLa0WxQUFYE7HI9fXbnEngic0X6YxXptic3X6qgrEuuAhQxlNaRpFvribb74C2QHkUsT8Q/640?wx_fmt=png&from=appmsg&randomid=uff222yu)
+![Image](images/640_cb61e32ab8aa.png)
 
 #### 9.3.2 NCCL 初始化 Hang 住
 
@@ -463,17 +463,17 @@ NCCL 初始化阶段 Hang 住出现的概率比较低，可能和 nvidia-fabricm
 
 NCCL 在 2.17+ 版本开始支持 NVLink Sharp，这个也是在 H100 的 NVSwitch 才支持的。当用户设置 NCCL_ALGO=NVSL 以及 NCCL_NVLS_ENABLE（默认），需要启动对应的 nvidia-fabricmanager。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgn0OYo4jdSLa0WxQUFYE7HWwQ0Kn3RRDpn9WV9NZFlmf5NyicmIMUibKRrH81CIy3m9KJfm9gsRSEQ/640?wx_fmt=png&from=appmsg&randomid=7kxakscy)
+![Image](images/640_06356cd99837.png)
 
 具体来说，我们发现多机分布式训练时 Pytorch 在初始化节点会 Hang 住，甚至用 NCCL 的 AllReduce 测试也会 Hang，但设置 NCCL_ALGO=Ring 则可以正常执行。最终发现是节点上 nvidia-fabricmanager 异常退出导致的，通过重启 nvidia-fabricmanager 可以解决（有些时候也需要重启机器 NCCL 2.18 / Cuda 12.2 fails on H100 system with transport/nvls.cc:165 NCCL WARN Cuda failure 'invalid argument' · Issue #976 · NVIDIA/nccl · GitHub [12]）。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgn0OYo4jdSLa0WxQUFYE7Hk7EEnt6fTD1VSyhGMf9Laibsuiae5XkNZK8GDicCzfb3lYNyAHPyAibrSg/640?wx_fmt=png&from=appmsg&randomid=ftrmrngh)
+![Image](images/640_8a19f6c3508a.png)
 
 #### 9.3.3 通信操作不 match 导致 NCCL Timeout
 
 PyTorch 训练中出现 NCCL Timeout 很多是因为通信操作不匹配导致的。比如，代码中有逻辑判断，只有一个 Rank[0] 在执行 AllReduce 操作，其他 Rank 都在执行 AllGather 操作，导致通信阻塞并 Timeout。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgn0OYo4jdSLa0WxQUFYE7HMqA68j8UOibAicptZiclugL8Cx22yPr4zhjUqGmBic3viaibgg32nIBEXc5g/640?wx_fmt=png&from=appmsg&randomid=f0muhxpz)
+![Image](images/640_aa766defc677.png)
 
 TIPS：这类问题通常会伴随 “[Rank 0] Watchdog caught collective operation timeout: WorkNCCL(SeqNum=xx, OpType::YYY, Numelln=xxx, NumelOut=xxx, Timeout(ms)=60000)” 日志信息，可以通过所有 Worker 的 OpType 来判断在执行什么通信操作，根据 Numellm 和 NumelOut 判断通信量。
 
@@ -481,7 +481,7 @@ TIPS：这类问题通常会伴随 “[Rank 0] Watchdog caught collective operat
 
 这个问题与上述 GPU Util 全部变为 100% 的现象稍有不同，如下图红框所示，Max 值一直是 100%，而 Min 值一直是 0%。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgn0OYo4jdSLa0WxQUFYE7HWl2uEI0iaY7p11Spy87uvZdpO8BdnutTo95LQeU606PgKWWZlbBiaWmQ/640?wx_fmt=png&from=appmsg&randomid=nd3y0r53)
+![Image](images/640_21b610866224.png)
 
 这个问题很可能是个别 Worker 出现 “torch.OutOfMemoryError: CUDA out of memory”，影响了 NCCL 通信，当前 Worker 退出，但是其他 Worker 没有感知到。
 

@@ -41,7 +41,7 @@
 - 将 query 与检索到的 chunks 进行合并。
 - 将合并后的 query 输入 LLM 用于生成，并返回生成结果。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia8oRwKVf78SAzicyVI2AlvygSmIoO7R2NoBvmzLdkMnXcHpvx0ZxtN4lYWCAP3hsrm8w5OrDzBteQ/640?wx_fmt=png&from=appmsg&randomid=6bls0ekt)
+![Image](images/640_aee355645dd5.png)
 
 #### 3.1.2. Naive RAG 不足
 
@@ -59,7 +59,7 @@
 
 如下图所示，Advanced RAG 相比 Naive RAG 进一步增加了 Pre-Retrieval 和 Post-Retrieval 模块：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia8oRwKVf78SAzicyVI2AlvyTtYqiaLSStklRY08bCCia7bHNtmfFWFZIh0v03FNjOpyR3ia6M9kQvIMA/640?wx_fmt=png&from=appmsg&randomid=6y64obwh)
+![Image](images/640_331a94671771.png)
 
 #### 3.2.2. Pre-Retrieval Process
 
@@ -97,7 +97,7 @@
 - Predict：检索的数据中可能包含噪声和冗余信息，Predict 用于使用 LLM 生成相应的确定的信息而不是直接检索。
 - Task Adapter：是指将 RAG 适配为特定的下游任务，比如从预先构建好的数据池中检索 zero-shot 任务的输入以扩展 prompt，从而增强任务的通用性。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia8oRwKVf78SAzicyVI2AlvyUyuPhORx7M50TMjHT8pD9NVJTT4XAQEIRVfw7tDM0nMrr8Agia2Q8cA/640?wx_fmt=png&from=appmsg&randomid=r5h76gdi)
+![Image](images/640_c10bac92d2fd.png)
 
 #### 3.3.3. 新的范式
 
@@ -106,7 +106,7 @@
 - 增加或替换模块：比如在 “Retrieve-Read” 的基础上增加 query 改写。
 - 调整模块 Pipeline：比如 DSP 和 ITER-RETGEN。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia8oRwKVf78SAzicyVI2AlvyNb3MqJdTh7tgxQIUlEibjcV3Rtc0ibfZTibZLbfDfqAMK1HzYnSHl8cYg/640?wx_fmt=png&from=appmsg&randomid=r0g3hove)
+![Image](images/640_a77611ea25ff.png)
 
 ## 四、RAG 优化
 
@@ -132,9 +132,9 @@
 
 类似地，可以先对整个文档进行总结归纳，基于总结构建一级索引，文档的 Chunk 构建二级索引，检索时先从总结索引中检索；此外也可以将文档中的不同元素分别建立对应类别的索引，比如对图表索引。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia8oRwKVf78SAzicyVI2AlvyNQEWqC1Z2cfP2wqB37ySwkyFULibA6bqzFbJFHBNIHqEe50jmSo79iaQ/640?wx_fmt=png&from=appmsg&randomid=nv1q85rg)
+![Image](images/640_88e4cfcfac24.png)
 
-![Image](https://mmbiz.qpic.cn/mmbiz_png/zhVlwj96tTia8oRwKVf78SAzicyVI2AlvyqrNkQvHBHyvKsibGQZ3PtYEY4FBOIjZ5uSUtiajjjwXmAVJmEg7kich3g/640?wx_fmt=png&from=appmsg&randomid=iitdvxqk)
+![Image](images/640_709c049e1e41.png)
 
 ### 4.2. 检索源优化
 
@@ -143,7 +143,7 @@ RAG 的关键是通过额外的语料库来增强 LLM 的生成质量，数据�
 - 结构化数据：越来越多的工作开始把知识图谱（Knowledge Graph，KG）引入到 RAG 中，比如 KnowledGPT 用于推理阶段，SUGRE 用于微调阶段。
 - LLM 生成的内容：除了外部知识外，LLM 本身的知识也至关重要，有些工作尝试对用户 query 进行分类，然后有选择的使用外部知识或内部知识。此外也可以用 LLM 直接生成代码等。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia8oRwKVf78SAzicyVI2AlvyXz96wpKrnSeVYA97bl7H9wdZsm3mzIj5rumdBKaPss7QEXcAQaaqIA/640?wx_fmt=png&from=appmsg&randomid=tf7m2q7c)
+![Image](images/640_b85ff82c224b.png)
 
 ### 4.3. Query 优化
 
@@ -161,7 +161,7 @@ Embedding 优化主要包括：
 - 针对任务进行微调：embedding 模型的训练预料和实际检索的语料分布可能并不相同，此时在对应语料上进行 finetuning 可以显著提升检索到的内容的相关性。比如 OpenAI 也提供了代码相关的 code embedding 模型。
 - Adapter：如下图所示，也有研究者引入 Adapter，在提取 query embedding 后进一步让 embedding 经过 Adapter，以便实现与索引更好的对齐。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia8oRwKVf78SAzicyVI2Alvyw0siamCVZMg9dIU1dD32cd39DnuLxYl3XKwM3YcXaFLV3ScEWXibznjw/640?wx_fmt=png&from=appmsg&randomid=c2nuyq7b)
+![Image](images/640_7bbab414f1af.png)
 
 ### 4.5. 检索过程优化
 
@@ -173,7 +173,7 @@ RAG 中的标准做法是通过一次检索、生成获得最终结果，然而�
 
 如下图所示， [2305.15294] Enhancing Retrieval-Augmented Large Language Models with Iterative Retrieval-Generation Synergy 中迭代检索的示例，其结合了“检索增强生成”和“生成增强检索”：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia8oRwKVf78SAzicyVI2Alvyyucf5hUqh4ZajR5U5yiaAYelbrKFK20EqDQGKsGFXd2mXVic53sTUoQA/640?wx_fmt=png&from=appmsg&randomid=n1gp2xj6)
+![Image](images/640_40338df1ad83.png)
 
 #### 4.5.2. 递归检索
 
@@ -181,7 +181,7 @@ RAG 中的标准做法是通过一次检索、生成获得最终结果，然而�
 
 如下图所示为 [2212.10509] Interleaving Retrieval with Chain-of-Thought Reasoning for Knowledge-Intensive Multi-Step Questions 中递归检索的示例，其结合思维链（COT）来指导检索过程，并根据获得的检索结果对 CoT 进行细化：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia8oRwKVf78SAzicyVI2AlvynwOicBHUh3IiaxILm3Fjqqna0NJwYCicz87ibpC6GjkicyORNMXULYiakib2Q/640?wx_fmt=png&from=appmsg&randomid=v84slwv5)
+![Image](images/640_dec3bf518546.png)
 
 #### 4.5.3. 自适应检索
 
@@ -189,7 +189,7 @@ RAG 中的标准做法是通过一次检索、生成获得最终结果，然而�
 
 如下图所示为 [2310.11511] Self-RAG: Learning to Retrieve, Generate, and Critique through Self-Reflection 中自适应检索的过程，其引入了 “Reflection” Token，允许模型内省其输出，该模型可自主决定何时激活检索，提高了模型在生成准确结果方面的自主判断能力：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia8oRwKVf78SAzicyVI2AlvyhEB60ZWW0NDK7VtXur2icrGOs9y83NLF00GINVRNlXAS4mRmjuD66ew/640?wx_fmt=png&from=appmsg&randomid=voumxpwt)
+![Image](images/640_573f088497bd.png)
 
 ## 五、RAG 评估
 
@@ -221,9 +221,9 @@ RAG 的评估通常强调 3 个主要的质量分数和 4 个基本的能力，�
 
 如下图 Table 2 和 Table 3 展示了常见的评估基准和评估工具：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia8oRwKVf78SAzicyVI2AlvyWwzFIROiaLUiaQHMeO4N8lO0G1hTZwlQAyegqqq97kvxiak46x2KFkHicg/640?wx_fmt=png&from=appmsg&randomid=fayclzcj)
+![Image](images/640_003dab552255.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia8oRwKVf78SAzicyVI2Alvym0l64cz3XsEyZBtNvhfOx0RT4ADcUiaL2jqlrOXTHuSBQZIRvaqibx7w/640?wx_fmt=png&from=appmsg&randomid=880rg2dv)
+![Image](images/640_aefef6b14250.png)
 
 ## 六、其他
 
@@ -233,19 +233,19 @@ RAG 的评估通常强调 3 个主要的质量分数和 4 个基本的能力，�
 
 如下图所示，[2211.12561] Retrieval-Augmented Multimodal Language Modeling 作者使用检索来增强图像生成和图像描述任务，embedding 模型采用 CLIP，其实现了比较好的文本-图像特征对齐，可以用于文本检索图像：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia8oRwKVf78SAzicyVI2AlvyaUiaujNqfnzQj9X9hLOIbQU3yFNcgl36tTicSbWicZ2rlwZY0SgRq3Fpw/640?wx_fmt=png&from=appmsg&randomid=j1jhu7wh)
+![Image](images/640_65a60f6fcc11.png)
 
 如下图所示，[2309.08051] Retrieval-Augmented Text-to-Audio Generation 作者使用检索来增强文本到语音生成任务：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia8oRwKVf78SAzicyVI2AlvywO0EX94BZ3A058bhGiaAECXnkArG1BbarOB57upTPsSUibQFxACxOSCw/640?wx_fmt=png&from=appmsg&randomid=uykcv8w9)
+![Image](images/640_757d11d5f9f8.png)
 
 如下图所示，Multi-Vector Retriever for RAG on tables, text, and images 作者介绍了将文档中不同内容出别处理（图片、表格、纯文本），进而提升生成质量的方案：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia8oRwKVf78SAzicyVI2AlvyjXbPMm38UvVTkmhGKVCqKmdfj2pAJhfkmxmSU4ykriaLibDGib2IibdIZg/640?wx_fmt=png&from=appmsg&randomid=t45efcqn)
+![Image](images/640_d5225c292943.png)
 
 如下图所示，[2312.14135] V*: Guided Visual Search as a Core Mechanism in Multimodal LLMs 中作者将 VQA LLM 与视觉搜索相结合，通过对视觉目标进行多轮引导搜索，能够提取局部特征，并将其添加到工作记忆中，然后 VQA LLM 利用搜索到的内容生成最终结果：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia8oRwKVf78SAzicyVI2AlvyVEWcnHp8jUtXhHDUduhMs2R8XV6gWicCusvUdDjA1OlA5Ag8Hy5JVxw/640?wx_fmt=png&from=appmsg&randomid=e7w0c2iv)
+![Image](images/640_5d86c66677d8.png)
 
 ### 6.2. 向量数据库
 
@@ -255,7 +255,7 @@ RAG 的评估通常强调 3 个主要的质量分数和 4 个基本的能力，�
 
 Milvus 创建于 2019 年，是一个用于对万亿级 embedding 进行索引、查询的开源的、高度可扩展的数据库。与现有的关系型数据库主要按照预定义的模式处理结构化数据不同，Milvus 是自下而上设计的，用于处理从非结构化数据转换而来的嵌入矢量。Milvus 能够通过计算两个 embedding 的相似距离来分析它们之间的相关性，如果两个 embedding 矢量非常相似，则意味着原始数据源也相似。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia8oRwKVf78SAzicyVI2AlvyNnCEYRw8jTZicnsGKhO9l6ZNdhe7648yrOtZtfjMj3SuWHmxNJfcdrw/640?wx_fmt=png&from=appmsg&randomid=8c4j0kob)
+![Image](images/640_4daa0a15aa3d.png)
 
 Milvus 的使用很简单，并且具有高可用、云原生等特性，还提供了大量索引类型，比如 FLAT, IVF_FLAT, IVF_PQ, HNSW, RHNSW_FLAT, RHNSW_PQ, RHNSW_SQ, and, ANNOY。
 
@@ -263,19 +263,19 @@ Milvus 的使用很简单，并且具有高可用、云原生等特性，还提�
 
 Pinecone 也是一个非常流行的云原生向量数据库，其基于 Kubernetes 部署，对外提供 API Gateway，并将这些请求路由到用户索引。基于 Pinecone，用户可以在短短 30s 内创建索引，并为搜索、推荐等应用执行超快速检索，它支持数十亿规模的 embedding，也可以通过 Metadata 进行过滤以及实时更新。然而，Pinecone 是闭源的，也就意味着无法私有化部署。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia8oRwKVf78SAzicyVI2Alvyt14NUBicEzwyggTe4XZrbCX7jbxyE6sM70LXyKbwRhUU7B1jAcBRdkQ/640?wx_fmt=png&from=appmsg&randomid=eqn6asbf)
+![Image](images/640_691dad4c9580.png)
 
 #### 6.2.3. Chroma
 
 Chroma 也是一个开源的向量数据库，可以用于存储和检索 embedding 以及相应的 Metadata，其使用非常简单，也很轻量化，很适合做本地化部署和用于快速验证：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia8oRwKVf78SAzicyVI2Alvy83UQrPsRic41leWPdtnCoxjic5cDPVXv0dtMMrxnxdJ9HZILlv1UDXYA/640?wx_fmt=png&from=appmsg&randomid=4pldl7nk)
+![Image](images/640_75f564941d28.png)
 
 #### 6.2.4. Elasticsearch
 
 Elasticsearch 是一个开源的分布式搜索和分析引擎，它是基于Apache Lucene 搜索引擎构建的。它提供了强大的全文搜索能力，支持实时数据分析，并能够处理大规模数据。Elasticsearch 专注于混合检索，将文本和矢量搜索功能无缝结合，以实现卓越的相关性和准确性。其支持各种检索类型、机器学习模型架构和强大的搜索体验构建工具。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia8oRwKVf78SAzicyVI2Alvyo26bPicWO1S3rfu88bOYeIL9c17SwpjZaPTKUL5VrL4Ng0hblPeBSuA/640?wx_fmt=png&from=appmsg&randomid=4cy4vshm)
+![Image](images/640_65a6d1c6a82f.png)
 
 ### 6.3. RAG 框架
 
@@ -285,7 +285,7 @@ Elasticsearch 是一个开源的分布式搜索和分析引擎，它是基于Apa
 
 LlamaIndex 以前称为 GPT Index，是一个新的数据框架，专门用于支持基于 LLM 的应用开发。它提供了一个高级框架，使开发人员能够将各种数据源与 LLM 集成，包括各种文档格式，例如 PDF、PowerPoint，以及 Notion 和 Slack 等应用，甚至 Postgres 和 MongoDB 等数据库。它包含一系列连接器，可协助数据获取，促进与 LLM 的无缝交互。此外，LlamaIndex 拥有高效的数据检索和查询界面，也支持不同类型的索引，例如矢量、树、列表、关键字和知识图谱索引。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia8oRwKVf78SAzicyVI2AlvyLMI9QIT763ibJiaaSI2bZv7o7EKrJ9ptbSYBGy5ySB8ib7ScK7sMs9Y9w/640?wx_fmt=png&from=appmsg&randomid=jrplgtn6)
+![Image](images/640_dfa74368cd06.png)
 
 #### 6.3.2. Haystack
 
@@ -299,13 +299,13 @@ Haystack 使用一些简单但有效的概念来帮助用户构建自定义的 N
 
 如下图所示为使用 Haystack 构建的信息检索和问答系统：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia8oRwKVf78SAzicyVI2AlvytOVxZTLONoXe67l9pH9y8rjzUxk3vp4OoqbZhQ40eXVIaeMRicJSQzA/640?wx_fmt=png&from=appmsg&randomid=dkhk86av)
+![Image](images/640_4e682c0cdce3.png)
 
 #### 6.3.3. LangChain
 
 LangChain 是一个最流行的以 LLM 为驱动的用于开发 AI 应用的框架。如下为其架构图，由于其非常流行，这里就不再赘述：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia8oRwKVf78SAzicyVI2AlvysgD2yLdzfhtrHMvDdztpHYZRzsmv3uQRFc9v1vvWvoFBSB0eMxZMEA/640?wx_fmt=png&from=appmsg&randomid=fmfm887s)
+![Image](images/640_e4b8e0971e16.png)
 
 ## 七、相关链接
 

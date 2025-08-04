@@ -26,7 +26,7 @@ SDXL-Turbo 对应的代码库为：Generative Models by Stability AI
 
 1. [文生图模型演进：AE、VAE、VQ-VAE、VQ-GAN、DALL-E 等 8 模型](http://mp.weixin.qq.com/s?__biz=Mzk0ODU3MjcxNA==&mid=2247485323&idx=1&sn=4408ac639f54f87c62cb64503cc2e9d9&chksm=c364c0cef41349d8f7a0c2d388b3de7bdfef049c8024b09e382e20a8e337e7c7acbca7b0a8e7&scene=21#wechat_redirect)
 2. [OpenAI 文生图模型演进：DDPM、IDDPM、ADM、GLIDE、DALL-E 2、DALL-E 3](http://mp.weixin.qq.com/s?__biz=Mzk0ODU3MjcxNA==&mid=2247485383&idx=1&sn=13c638d36899e6b3f8935be850b8ba79&chksm=c364c082f4134994d7672f4c35d5044b7271ec9978ac6f4fc5015da01f10f5388d4983c1deaa&scene=21#wechat_redirect)3. [Google 图像生成模型 ViT-VQGAN & Parti-20B](http://mp.weixin.qq.com/s?__biz=Mzk0ODU3MjcxNA==&mid=2247485482&idx=1&sn=d508b9e561db18763d6abe7860246cb0&chksm=c364cf6ff4134679717c65ed5e4baf9f927c048e68948aa05920c0dd001e3b2116147c5678dd&scene=21#wechat_redirect)4. [Google 图像生成模型 MaskGIT & Muse, 并行解码 60 倍加速](http://mp.weixin.qq.com/s?__biz=Mzk0ODU3MjcxNA==&mid=2247485483&idx=1&sn=eaa53acbeb203f9d010a4506ca9ac6bc&chksm=c364cf6ef4134678db1caba5efa5c5a615a3804f796975349ed2c070431c98a6b3905dc57109&scene=21#wechat_redirect)5. [Google 最强文生图模型 Imagen & Imagen 2](http://mp.weixin.qq.com/s?__biz=Mzk0ODU3MjcxNA==&mid=2247485527&idx=1&sn=d9ef1fed4ad899cf220ccca16c841433&chksm=c364cf12f41346048b6b1aa63e21bf0d1ccca3516e94667c8923511e9c4d6c8516572579b722&scene=21#wechat_redirect)
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgdcmGAZ0wl1a0uya0eCfUWFudehqGHgmfxTy4R9tyvmUx7UanvabkS5IQYbboCpdO7KstDMKJicFA/640?wx_fmt=png&from=appmsg&randomid=3zmfmusl)
+![Image](images/640_a0788d4b2d7f.png)
 
 ## 二、摘要
 
@@ -38,17 +38,17 @@ SDXL-Turbo 对应的代码库为：Generative Models by Stability AI
 
 如下图 Figure 5 所示为其文本引导图像生成的结果：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgdcmGAZ0wl1a0uya0eCfUWHlz6eicdLUkOJ6IBkTnEI9x3ONId8IDWibVAuyzW42X3DscyalM5asXA/640?wx_fmt=png&from=appmsg&randomid=qfq92rdz)
+![Image](images/640_45f46fb06be4.png)
 
 在 Stable Diffusion（LDM）的基础上，SDXL 将 U-Net 主干扩大了三倍：模型参数增加主要是使用了第二个 Text Encoder，因此也就使用更多的 Attention Block 和 Cross Attention 上下文。此外，作者设计了多分辨率训练方案，在多个不同长宽比的图像上训练。作者还引入了一个细化模型，用于进一步提升生成图像的视觉逼真度。结果表明，与之前版本的 Stable Diffusion 相比，SDXL 的性能有了显著提升，并取得与其他非开源模型相当的效果。此次的模型和代码同样完全开源。
 
 如下图所示为 SDXL 生成的图像：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgdcmGAZ0wl1a0uya0eCfUWs2tX5micxpz1xcWuCrWNRkfYDlrHzoVYreNt0KR7DyeN7eHAINkDmTw/640?wx_fmt=png&from=appmsg&randomid=6ncpry5s)
+![Image](images/640_32a424eb89f0.png)
 
 在 SDXL 的基础上，作者提出了对抗性扩散蒸馏技术（Adversarial Diffusion Distillation，ADD），将扩散模型的步数降低到 1-4 步，同时保持很高的图像质量。结果表明，模型在 1 步生成中明显优于现有的几步生成方法，并且仅用 4 步就超越了最先进的 SDXL 的性能。训练出的模型称为 SDXL-Turbo。
 
-如下图 Figure 1 所示为 SDXL-Trubo 生成的图像：![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgdcmGAZ0wl1a0uya0eCfUW5UgtD5gHhHaGVmfyPuNFt4hibKWV66BScHaJ7Z1Va3pYfKQOJmzzvSA/640?wx_fmt=png&from=appmsg&randomid=f61frf1r)
+如下图 Figure 1 所示为 SDXL-Trubo 生成的图像：![Image](images/640_60dacb0000de.png)
 
 ## 三、Latent Diffusion Model（LDM）
 
@@ -62,7 +62,7 @@ LDM 和其他扩散生成模型结构类似，整体来说包含三个组件：
 - 对于图像类型条件，比如图像修复、分割条件，可以将其编码后与噪声 Concat 作为输入，而不是通过 Attention 机制交叉。
 - Denoising U-Net：下图中间部分，用于从随机噪声 zT 中通过几步迭代生成 latent code，然后使用 Decoder 恢复出图像。其中的各种条件信息都会通过 Cross Attention 进行交叉融合。需要说明的是，U-Net 生成的目标是 x 经 Encoder 编码后的 embedding，通常也称为隐向量，而不是直接生成图像像素，因此说 U-Net 是作用在隐空间（Latent Space）。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgdcmGAZ0wl1a0uya0eCfUWCtShyMcdcUaa7H7iaRIWTIHCcR8LibDyUaMXRQBPM42z8pq9hdibGqicmg/640?wx_fmt=png&from=appmsg&randomid=77xwuw80)
+![Image](images/640_0f054088c165.png)
 
 ### 3.2. AutoEncoder
 
@@ -70,17 +70,17 @@ AutoEncoder 中的 Encoder 用于对图像 x 进行压缩，假设输入图像�
 
 作者在类别条件生成任务上对几种压缩比进行了实验验证，如下图 Figure 6 所示，可见 LDM-4、LDM-8、LDM-16 获得最好的平衡。LDM-32 的压缩率太高，反而影响了生成质量：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgdcmGAZ0wl1a0uya0eCfUWIVia6fgyeIsuEGzarWMCqCia0ib60bVSiaJz3oYoGywn7G8icTEibdYUlERA/640?wx_fmt=png&from=appmsg&randomid=hgbwvlk7)
+![Image](images/640_e7a847afa699.png)
 
 如下图 Table 6 所示，作者同样在图像修复任务上验证了不同压缩率、Cross Attention 的影响，可以看出 LDM-4 的训练、推理吞吐相比 LDM-1 有明显提升，并且 Attention 对吞吐的影响也不大。同时 LDM-4 还获得更好的效果（更低的 FID）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgdcmGAZ0wl1a0uya0eCfUWv9MZ1ib38icENtqy3Oic47V7Zb5Uwj96ARbdWibvFGkIYboz02FeljZhbg/640?wx_fmt=png&from=appmsg&randomid=26715f23)
+![Image](images/640_6e2fc8818845.png)
 
 ### 3.3. Latent Diffusion Models
 
 本文中作者使用的 U-Net 模型是基于 OpenAI Diffusion Models Beat GANs 中的 Ablated U-Net 修改而来，具体来说是将其中的 Self-Attention 替换为 T 个 Transformer block，每个 block 中包含一个 Self-Attention，一个 MLP 和一个 Cross-Attention，如下图所示，其中的 Cross Attention 就是用于和其他条件的 embedding 进行交叉融合：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgdcmGAZ0wl1a0uya0eCfUWSnUDpuDe2JFqUH4cjYHdtSIxBVEBzAbzRu1AibibaFpwTpXSzfNysY9A/640?wx_fmt=png&from=appmsg&randomid=w421rc3y)
+![Image](images/640_e506a2d0ea76.png)
 
 ### 3.4. Conditioning 机制
 
@@ -88,23 +88,23 @@ LDM 支持多种条件类型，比如类别条件、文本条件、分割图条�
 
 对于文本条件，可以使用常用的文本 Encoder，比如 Bert 模型，或者 CLIP 的 Text Encoder，其首先将文本转换为 Token，然后经过模型后每个 Token 都会对应一个 Token embedding，所以文本条件编码后变为一个 Token embedding 序列。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgdcmGAZ0wl1a0uya0eCfUW7vsR9a6cuEpo8aHAau15TgEAOMF47tiaaESthMHamT5IgVtG6GfWH9w/640?wx_fmt=png&from=appmsg&randomid=k1al7r0w)
+![Image](images/640_d5cf9b8c30f4.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgdcmGAZ0wl1a0uya0eCfUWAGND8ibpsYdfJH8ptblckvkr8IPMLKSMMlN8TW5Yt1SgYrP3wNYzk3g/640?wx_fmt=png&from=appmsg&randomid=z4bumd2l)
+![Image](images/640_11fa6c06f308.png)
 
-对于 layout 条件，比如常见的边界框，每个边界框都会以（l,b,c）的方式编码，其中 l 表示左上坐标，b 表示右下坐标，c 表示类别信息。![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgdcmGAZ0wl1a0uya0eCfUW3p3zaJkwoXEdbV6hHaZFcLfqictcQRMDYTIN7WpetUYITkSE3pfrrDQ/640?wx_fmt=png&from=appmsg&randomid=d93zu7yh)
+对于 layout 条件，比如常见的边界框，每个边界框都会以（l,b,c）的方式编码，其中 l 表示左上坐标，b 表示右下坐标，c 表示类别信息。![Image](images/640_4e328a26b42f.png)
 
-对于类别条件，每个类别都会以一个可学习的 512 维向量表示，同样通过 Cross-Attention 机制融合。![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgdcmGAZ0wl1a0uya0eCfUWXRZs1H47vg7aicksNjyufqicUAKjzAFzZ8JXLNMG4bR1cF6WjBYOibcIQ/640?wx_fmt=png&from=appmsg&randomid=cff2ejxe)
+对于类别条件，每个类别都会以一个可学习的 512 维向量表示，同样通过 Cross-Attention 机制融合。![Image](images/640_7070c8289f51.png)
 
 对于分割图条件，可以将图像插值、卷积后编码为 feature map，然后作为条件。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgdcmGAZ0wl1a0uya0eCfUWqO2LPZbx5x3VZiaOb2DbUicPg8MJo4hJ6FHrbMy2VojdcIsaeNzSjp7w/640?wx_fmt=png&from=appmsg&randomid=biysfpvj)
+![Image](images/640_73d122bc1fb8.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgdcmGAZ0wl1a0uya0eCfUWsKsshlARBFsCLDYiczlxGLRRGDBibvfTWZoaemuhk4HycAzHvVMqdVNw/640?wx_fmt=png&from=appmsg&randomid=5a4hcew2)
+![Image](images/640_82f2bf26d529.png)
 
-其中文本条件和 layout 条件都通过 Transformer Encoder 编码，对应的超参如下图 Table 17 所示，也就是文本最多只能编码为 77 个 Token，Layout 最多编码为 92 个 Token：![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgdcmGAZ0wl1a0uya0eCfUWVZlh85h818SicvaWJRCpiaVxlHC1vk7JcensvwlWBC3xZfZnmYibSVdgQ/640?wx_fmt=png&from=appmsg&randomid=lkxtgjkb)
+其中文本条件和 layout 条件都通过 Transformer Encoder 编码，对应的超参如下图 Table 17 所示，也就是文本最多只能编码为 77 个 Token，Layout 最多编码为 92 个 Token：![Image](images/640_98fb3a7d1d60.png)
 
-所谓的 layout-to-image 生成如下图所示，给定多个边界框，每个边界框有个类别信息，生成的图像要在对应的位置生成对应的目标：![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgdcmGAZ0wl1a0uya0eCfUWFBOHFuwWlmwGgtEXzMWQwsH23a32haxZDRCjeNxp3J3IuRQaWnbVQA/640?wx_fmt=png&from=appmsg&randomid=r55q1f3g)
+所谓的 layout-to-image 生成如下图所示，给定多个边界框，每个边界框有个类别信息，生成的图像要在对应的位置生成对应的目标：![Image](images/640_6d432aa30a90.png)
 
 ### 3.5. 实验结果
 
@@ -112,25 +112,25 @@ LDM 支持多种条件类型，比如类别条件、文本条件、分割图条�
 
 如下图 Table 1 所示，作者在多个任务上评估了 LDM-4 和 LDM-8 的无条件图像生成效果，可以看出，在大部分任务上都获得了很不错的结果：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgdcmGAZ0wl1a0uya0eCfUW8y8TjPMmJsNX1aAskOhu17RtpTx67e5nm3G8qLCcZJHvJGF3d2dkIw/640?wx_fmt=png&from=appmsg&randomid=5869yh73)
+![Image](images/640_75444fe75277.png)
 
 #### 3.5.2. 类别条件生成
 
 如下图 Table 3 所示，作者同样在 ImageNet 上与 ADM（Diffusion Model Beat GANs）等模型进行了类别条件图像生成对比，可见在 FID 和 IS 指标上获得了最优或次优的结果：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgdcmGAZ0wl1a0uya0eCfUWW2P8mkkFjRdUgEjxltg7nCTN9uGlk0hDXiaSZ6nSUtPacykib8GibLRRg/640?wx_fmt=png&from=appmsg&randomid=6b9s5zod)
+![Image](images/640_6ccf2b71e7e7.png)
 
 #### 3.5.3. LDM-BSR
 
 作者同样将 BSR-degradation 应用到超分模型的训练，获得了更好的效果，BSR degradation Pipeline 包含 JPEG 压缩噪声、相机传感器噪声、针对下采样的不同图像插值方法，高斯模糊核以及高斯噪声，并以随机顺序应用于图像（具体可参考代码 https://github.com/CompVis/stable-diffusion/blob/main/ldm/modules/image_degradation/bsrgan_light.py），最终获得了不错的效果：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgdcmGAZ0wl1a0uya0eCfUWRKRNkkfaNWRLpn39UsSxuaXDfvWjZcJBuXicQCMZrUHCaiaO7kb67drA/640?wx_fmt=png&from=appmsg&randomid=ffq271ha)
+![Image](images/640_e065e7ce48d9.png)
 
 ### 3.6. 计算需求
 
 作者与其他模型对比了训练和推理的计算需求和相关的参数量、FID、IS 等指标，提出的模型在更小的代价下获得更好的效果：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgdcmGAZ0wl1a0uya0eCfUW5pmsWmrn2XPicUPd7sK4dv2yqXcWcIic2HQ2m50kI3o5bkpvY9YASGkg/640?wx_fmt=png&from=appmsg&randomid=6ld6nhd9)
+![Image](images/640_18c13890abee.png)
 
 ## 四、SDXL
 
@@ -142,9 +142,9 @@ LDM 支持多种条件类型，比如类别条件、文本条件、分割图条�
 - 使用 CLIP ViT-L 和 OpenCLIP ViT-bigG 两个 text encoder
 - 基于 OpenCLIP 的 text embedding 增加了一个 pooled text embedding
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgdcmGAZ0wl1a0uya0eCfUWyTZ35QrLCqBmmxibjoKYiaNpRU9g4ZfYw3ykuyMkCazicyWAB40t8UXVA/640?wx_fmt=png&from=appmsg&randomid=iai3pbfs)
+![Image](images/640_19c413489334.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgdcmGAZ0wl1a0uya0eCfUWVdT8ia1k6nxCLCeibbiaB52ODlBaF9tyggMCrouXASIVbNiawLbFq8f1LA/640?wx_fmt=png&from=appmsg&randomid=qrv34d2c)
+![Image](images/640_6bcc4fa79fa9.png)
 
 ### 4.2. 微条件（Micro-Conditioning）
 
@@ -155,25 +155,25 @@ LDM 支持多种条件类型，比如类别条件、文本条件、分割图条�
 - 丢弃分辨率过小的图像（例如，SD 1.4/1.5 丢弃了小于 512 像素的图像）。但是这可能导致丢弃过多数据，如下图 Figure 2 所示为预训练数据集中图像的长、宽分布，如果丢弃 256x256 分辨率的图像，将导致 39% 的数据被丢弃。
 - 另一种方式是放大图像，但是可能会导致生成的样本比较模糊。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgdcmGAZ0wl1a0uya0eCfUWar4H2ug7EEWSxgnfH5KOiap5IAoNRuKYFibCMTq6kY7sLAvwDqQgX9UA/640?wx_fmt=png&from=appmsg&randomid=y58rs584)
+![Image](images/640_2804ef204a0c.png)
 
 针对这种情况，作者提出将原始图像分辨率作用于 U-Net 模型，并提供图像的原始长和宽（csize = (h, w)）作为附加条件。并使用傅里叶特征编码，然后会拼接为一个向量，把它扩充到时间步长 embedding 中并一起输入模型。
 
-如下图所示，在推理时指定不同的长宽即可生成相应的图像，（64,64）的图像最模糊，（512, 512）的图像最清晰：![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgdcmGAZ0wl1a0uya0eCfUWDoU3IicyAdFibLXuzibKyZica8KdQCOAKXN2coRAuVNLINrpGibHbGp683w/640?wx_fmt=png&from=appmsg&randomid=nv4ekyvc)
+如下图所示，在推理时指定不同的长宽即可生成相应的图像，（64,64）的图像最模糊，（512, 512）的图像最清晰：![Image](images/640_638354e319c4.png)
 
 #### 4.2.2. 以裁剪参数作为条件
 
 此外，以前的 SD 模型存在一个比较典型的问题：生成的物体不完整，像是被裁剪过的，如下图 SD1.5 和 SD 2.1 的结果。作者猜测这可能和训练阶段的随机裁剪有关，考虑到这个因素，作者将裁剪的左上坐标（top, left）作为条件输入模型，和 size 类似。如下图 Figure 4 中 SDXL 的结果，其生成结果都更加完整：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgdcmGAZ0wl1a0uya0eCfUWoaO2W9wHXWFyqRdeDjyMMnCCBGwEZicuqmnVXfMLoZWh3e2jTicAUg3w/640?wx_fmt=png&from=appmsg&randomid=hzemcz69)
+![Image](images/640_a0364f654f4a.png)
 
-如下图 Figure 5 所示，在推理阶段也可以通过裁剪坐标来控制位置关系：![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgdcmGAZ0wl1a0uya0eCfUWPjCJtrDYdic95YLKR3viclicqCEacb515PD7riaHA8S1PlTu4b9oqIAKUw/640?wx_fmt=png&from=appmsg&randomid=13v7u6wn)
+如下图 Figure 5 所示，在推理阶段也可以通过裁剪坐标来控制位置关系：![Image](images/640_1015c11dc9b2.png)
 
 ### 4.3. 多分辨率训练
 
 真实世界的图像会包含不同的大小和长宽比，而文本到模型生成的图像分辨率通常为 512x512 或 1024x1024，作者认为这不是一个自然的选择。受此启发，作者以不同的长宽比来微调模型：首先将数据划分为不同长宽比的桶，其中尽可能保证总像素数接近 1024x1024 个，同时以 64 的整数倍来调整高度和宽度。如下图所示为作者使用的宽度和高度。在训练过程中，每次都从同样的桶中选择一个 batch，并在不同的桶间交替。此外，和之前的 size 类似，作者会将桶的高度和宽度 （h, w）作为条件，经傅里叶特征编码后添加到时间步 embedding 中：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgdcmGAZ0wl1a0uya0eCfUWKYpOZf0bichJ7Ewy4mKZzVU9tHzmZJAUNMWuHy0Aib7tCvup6qLZS3MA/640?wx_fmt=png&from=appmsg&randomid=onldzmu6)
+![Image](images/640_e56c1952a506.png)
 
 ### 4.4. 训练
 
@@ -189,13 +189,13 @@ SDXL 模型的训练包含多个步骤：
 
 如下图所示，作者基于用户评估，最终带有 Refiner 的 SDXL 获得了最高分，并且 SDXL 结果明显优于 SD 1.5 和 SD 2.1。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgdcmGAZ0wl1a0uya0eCfUWC7XF9UicxPEzXN4oOFMwPAgv6GCmKicQTTmFWmIsXe0Yb760Muo5LiaVA/640?wx_fmt=png&from=appmsg&randomid=dk4sob0q)
+![Image](images/640_ecdc145e7267.png)
 
-如下图 Figure 10 所示为 SDXL（没有 Refiner） 和 Midjourney 5.1 的对比结果，可见 SDXL 的结果略胜一筹：![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgdcmGAZ0wl1a0uya0eCfUWs5aMQbPbnZR6O7iasR45cG6IwKalElfib0ciar8BuXwrnoGDdsibdnNx9g/640?wx_fmt=png&from=appmsg&randomid=dvvpqaqd)
+如下图 Figure 10 所示为 SDXL（没有 Refiner） 和 Midjourney 5.1 的对比结果，可见 SDXL 的结果略胜一筹：![Image](images/640_c73384b05153.png)
 
 如下图 Figure 11 所示为 SDXL（带有 Refiner） 和 Midjourney 5.1 的对比结果，可见 SDXL 的结果同样略胜一筹：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgdcmGAZ0wl1a0uya0eCfUWUTdLeLtwaRfENE9moXgGETicFucjt5pRQsl6QTJzv7eFtibBSyKAqhfQ/640?wx_fmt=png&from=appmsg&randomid=bchd5ebd)
+![Image](images/640_0543b2ddf462.png)
 
 ## 五、SDXL-Turbo
 
@@ -211,7 +211,7 @@ SDXL-Turbo 在模型上没有什么修改，主要是引入蒸馏技术，以便
 - 基于学生模型去噪图像 xθ 和教师模型去噪图像 xψ 计算蒸馏损失（distillation）。
 - 根据损失进行反向传播（注意，教师模型不更新，因此会 stop 梯度）。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgdcmGAZ0wl1a0uya0eCfUW1ZQdhCNgx3HZRvRGtKibpNTRROFmVoSCrCPfbQGsRRKselr0ItklsXQ/640?wx_fmt=png&from=appmsg&randomid=mtk07cf2)
+![Image](images/640_553c171b16ef.png)
 
 需要说明的是，通常 ADD-student 模型需要预训练过程，然后再蒸馏。此外，Tstudent 的 N 比较小，作者设置为 4，而 Tteacher 的 N 比较大，为 1000。也就是学生模型可能只加噪 1,2,3,4 步，而教师模型可能加噪 1-1000 步。
 
@@ -228,17 +228,17 @@ SDXL-Turbo 在模型上没有什么修改，主要是引入蒸馏技术，以便
 - (e) 不同学生模型和教师模型的影响。
 - (f) 教师 step 的影响。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgdcmGAZ0wl1a0uya0eCfUWTv560APRaM6v91sKVWUZfv3adEtcM5Lrp48fX0FW0JzeCRJHrV6P1Q/640?wx_fmt=png&from=appmsg&randomid=55fw15zf)
+![Image](images/640_5cb48c877663.png)
 
 ### 5.3. 实验结果
 
 如下图所示，作者与不同的蒸馏方案进行了对比，本文提出的方案只需一步就能获得最优的 FID 和 CLIP 分数：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgdcmGAZ0wl1a0uya0eCfUWIicc22CuAiaAxGYvRI1rrxYUsicXjZhM9q11ydwwHYWRHm4udf7N1pP3w/640?wx_fmt=png&from=appmsg&randomid=lbkllg3j)
+![Image](images/640_eb5fe726fca3.png)
 
-如下图 Figure 5 和 Figure 6 所示为性能和速度的对比，ADD-XL 1 步比 LCM-XL 4 步的效果更好，同时 ADD-XL 4 步可以超越 SDXL 50 步的结果，总之，ADD-XL 获得了最佳性能：![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgdcmGAZ0wl1a0uya0eCfUW9UMQXiahhZNSo69xjt4fg2a1sXEibibiau70ayqta0IrfrxLkoUMjDEwvw/640?wx_fmt=png&from=appmsg&randomid=6hex407w)
+如下图 Figure 5 和 Figure 6 所示为性能和速度的对比，ADD-XL 1 步比 LCM-XL 4 步的效果更好，同时 ADD-XL 4 步可以超越 SDXL 50 步的结果，总之，ADD-XL 获得了最佳性能：![Image](images/640_e746800b8d54.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgdcmGAZ0wl1a0uya0eCfUW7MeX390vUPZ2Fqx9ibgwiaiaAGSfSJO7xicBJjBpUNkooTT8ZicU1C1SgEw/640?wx_fmt=png&from=appmsg&randomid=fyqwvpy7)
+![Image](images/640_f672a7deafdf.png)
 
 ## 六、演进
 
@@ -277,7 +277,7 @@ Stable Diffusion 的第一个版本，特指文生图扩散模型，位于代码
 
 对应的 FID 和 CLIP 分数如下图所示，可见从 v1-1 到 v1-2，再到 v1-3 提升都很明显，v1-3 和 v1-4 差距不大：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgdcmGAZ0wl1a0uya0eCfUWTFEWUB2NoQgm2icIGuQrQ48Izu6ibEnuibE4nWs1toTfic7X9O8q6ZNC2w/640?wx_fmt=png&from=appmsg&randomid=71tppjjn)
+![Image](images/640_fc965e35381f.png)
 
 ### 6.3. Stable Diffusion V1.5
 
@@ -292,11 +292,11 @@ Stable Diffusion 的 V1.5 版本，由 runway 发布，位于代码库 GitHub - 
 
 对应的 FID 和 CLIP 分数如下图所示，可以看出，v1.5 相比 v1.4 的提升也不是很明显：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgdcmGAZ0wl1a0uya0eCfUWjictxSgtnkrB46oPlttQJQ4aiaEgVwx4F4Map9iaLB7pyFfEAbw0WBMUg/640?wx_fmt=png&from=appmsg&randomid=vxetuq8s)
+![Image](images/640_b1007e35ca55.png)
 
 如下图所示为图像修复的示例：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgdcmGAZ0wl1a0uya0eCfUWYA6FTt1NWu37jqye0ufE36yReva8FRg6BzaTWtyocUO1FmUWOkOzUA/640?wx_fmt=png&from=appmsg&randomid=8h1828s7)
+![Image](images/640_caa6abf05cad.png)
 
 ### 6.3. Stable Diffusion V2
 
@@ -318,7 +318,7 @@ V2 包含三个子版本，分别为 v2.0，v2.1 和 Stable UnCLIP 2.1：
 
 如下图所示为 v2.0 和 v2.0-v 与 v1.5 的对比，可见其都有明显提升：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgdcmGAZ0wl1a0uya0eCfUW0EKtEEd3icYFBJLrHuK6eVfG01l0sEvHLnNK6PrXzlqmPd6o3RAUiatQ/640?wx_fmt=png&from=appmsg&randomid=5nymbv3a)
+![Image](images/640_db9a354917c8.png)
 
 ### 6.4. Stable Diffusion XL
 

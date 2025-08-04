@@ -15,7 +15,7 @@
 1. [文生图模型演进：AE、VAE、VQ-VAE、VQ-GAN、DALL-E 等 8 模型](http://mp.weixin.qq.com/s?__biz=Mzk0ODU3MjcxNA==&mid=2247485323&idx=1&sn=4408ac639f54f87c62cb64503cc2e9d9&chksm=c364c0cef41349d8f7a0c2d388b3de7bdfef049c8024b09e382e20a8e337e7c7acbca7b0a8e7&scene=21#wechat_redirect)
 2. [OpenAI 文生图模型演进：DDPM、IDDPM、ADM、GLIDE、DALL-E 2、DALL-E 3](http://mp.weixin.qq.com/s?__biz=Mzk0ODU3MjcxNA==&mid=2247485383&idx=1&sn=13c638d36899e6b3f8935be850b8ba79&chksm=c364c082f4134994d7672f4c35d5044b7271ec9978ac6f4fc5015da01f10f5388d4983c1deaa&scene=21#wechat_redirect)3. [Google 图像生成模型 ViT-VQGAN & Parti-20B](http://mp.weixin.qq.com/s?__biz=Mzk0ODU3MjcxNA==&mid=2247485482&idx=1&sn=d508b9e561db18763d6abe7860246cb0&chksm=c364cf6ff4134679717c65ed5e4baf9f927c048e68948aa05920c0dd001e3b2116147c5678dd&scene=21#wechat_redirect)4. [Google 图像生成模型 MaskGIT & Muse, 并行解码 60 倍加速](http://mp.weixin.qq.com/s?__biz=Mzk0ODU3MjcxNA==&mid=2247485483&idx=1&sn=eaa53acbeb203f9d010a4506ca9ac6bc&chksm=c364cf6ef4134678db1caba5efa5c5a615a3804f796975349ed2c070431c98a6b3905dc57109&scene=21#wechat_redirect)5. [Google 最强文生图模型 Imagen & Imagen 2](http://mp.weixin.qq.com/s?__biz=Mzk0ODU3MjcxNA==&mid=2247485527&idx=1&sn=d9ef1fed4ad899cf220ccca16c841433&chksm=c364cf12f41346048b6b1aa63e21bf0d1ccca3516e94667c8923511e9c4d6c8516572579b722&scene=21#wechat_redirect)6. [Stable Diffusion 模型演进：LDM、SD 1.0, 1.5, 2.0、SDXL、SDXL-Turbo 等](http://mp.weixin.qq.com/s?__biz=Mzk0ODU3MjcxNA==&mid=2247485528&idx=1&sn=5f1bc1a973eccc58e61c6fa426b78e62&chksm=c364cf1df413460b345a9dae1844e7e00b2ee5c125b3c1687017ba78ac5e5043f85d46440a5c&scene=21#wechat_redirect)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTcHS5cX47xYBKKZ3DKzhiaymJxQiaNVb8P8O5hyes6bQfiah6QEYrLQ7zBw/640?wx_fmt=png&from=appmsg&randomid=m046981c)
+![Image](images/640_83702e2f6e59.png)
 
 ## 二、任务场景
 
@@ -31,7 +31,7 @@ CelebA-HQ（人脸）、FFHQ（人脸）、LSUN-Churches（教堂） 和 LSUN-Be
 - FFHQ 同样是高质量的人脸数据集，包含 70,000 张 1024x1024 分辨率的高质量人脸图像，有不同的种族、肤色和背景等。（https://github.com/NVlabs/ffhq-dataset）
 - LSUN 数据集包含 10 个场景类别，包括卧室、厨房、教堂等等，每个图像的大小都为 256x256 分辨率，每个类别包含 120,000 到 3,000,000 张图像。
 
-如下图所示为分别基于以上数据集训练之后（4 个模型）生成的图像示例（来自 LDM）：![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTc5kMJ1tp0p4gReiaEKvlyXeyYqhs2iaibgmkO5r74MSqDVgic0eAGfhKAyg/640?wx_fmt=png&from=appmsg&randomid=ow8ytqdr)
+如下图所示为分别基于以上数据集训练之后（4 个模型）生成的图像示例（来自 LDM）：![Image](images/640_8d401df49b0e.png)
 
 ### 2.2. 有条件生成
 
@@ -43,7 +43,7 @@ CelebA-HQ（人脸）、FFHQ（人脸）、LSUN-Churches（教堂） 和 LSUN-Be
 
 如下图所示为基于 ImageNet 训练后，按类别生成的图像结果（来自 ViT-VQGAN）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTczrvatjvbZBVdfgYf9bOfROoibJfSY6HzLrc1dj0rSzFWiciawSm7f7OeQ/640?wx_fmt=png&from=appmsg&randomid=9nbts6ec)
+![Image](images/640_faa85c5d06c9.png)
 
 #### 2.2.2. 文本条件生成
 
@@ -51,7 +51,7 @@ CelebA-HQ（人脸）、FFHQ（人脸）、LSUN-Churches（教堂） 和 LSUN-Be
 
 如下图所示为文本条件生成的示例（来自 DALL-E 3）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTc7JyJ4sOb3XbyaCP8cpTOfoG1vibHyrfpKLnBoUmpDBlMnGFznaLgCLw/640?wx_fmt=png&from=appmsg&randomid=3izj06n8)
+![Image](images/640_f2e741d0268c.png)
 
 #### 2.2.3. 位置条件
 
@@ -59,7 +59,7 @@ CelebA-HQ（人脸）、FFHQ（人脸）、LSUN-Churches（教堂） 和 LSUN-Be
 
 如下图所示，左侧图中指定了图片中物体的位置关系（以边界框坐标表示），最终模型按要求生成了对应的图像（图片来自 LDM，模型基于 COCO 数据集训练）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTcz0YfpOUGRy6IggicTFIHOkuOthZjLeRM2qPh3otfghZOQRMuYU2KZVQ/640?wx_fmt=png&from=appmsg&randomid=ojlskwwf)
+![Image](images/640_458091d4ce16.png)
 
 #### 2.2.4. 图像扩充
 
@@ -67,7 +67,7 @@ CelebA-HQ（人脸）、FFHQ（人脸）、LSUN-Churches（教堂） 和 LSUN-Be
 
 如下图所示，给定图像，将其扩展为更大的图片（图片来自 Imagen 2）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_gif/zhVlwj96tTjicWk9KPiaS8hP0XicxgCwj45IoeaZIQEgyVt3S79S7wnpZsTpqSy8raiaGCbgHcAAHKcFx6U6mibRrOg/640?wx_fmt=gif&from=appmsg&randomid=3gyoedec)
+![Image](images/640_ef114944b1f0.gif)
 
 #### 2.2.5. 图像内编辑
 
@@ -75,7 +75,7 @@ CelebA-HQ（人脸）、FFHQ（人脸）、LSUN-Churches（教堂） 和 LSUN-Be
 
 如下图所示，可以在图像内指定区域，然后按照文本指令对其进行修改（图片来自 Imagen 2）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_gif/zhVlwj96tTjicWk9KPiaS8hP0XicxgCwj459hX1NhnESnh0ic1RdWvQ65pM8S0b2XJ5jJwU7O58ibKW1l6xo4iagFwsA/640?wx_fmt=gif&from=appmsg&randomid=qvagq1l6)
+![Image](images/640_08d6ee940429.gif)
 
 #### 2.2.6. 图像内文字生成
 
@@ -83,7 +83,7 @@ CelebA-HQ（人脸）、FFHQ（人脸）、LSUN-Churches（教堂） 和 LSUN-Be
 
 如下图所示，左图要求图像中包含 “CYMBAL”，右图要求图像中包含 “Delicious”，最终模型也成功按要求生成对应图像（图片来自 Imagen 2）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTcqD27geZDkyHmIrHu7h6LBV3icBjywk2dIc6EzSZtWV8vlFMAvUx5uUA/640?wx_fmt=png&from=appmsg&randomid=7nrc7688)
+![Image](images/640_2ca00b55723d.png)
 
 #### 2.2.7. 多种条件生成
 
@@ -91,7 +91,7 @@ CelebA-HQ（人脸）、FFHQ（人脸）、LSUN-Churches（教堂） 和 LSUN-Be
 
 如下图所示，即指定了图像、文本，又有特指的类别，模型也成功生成了符合要求的图像（图片来自 Imagen 2）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTcYIv1lfy7RiaTBhyy7cYsnMT3zUBCVMAyVmzklC34NBzeiazWPCO1RyFw/640?wx_fmt=png&from=appmsg&randomid=fs1c3zlu)
+![Image](images/640_fb23a06bfeba.png)
 
 ## 三、评估指标
 
@@ -116,7 +116,7 @@ FID 的计算方法包含两个步骤：
 - 首先，通过模型提取真实图像和生成图像的特征向量。
 - 然后，计算这两个特征向量分布之间的 Frechet 距离，也就是均值和协方差的 Frechet 距离。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTcyiaJxNGe91XQBsbETxzOffw7eFn1G4ricMo4pgome8PvrnuflAxBKfZw/640?wx_fmt=png&from=appmsg&randomid=7gm2j23b)
+![Image](images/640_bed2780f3c34.png)
 
 在实际使用中，通常使用 IS 来评估真实性，使用 FID 来评估多样性。
 
@@ -130,7 +130,7 @@ CLIP 模型由 OpenAI 发布，其模型包含一个图像 encoder 和一个文�
 
 如下图 Table A.1 所示，DrawBench 基准包含 11 个类别的 200 个文本提示：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTcBwRrWNu4icEiacaYlV79g9PibB9Iu6WBjsribUGAtGVLtsKkcLrSronkUQ/640?wx_fmt=png&from=appmsg&randomid=jkvf3d4m)
+![Image](images/640_b00f5b746016.png)
 
 针对这个基准的评估，会对每个类别进行独立的人工评估。对于每个提示，评分员都会看到两种图像，一组来自模型 A，一组来自模型 B。每组包含来自相应模型的 8 个随机生成结果，针对每组图像，评分员都会被问两个问题：
 
@@ -145,13 +145,13 @@ CLIP 模型由 OpenAI 发布，其模型包含一个图像 encoder 和一个文�
 
 如下图 Figure 2 所示为评估的示例：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTce7n2woIAjrgyzTib5GEibFOCGxV4CJOz4Thlj5icKS7ZyJOPF0eXx9q9g/640?wx_fmt=png&from=appmsg&randomid=odo1iz7w)
+![Image](images/640_ce08b57f06dc.png)
 
 ### 3.5. PartiPrompts
 
 在 Parti 中，Google 作者构建了 PartiPrompts 评估基准，其包含 1600 个英文提示，并将其按照两个维度进行划分：Category 和 Challenge，具体的分布如下所示：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTciaUpTwfcopSmckUxhLoctsph1K8a9qCHF99JKRKGbicGayqYFzSopSLg/640?wx_fmt=png&from=appmsg&randomid=81qpcjdy)
+![Image](images/640_a5f3b8d382b5.png)
 
 ## 四、常用模型
 
@@ -164,7 +164,7 @@ CLIP 模型由 OpenAI 发布，其模型包含一个图像 encoder 和一个文�
 - Decoder 通常用于使用编码重构输入（解压缩），比如从隐空间 L 恢复出图像 X。
 - U-Net：U-Net 模型结构和 AutoEncoder 模型很类似，主要是在 Encoder 和 Decoder 的通分辨率之间添加了 Skip Connection，如下图所示，也就是说，此时的 Decoder 不仅依赖 Latent code 还依赖输入，也就不能分开单独使用：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTcMksAaAZz3XoamibnlwUKtDI2RicUcKVl0F45gvzveQyibX38CabyWTYsQ/640?wx_fmt=png&from=appmsg&randomid=hqj8y3ph)
+![Image](images/640_15ae8588c901.png)
 
 ### 4.2. 预训练模型
 
@@ -172,13 +172,13 @@ CLIP 模型由 OpenAI 发布，其模型包含一个图像 encoder 和一个文�
 
 CLIP 是 OpenAI 发布的在大规模图文数据对（4亿）上通过对比学习进行预训练的图文对齐模型。如下图左侧是其对比预训练过程，在一个 batch 中对应的图文特征作为正对，图片特征和其他文本特征作为负对。如下图右侧，可广泛用于 zero-shot 的图像分类等任务。由于其强大的表征能力，其 Text Encoder 和 Image Encoder 常被其他模型使用，用于对图像或文本编码，比如，在 LMM（大规模多模态模型）中也常作为 Image encoder 使用。此外，也常使用其对应的开源实现 OpenCLIP 模型。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTcHu6DMlD7hNQmkKTeQ3ichpfarLhKRzAv8HiaPPXotQI8KHW5DcIrQEJg/640?wx_fmt=png&from=appmsg&randomid=f13krxzc)
+![Image](images/640_3a4e23121e72.png)
 
 #### 4.2.2. CoCa 模型
 
 CoCa 模型的思路比较简单，在 CLIP 模型的基础上额外增加一个 Multimodal Text Decoder，训练中除了 CLIP 的对比损失（Contrastive Loss）外，也相应增加了描述损失（Captioning Loss）。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTcopTQfR4FCk6iboFibB9JqKJNicd3cOcFqQxVice4HTv6mtiajxKm6t7hajA/640?wx_fmt=png&from=appmsg&randomid=o5jhdrfa)
+![Image](images/640_6d9be85aa8c8.png)
 
 ## 五、模型类型
 
@@ -186,7 +186,7 @@ CoCa 模型的思路比较简单，在 CLIP 模型的基础上额外增加一个
 
 VAE 系列模型的发展大概分为几个阶段，首先是从 AE（AutoEncoder）发展到 VAE（Variational Autoencoder），然后依次出现了 VQ-VAE（Vector Quantised VAE）、VQ-VAE-2 以及 VQ-GAN、ViT-VQGAN 和 MaskGIT 等工作。然而这些工作往往用于无条件生成，或者简单的类别条件、图像条件等，其往往不支持文本输入，或者相关能力很弱。从 21 年初 DALL-E 的发布，文生图的模型开始大量出现，进一步出现 DALL-E mini、 CLIP-VQ-GAN、Parti、Muse 等模型。如下图所示，为这一系列模型的演进路径：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTcZ5M5sLp9UDLEFDPNN51mibsHlHsLJdr15PawR6ibAvzNpT3EJhoKQPEw/640?wx_fmt=png&from=appmsg&randomid=9brgwal5)
+![Image](images/640_c92e347cace2.png)
 
 #### 5.1.1. AE
 
@@ -197,19 +197,19 @@ AutoEncoder 有两个主要的部分组成：
 - Encoder（编码器）：用于对输入进行编码（压缩）
 - Decoder（解码器）：用于使用编码重构输入（解压缩）
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTcsHYCgQVRbzgLvKuo3ucbhESdxbg94GvVHYjWDsgoM8xLbia8oHdib0yg/640?wx_fmt=png&from=appmsg&randomid=wv6ti27l)
+![Image](images/640_13051b4f6aee.png)
 
 #### 5.1.2. VAE
 
 VAE （Variational AutoEncoder，也称变分自编码器）主要是在 AE 的基础上引入概率生成模型的概念，通过在隐空间引入概率分布，使模型能够生成多样性的样本，并且在学习过程中可以更好地理解数据的分布。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTcCRuOkhSFuZzyNxczDg2EOXBzGcaZ8FFKibtV2YwIEPUxR14byjNbOHg/640?wx_fmt=png&from=appmsg&randomid=l4wp37ta)
+![Image](images/640_3f2d8544ae06.png)
 
 #### 5.1.3. VQ-VAE
 
 VQ-VAE（Vector Quantization）主要是在 VAE 的基础上引入离散的、可量化的隐空间表示，有助于模型更好地理解数据中的离散结构和语义信息，同时可以避免过拟合。VQ-VAE 与 VAE 的结构非常相似，只是中间部分不是学习概率分布，而是换成 VQ 来学习 Codebook。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTchV6JDNoohQEB361B2kkfQBwXINfaaFyhpmeKkNp5SCWLhjosibGnsOA/640?wx_fmt=png&from=appmsg&randomid=debd1fv1)
+![Image](images/640_da33a06cd2a2.png)
 
 #### 5.1.4. VQ-GAN
 
@@ -219,7 +219,7 @@ VQ-GAN 相比 VQ-VAE 的主要改变有以下几点：
 - 将 PixelCNN 替换为性能更强大的自回归 GPT2 模型（针对不同的任务可以选择不同的规格）。
 - 引入滑动窗口自注意力机制，以降低计算负载，生成更大分辨率的图像。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTcqtBTHOIRDLeUNib3H4qbYMj4y7EERP4iaSzIBQ7O3fwxLNaCFoWicE0GQ/640?wx_fmt=png&from=appmsg&randomid=15dd82z4)
+![Image](images/640_8d9a669ecd16.png)
 
 #### 5.1.5. ViT-VQGAN
 
@@ -230,19 +230,19 @@ VQ-GAN 相比 VQ-VAE 的主要改变有以下几点：
 - Decoder：从 1024 个离散 Latent code 中恢复原始图像。
 - Autoregressive Transformer：用于生成离散 Latent code。训练中可以直接利用 Encoder 生成好的离线 Latent code 作为 Target，计算交叉熵损失。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTcm9Aerib59zE3sNC21uwFC3w2v8fuMHN0ctZfsXrOjIwFFOrkyXiar2Bg/640?wx_fmt=png&from=appmsg&randomid=b8ail1lt)
+![Image](images/640_333504eb602a.png)
 
 #### 5.1.6. Parti
 
 相比原始的 VQ-GAN 和 ViT-VQGAN 中使用 Decoder Only 的 Transformer 来生成离散 latent code，Parti 中作者将其扩展为 Encoder + Decoder 的 Transformer，这样可以使用 Encoder 来对文本编码，生成文本 embedding，然后文本 embedding 作为条件在 Transformer Decoder 中作为 K 和 V 通过 Cross Attention 与视觉 Token 交叉。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTc5cfORH1giaKtu7NaJYr5ubLIqoOPia0ClSdLrSeM4rswOCaZFapOSp0A/640?wx_fmt=png&from=appmsg&randomid=ikl38s4v)
+![Image](images/640_591fb978b436.png)
 
 #### 5.1.7. MaskGIT
 
 MaskGIT 采用 VQGAN 的模型范式，与 VQGAN 不同的是，VQGAN 中的 Transformer 采用序列生成的方式，在推理阶段其图像 Token 要一个一个预测，性能比较差，而 MaskGIT 中，Transformer 生成模型采用 Masked Visual Token Modeling 方式来训练（采用类似 Bert 的双向 Transformer 模型），也就是随机遮挡部分图像 Token，模型训练的目标是预测这些遮挡的 Token。以此方式训练的 Transformer 可以充分利用并行解码（Parallel Decoding）方式加速生成效率。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTcNgia0dW1jw8hDB6wNPG7mPptCS4ZZA1RBh5Ls5qJDsO66cSI4hMmflQ/640?wx_fmt=png&from=appmsg&randomid=q5mfvxc7)
+![Image](images/640_f317c1680bee.png)
 
 #### 5.1.8. Muse
 
@@ -254,25 +254,25 @@ Muse 采用预训练的 LLM 提取文本 embedding，和 MaskGIT 一样，被训
 - 256x256：低分辨率 Token 预测，包含 VQ Tokenizer 和 Base Transformer
 - 512x512：高分辨率 Token 预测，包含 VQ Tokenizer 和 SuperRes Transformer
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTcVdia44CEyv0ia3lvnfjqMxfa87D63SsEd98juOxSoGhXJXU0OWkL6rEg/640?wx_fmt=png&from=appmsg&randomid=mit6pi04)
+![Image](images/640_04c472213463.png)
 
 #### 5.1.9. DALL-E
 
 与 VQ-GAN 类似，DALL-E 的训练也是分为两个阶段，第一阶段是训练 VAE，不过并没有使用 VQ-VAE，而是使用 Discrete VAE（dVAE），整体来说与 VQ-VAE 类似，主要的区别是引入 Gumbel Softmax 来训练，避免 VQ-VAE 训练中 ArgMin 不可导的问题。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTcDibR9kLl4uMRCH1cjKtpQaapYHEngUhXODyA3TO3LUXFp4NTjibw92jQ/640?wx_fmt=png&from=appmsg&randomid=vzte8l43)
+![Image](images/640_494a6d4d9922.png)
 
 #### 5.1.10. DALL-E mini
 
 DALL-E mini 是开源社区对 DALL-E 的开源复现，其中作者使用 VQ-GAN 替代 dVAE，使用 Encoder + Decoder 的 BART 替代 DALL-E 中 Decoder only 的 Transformer。此外，会使用 VQ-GAN 的 Decoder 生成多个候选图像，之后再使用 CLIP 提取这些图像的 embedding 和文本 embedding，之后进行比对排序，挑选出最匹配的生成结果。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTcwhGqFs2OK0iak6MALK159tuHLBuzR9C1RFoceG988icROicC3FIiaGrQIw/640?wx_fmt=png&from=appmsg&randomid=rgwlm1al)
+![Image](images/640_d468c18212d6.png)
 
 #### 5.1.11. VQGAN-CLIP
 
 VQGAN-CLIP 的思路很简单：使用初始图像通过 VQ-GAN 生成一个图像，然后使用 CLIP 对生成图像和 Target Text 提取 embedding，然后计算相似性，并将其误差作为反馈对隐空间的 Z-vector 进行迭代更新，直到生成图像和 Target Text 对应的 embedding 很相似为止。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTcVkCsDMEgt3dSgL6qC7TeHpRxkhZSpicmMwDT6vU5FIblia00tibeSEegg/640?wx_fmt=png&from=appmsg&randomid=kjck2eol)
+![Image](images/640_ab6898e2f98d.png)
 
 ### 5.2. Diffusion 系列
 
@@ -280,13 +280,13 @@ VQGAN-CLIP 的思路很简单：使用初始图像通过 VQ-GAN 生成一个图�
 
 Diffusion 模型的发展路径如下图所示，主要是 OpenAI 系列模型，Stable Diffusion 系列模型，和 Google 的 Imagen、Imagen 2。其他主要的 Diffusion 模型大多没有开源或没有论文，这里就不再介绍。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTc5htDcrempictI355iawrYPZ6N0GTk0cP1mymg9fcYCEm8CF0NAjz9GKQ/640?wx_fmt=png&from=appmsg&randomid=vhmw1h4k)
+![Image](images/640_f40cd27f3f39.png)
 
 #### 5.2.1. DDPM
 
 扩散模型包含两个过程：前向过程（Forward Process，也称为扩散过程 Diffusion Process）和逆向过程（Reverse Process）。无论是前向还是逆向，都是一个马尔科夫链形式（Markov Chain），其中前向过程是不断地向图片中添加高斯噪声，逆向过程是不断地去除高斯噪声，重建图像。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTcibcNkllB1y0gMkVI4hDibSbnia4CHvW6UfIs8iabjh9Pibiat7o6ELxeASJw/640?wx_fmt=png&from=appmsg&randomid=h0m577ts)
+![Image](images/640_97c5bf3436bb.png)
 
 #### 5.2.2. Diffusion Model Beat GANs
 
@@ -305,7 +305,7 @@ Diffusion 模型的发展路径如下图所示，主要是 OpenAI 系列模型�
 
 如下图 Table 1 所示为不同配置的影响，可以看出，使用更多的 Attention 头、在多个分辨率使用 Attention 以及采用 BigGAN 的 residual block 获得了最好的结果，提出的模型称作 ADM（Ablate Diffusion Model），这个模型也为 OpenAI 后续的生成模型奠定了基础，Stable Diffusion 的模型也有参考：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTccNjGjUiayNqV7z4GEXxeYX0OT3TaruLicicEsVzIAFdEtUYc4xLG525Aw/640?wx_fmt=png&from=appmsg&randomid=51ycgyyu)
+![Image](images/640_8daa96151a54.png)
 
 #### 5.2.3. GLIDE
 
@@ -327,7 +327,7 @@ GLIDE 模型中作者将 Diffusion 模型应用于文本条件图像生成，GLI
 - prior：用于从文本 embedding zt 生成图像 embedding zi。
 - decoder：用于从图像 embedding zi 生成最终图像（文本条件为可选项）。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTcibf98QIYGmZ4ib0hWhL6jyU69Il4PfM5jibpyNugWXicjicdzcKlsP1WyhA/640?wx_fmt=png&from=appmsg&randomid=n3wx158d)
+![Image](images/640_d0acc42e3d6d.png)
 
 #### 5.2.5. DALL-E 3
 
@@ -341,11 +341,11 @@ DALL-E 3 是 OpenAI 最新的文生图模型，作者发现传统的文生图模
 - 时间步长条件：采用 GroupNorm，并学习了 scale 和 bias。
 - 文本条件：使用 T5 XXL 作为 text encoder，然后将输出的 embedding 和 xfnet 进行 Cross Attention。在 OpenAI 的 Paper 中并没有找到 xfnet 相关介绍，不过在 GLIDE 的开源代码里确实有 xf model。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTc7b2gpMbvtjYDWT8NaibSrv7hI8vI4N8jl4eZsqwblIgJJ0ibVONGJAmw/640?wx_fmt=png&from=appmsg&randomid=66eam9vp)
+![Image](images/640_6c08c82d9bc1.png)
 
 如下图所示，作者同样训练了一个 latent decoder，可以用来提升图像细节，比如文本和人脸。其同样是参考 Stable Diffusion 的实现。不过这个 diffusion decoder 采用的是 DDPM 中描述的空间卷积 U-Net，此外，也基于 [2303.01469] Consistency Models 的蒸馏策略将去噪步数降低到 2 步，极大降低推理代价。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTcjEr57lu5eaia8bbmMpiaIicIr2MWh6bfBwLzvrV87XX01ibamKmiasYeSkQ/640?wx_fmt=png&from=appmsg&randomid=gf3s8c5c)
+![Image](images/640_52acd9090ae8.png)
 
 #### 5.2.6. Stable Diffusion（LDM）
 
@@ -357,7 +357,7 @@ LDM 和其他扩散生成模型结构类似，整体来说包含三个组件：
 - 对于图像类型条件，比如图像修复、分割条件，可以将其编码后与噪声 Concat 作为输入，而不是通过 Attention 机制交叉。
 - Denoising U-Net：下图中间部分，用于从随机噪声 zT 中通过几步迭代生成 latent code，然后使用 Decoder 恢复出图像。其中的各种条件信息都会通过 Cross Attention 进行交叉融合。需要说明的是，U-Net 生成的目标是 x 经 Encoder 编码后的 embedding，通常也称为隐向量，而不是直接生成图像像素，因此说 U-Net 是作用在隐空间（Latent Space）。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTcEjrp5LkzianmpzjOJOrxqBdLy9HdfGZD54w89ZTG39xYQ4pVOicLICjQ/640?wx_fmt=png&from=appmsg&randomid=4hu6ewwq)
+![Image](images/640_6afe2790033c.png)
 
 #### 5.2.7. SDXL
 
@@ -367,9 +367,9 @@ SDXL 相比 SD 主要的修改包括（模型总共 2.6B 参数量，其中 text
 - 使用 CLIP ViT-L 和 OpenCLIP ViT-bigG 两个 text encoder。
 - 基于 OpenCLIP 的 text embedding 增加了一个 pooled text embedding。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTc3VydUfPqQuiaqE73sibploOzsVq8PClLy0yL4prWGACZymzpoVmFcxKA/640?wx_fmt=png&from=appmsg&randomid=vj3ci83d)
+![Image](images/640_71f6087bdbad.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTc5E4c3XZwicJAG4ywcOW1ibJpxDrCxiaa73ulwpLFvS6SOe5KvPFOM3s1w/640?wx_fmt=png&from=appmsg&randomid=czzx7ov5)
+![Image](images/640_6efdf3fe5b75.png)
 
 #### 5.2.8. SDXL-Turbo
 
@@ -383,7 +383,7 @@ SDXL-Turbo 在模型上没有什么修改，主要是引入蒸馏技术，以便
 - 基于学生模型去噪图像 xθ 和教师模型去噪图像 xψ 计算蒸馏损失（distillation）。
 - 根据损失进行反向传播（注意，教师模型不更新，因此会 stop 梯度）。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTc5ibV1ic4Kf6qyGFyJ8RSLNfUsm4pJk2m3NShObMkCXV2yv2UeuBX8seQ/640?wx_fmt=png&from=appmsg&randomid=w5fh48d6)
+![Image](images/640_7f9a487b00c3.png)
 
 #### 5.2.9. Imagen
 
@@ -396,7 +396,7 @@ Imagen 是 Google 推出的基于扩散模型的文生图模型，其具有前�
 - 第一 Super-Resolution Diffusion Model：采用本文优化过的高效 U-Net，将 64x64 图像超分为 256x256 图像，同样使用文本 embedding 作为条件。共 600M 参数量。
 - 第二 Super-Resolution Diffusion Model：采用本文优化过的高效 U-Net，将 256x256 图像超分为 1024x1024 图像，同样使用文本 embedding 作为条件。共 400M 参数量。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTcic7VhvtParVyOpwhUowfq9IlTicW2jpNvca26oSU5kIf8KhGCnEXFHew/640?wx_fmt=png&from=appmsg&randomid=oc4yoxmk)
+![Image](images/640_2e173432d027.png)
 
 #### 5.2.10. Imagen 2
 
@@ -426,14 +426,14 @@ Classifier Free Guidance 的核心思想为：不是沿着图像分类器的梯�
 
 训练过程中如下图所示，随机的移除条件，也就相当于无条件生成（通常有条件生成和无条件生成都是同一个模型，或者说共享模型权重，比如很多模型会选择 10% 左右的概率移除文本条件）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTc8kcBC969NXlXb9IxJcddoy8knDnhneYEqqKC3y5KNmAsQhxkfLyovQ/640?wx_fmt=png&from=appmsg&randomid=qb6cwkab)
+![Image](images/640_2e876de9c85e.png)
 
 如下图所示，生成过程中同时使用有条件和无条件生成，并使用权重 w 来控制两者的强度：
 
 - w 越大，有条件生成作用越大，图像越真实（IS 分数越高）
 - w 越小，无条件生成作用越大，图像多样性越好（FID 分数越低）
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTcCzK5Hsl2yNjlYSvXH7ys7JTcXbkeqes6Lh5aZ7nu1U9AJkALMkicQyA/640?wx_fmt=png&from=appmsg&randomid=by0xmsz2)
+![Image](images/640_f1cb639c9416.png)
 
 ## 七、VQ-VAE 不可导
 
@@ -441,7 +441,7 @@ Classifier Free Guidance 的核心思想为：不是沿着图像分类器的梯�
 
 VQ-VAE 与 VAE 的结构非常相似，只是中间部分不是学习概率分布，而是换成 VQ 来学习 Codebook。而 VQ 中使用 Argmin 来获取最小的距离，这一步是不可导的，因此也就无法将 Decoder 和 Encoder 联合训练，针对这个问题，作者添加了一个 Trick，如下图红线部分，直接将量化后表示的梯度拷贝到量化前的表示，以使其连续可导：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTchsXCu1Xx2hgHGSLfia8fzexf0giarxEDy4EdLeqsib5KktQFq6bIZ6wzQ/640?wx_fmt=png&from=appmsg&randomid=c7s96v6t)
+![Image](images/640_f3305c5353ba.png)
 
 ### 7.2. Gumbel Softmax
 
@@ -449,15 +449,15 @@ Gumbel Softmax 是一种将离散采样问题转化为可微分操作的技术�
 
 如下图所示，一个图像经 Encoder 编码会生成 32x32 个 embedding，与 codebook （8192 个）内积再经 Softmax 即可得到在每个 codebook 向量的概率：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTciaohlwG0m8ibYzJZtlaDW7EJqic2nWrDFPWT2iaxe1Qice77hdRAHmjjsRA/640?wx_fmt=png&from=appmsg&randomid=yc6xkioj)
+![Image](images/640_6d44b7717913.png)
 
 应用 Gumbel Softmax 采样即可获得新的概率分布，然后将其作为权重，对相应的 codebook 向量进行累积就可以获得 latent vector。然后 Decoder 可以基于此 latent vector 重构输出图像。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTc9ibCEAZ6N1TDjTcMgcN2qB1qstZuQgmVuibuORia6YWo5A4kysJPughgQ/640?wx_fmt=png&from=appmsg&randomid=ufwy0xq1)
+![Image](images/640_beb9b1d0c95c.png)
 
 在上述的过程中，通过添加 Gumbel 噪声的方式进行离散采样，可以近似为选择 logits 中概率最大的类别，从而提供一种可微分的方式来处理离散采样问题。具体来说，其关键为 Gumbel-Max Trick，其中 gi 是从 Gumbel(0, 1) 分布中采样得到的噪声，τ 是温度系数。需要说明的是，t 越小，此处的 Softmax 就会越逼近于 ArgMax。τ 越大，就越接近于均匀分布。这也就引入了训练的一个 Trick：训练起始的温度系数 τ 很高，在训练的过程中，逐渐降低 τ，以便其逐渐逼近 ArgMax。在推理阶段就不再需要 Gumbel Softmax，直接使用 ArgMax 即可。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTccbibJ1HBGUrdR44J6LlZScAA0bLo3qnMibzLa8MSia28fx8GiaVbNetwZw/640?wx_fmt=png&from=appmsg&randomid=0ctysl5k)
+![Image](images/640_03bb866def2e.png)
 
 ## 八、扩大分辨率
 
@@ -467,7 +467,7 @@ Gumbel Softmax 是一种将离散采样问题转化为可微分操作的技术�
 
 如下图 Figure A.4 所示，在 Imagen 中采用了两个图像超分模型，分别将分辨率从 64x64 提升到 256x256，再从 256x256 提升到 1024x1024：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTcic7VhvtParVyOpwhUowfq9IlTicW2jpNvca26oSU5kIf8KhGCnEXFHew/640?wx_fmt=png&from=appmsg&randomid=nj02l2ah)
+![Image](images/640_1711ffce7a57.png)
 
 ### 8.2. 多级 Latent code
 
@@ -476,7 +476,7 @@ Gumbel Softmax 是一种将离散采样问题转化为可微分操作的技术�
 - 训练阶段：首先使用 Encoder 将图像压缩到 Bottom Level，对应大小为 64x64，然后进一步使用 Encoder 压缩到 Top Level，大小为 32x32。重建时，首先将 32x32 的表征经过 VQ 量化为 latent code，然后经过 Decoder 重建 64x64 的压缩图像，再经过 VQ 和 Decoder 重建 256x256 的图像。
 - 推理阶段（图像生成）：使用 PixelCNN 首先生成 Top Level 的离散 latent code，然后作为条件输入 PixelCNN 以生成 Bottom Level 的更高分辨率的离散 latent code。之后使用两个 Level 的离散 latent code 生成最终的图像。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTc6YNIRSV0AAdeo99CdZkPmicQSqmicIkpicQI4Cr7juha4mfrLGEkG36Jg/640?wx_fmt=png&from=appmsg&randomid=zl51jqiw)
+![Image](images/640_870ecfd3cfcb.png)
 
 当然，基于这个思想作者也进一步验证了使用 3 个 Level 来生成 1024x1024 分辨率的图像，相应的压缩分辨率分别为 128x128、64x64、32x32。
 ### 8.3. 多级 Latent code + 图像超分
@@ -487,7 +487,7 @@ Gumbel Softmax 是一种将离散采样问题转化为可微分操作的技术�
 
 其超分模型如下图所示，其第一阶段生成 16x16 的 Low-Res Token 会经过一系列的 Transformer Encoder 层（图中红框），然后与文本 embedding concat 到一起输入 Transformer Decoder 层（图中蓝框），并作为 K 和 V 与图像 embedding 完成 Cross Attention，最终生成 64x64 的 High-Res Token。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTczUwkaXh4khLrMdAy91007gIlvn6dVe4oZT44ciavHmEk4NFm0qYqUBQ/640?wx_fmt=png&from=appmsg&randomid=b8r1gb9p)
+![Image](images/640_8477587f57fc.png)
 
 ## 九、指令遵循
 
@@ -497,13 +497,13 @@ Gumbel Softmax 是一种将离散采样问题转化为可微分操作的技术�
 
 如下图 Figure A.5 所示为 Imagen 中作者对比的不同大小 T5 模型的影响：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTcNpZkG1hryfuexyITyCNDf7X9ibjFK2J6bcr56dvepXfoaX6TVqrQgoA/640?wx_fmt=png&from=appmsg&randomid=4ov8yd5a)
+![Image](images/640_10e2f2b50b4c.png)
 
 ### 9.2. 多个 Text Encoder
 
 在 SDXL 中，作者采用两个 Text Encoder 来提升文本编码能力，如下图所示，作者同时使用了 CLIP ViT-L 和 OpenCLIP ViT-bigG 中的 Text Encoder：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTc5E4c3XZwicJAG4ywcOW1ibJpxDrCxiaa73ulwpLFvS6SOe5KvPFOM3s1w/640?wx_fmt=png&from=appmsg&randomid=avxzcd7h)
+![Image](images/640_4c79838ad395.png)
 
 ### 9.3. 数据增强
 
@@ -511,7 +511,7 @@ DALL-E 3 是 OpenAI 新的文生图模型，作者发现传统的文生图模型
 
 作者进一步验证了详细描述对模型指令跟随能力的影响。作者采用 CLIP score 作为评估标准。如下图 Figure 4 所示，左侧为使用 Ground Truth 文本训练模型的效果，右侧为混合了详细描述后训练的评估结果，可以看出 CLIP score 得到明显改善：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTcZxiagm8sdnNamsQXOdXgWCyibB3FIkq8MnicqZsq67OrYBJ15dx7ySRWw/640?wx_fmt=png&from=appmsg&randomid=a0l5bbm4)
+![Image](images/640_58b3d8be7540.png)
 
 ## 十、效率优化
 
@@ -521,7 +521,7 @@ DALL-E 3 是 OpenAI 新的文生图模型，作者发现传统的文生图模型
 
 然而， Transformer 模型推理时计算量与序列长度成二次方关系，也就是 O(644*K)，其代价很高。因此作者提出使用滑动窗口 Attention 机制来降低计算量的方案，具体来说，预测每一个位置的 code 时只考虑局部 code，而不是全局 code，比如使用 16x16 的窗口，计算量将降低到 O(642*162*K)，几乎降低为原来的 1/16。当然，对于边界的区域，并不是使用当前位置作为中心，而是将窗口相应地向图像中心偏移，保证窗口大小：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTch12Ix8oNGe8Q0IgeHZG1ItAVbWrGKALk6OibgzvicLtMs37Ogia8vcuJA/640?wx_fmt=png&from=appmsg&randomid=hcicya76)
+![Image](images/640_ffeed319f81a.png)
 
 ### 10.2. Sparse Transformer
 
@@ -531,7 +531,7 @@ DALL-E 3 是 OpenAI 新的文生图模型，作者发现传统的文生图模型
 - Column Attention：对于 (i-2)%4 = 0 的层使用，比如第 1 层，第 3 层。
 - Convolutional Attention：只在最后一层使用。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTcVtS7Rd4z8d1lo2GMWO9Pic4fLmznyFSnFZcOrGS8PhwZae0WmVrtXIA/640?wx_fmt=png&from=appmsg&randomid=qw3ut8pm)
+![Image](images/640_fc6485af63d1.png)
 
 ### 10.3. Efficient U-Net
 
@@ -543,15 +543,15 @@ DALL-E 3 是 OpenAI 新的文生图模型，作者发现传统的文生图模型
 
 如下图所示为修改过的 U-Net 模型结构（需要说明的是，在 256x256 -> 1024x1024 的超分模型中删除了 SelfAttention 模块，依旧保留 CombineEmbs 的 Cross Attention 模块）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTczfiaHYNPGAiaZUpicX77SyiakjLib459vow43jTI8IlzKXTzY1q8XECTkTg/640?wx_fmt=png&from=appmsg&randomid=cljxp1se)
+![Image](images/640_47ccbcbe71c1.png)
 
 如下图 Figure A.14 所示为其中 DBlock 和 UBlock 中的 ResNet Block：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTcwge0frGv0NBy7RJMqzkVf520UInGKD8VNIxuaRxaIqxlN5lOT23hGQ/640?wx_fmt=png&from=appmsg&randomid=dxee0ix2)
+![Image](images/640_8d71546da6f4.png)
 
 如下图 Figure A.14 所示，优化后训练效率大幅提升：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTcWCxiarzwql8XYGR5tk6S5sBPxdibbhliaNva91GAtWIyXY9BjuTpZhWzg/640?wx_fmt=png&from=appmsg&randomid=oszu849o)
+![Image](images/640_f3e0c6d40bff.png)
 
 ### 10.4. 并行解码-推理效率
 
@@ -562,7 +562,7 @@ Google 在其图像生成模型 MaskGIT 和 Muse 中引入了并行解码的方�
 - 上部分为 VQGAN 中采用的序列解码方式，生成 16x16=256 个图像 Token 需要解码 256 次。
 - 下部分所示为 MaskGIT 和 Muse 采用的并行解码方式，只用 8 个解码步骤即可生成 16x16=256 个图像 Token（图中深色的块即为解码过的 Token）。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTchMYyWVoLxmzsyUniaLzDkf0UQFkJBgDgAiaCj4jfcx4pBgJdnSoYYC7A/640?wx_fmt=png&from=appmsg&randomid=7gna2gsz)
+![Image](images/640_e0075e9f798f.png)
 
 具体来说，并行解码过程包含 4 个步骤（假设待生成序列长度为 N，K 表示 codebook 大小，总共需要迭代的次数为 T）：
 
@@ -583,7 +583,7 @@ Diffusion 模型的生成过程往往需要几十甚至几百步的迭代才能�
 
 在 SDXL-Turbo 中，作者同样将步数降低为 1-4，甚至 1 步即可获得不错的效果。如下图所示，作者与不同的蒸馏方案进行了对比，提出的方案只需一步就能获得最优的 FID 和 CLIP 分数：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTcxok1PHdicqVFRI6icpBq7lu7jicCibl9sZjxNdkvdH0wicDLUiabBIjCny6w/640?wx_fmt=png&from=appmsg&randomid=8q44ao6k)
+![Image](images/640_79f3d9e58109.png)
 
 ## 十一、局限性
 
@@ -591,7 +591,7 @@ Diffusion 模型的生成过程往往需要几十甚至几百步的迭代才能�
 
 如下图 Figure 16 所示，DALL-E 2 作者同样发现模型不能很好地在图像上生成正确的文本（可能是因为 BPE 文本编码的问题）。Google 的 Parti 和 Imagen 2 中提到都比较好地解决了这一问题。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTcCC7kDjljjjyRjdeXVxb6RQ3w9MeSIYdzDzPqMo1YTVIjzr0eBJRKjA/640?wx_fmt=png&from=appmsg&randomid=yqvxur5y)
+![Image](images/640_34705c630795.png)
 
 ### 11.2. 细节、空间位置、属性关联
 
@@ -602,17 +602,17 @@ Diffusion 模型的生成过程往往需要几十甚至几百步的迭代才能�
 - 左下：只要求长凳为白色，但是生成的钢琴也都是白色。
 - 右下：要求车门为白色，但总是在引擎盖等位置生成白色。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTcVJ9WZtM8CdBBOg8mXKHUGEFmOy7qjmI6t9X9leib8D4nvRd4ticEXp4Q/640?wx_fmt=png&from=appmsg&randomid=675mdexk)
+![Image](images/640_2c9fc2fb4db0.png)
 
 同样，在 DALL-E 2 中作者也提到了类似的问题，如下图 Figure 15 所示，模型还比较难将物体和属性结合起来，可能会混淆不同物体的颜色（最左侧提示为 “生成一个红色方块在蓝色方块之上”），此外也可能无法更好地重建相对的大小关系（作者猜测有可能是使用了 CLIP 模型的缘故）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTc4pibnWes0lLI3Q8k1w03LJwicsGTIxmI1wiaBiaVJcaia2hC5ynSHDSpxEg/640?wx_fmt=png&from=appmsg&randomid=0lvoculh)
+![Image](images/640_7c3aeadf6a0c.png)
 
 ### 11.3. 不完整
 
 在 SDXL 中，作者提出以前的 SD 模型存在一个比较典型的问题：生成的物体不完整，像是被裁剪过的，如下图 SD1.5 和 SD 2.1 的结果（其他生成模型也有类似问题）。作者猜测这可能和训练阶段的随机裁剪有关，考虑到这个因素，作者将裁剪的左上坐标（top, left）作为条件输入模型。如下图 Figure 4 中 SDXL 的结果，其生成结果都更加完整：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTcwWdDYcxYp7TIQDDTicXo333nmhQHu1SSkt2s0VSy9fwU9m08ec93dHQ/640?wx_fmt=png&from=appmsg&randomid=lwk678vf)
+![Image](images/640_d0d6261d1a6c.png)
 
 ## 十二、其他
 
@@ -622,13 +622,13 @@ Diffusion 模型的生成过程往往需要几十甚至几百步的迭代才能�
 
 BSR degradation Pipeline 包含 JPEG 压缩噪声、相机传感器噪声、针对下采样的不同图像插值方法，高斯模糊核以及高斯噪声，并以随机顺序应用于图像（具体可参考代码 https://github.com/CompVis/stable-diffusion/blob/main/ldm/modules/image_degradation/bsrgan_light.py）。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTcvibFQFEoEyVY8C3DIVdrCgwoCef0BT8wEynzMH7qR4Z9mkQ50Z3KrEA/640?wx_fmt=png&from=appmsg&randomid=47o378fm)
+![Image](images/640_9febfbadb68d.png)
 
 ### 12.2. 采样+排序
 
 模型在生成图像的过程中都有一定随机性，因此每次采样生成的图像可能不一样，因此就有工作尝试每次多生成几个图像，然后挑选和文本最匹配的输出，比如 DALL-E mini，每次都生成多个图像，然后通过 CLIP Score 获得最匹配的一个。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTcT19OTxeUTStrDOz2PegviaZlmOAdQ7reOzh7XgjA3ibqLIn4EpOVL2xw/640?wx_fmt=png&from=appmsg&randomid=8w0uj5jn)
+![Image](images/640_af5494971635.png)
 
 在 DALL-E 2 中，为了提升采样阶段的生成质量，作者会同时生成两个图像 embedding zi，然后选择一个与文本 embedding zt 内积更大的（相似性更高）使用。
 
@@ -636,7 +636,7 @@ BSR degradation Pipeline 包含 JPEG 压缩噪声、相机传感器噪声、针�
 
 真实世界的图像会包含不同的大小和长宽比，而文本到模型生成的图像分辨率通常为 512x512 或 1024x1024，作者认为这不是一个自然的选择。受此启发，SDXL 作者以不同的长宽比来微调模型：首先将数据划分为不同长宽比的桶，其中尽可能保证总像素数接近 1024x1024 个，同时以 64 的整数倍来调整高度和宽度。如下图所示为作者使用的宽度和高度。在训练过程中，每次都从同样的桶中选择一个 batch，并在不同的桶间交替。此外，作者会将桶的高度和宽度 （h, w）作为条件，经傅里叶特征编码后添加到时间步 embedding 中：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tThL425ictIF9KibrSibSxxwBTcYG7PgytUmWnl3RlfftJSiclrtrZA8kYMoGN7iauuLEibmZGzZK7QMwvMw/640?wx_fmt=png&from=appmsg&randomid=2byld85n)
+![Image](images/640_e6b16dc132dc.png)
 
 ## 十三、参考链接
 

@@ -19,7 +19,7 @@
 - 总共 64 层
 - 采用了 MoE，每层 8 个专家，每次激活 2 个专家
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaYfK6A4Va6GzNrcCrhzWMbAgnR4HHEhhibqehs9gcn2IXy3zlaahwy5ASCj4oQBl4kxRHUoSDWcvg/640?wx_fmt=png&from=appmsg&randomid=zrefzeag)
+![Image](images/640_2e779345d9cc.png)
 
 ### 1.2 数据、模型、专家并行
 
@@ -43,9 +43,9 @@
 - 上：有 4 个专家，每个专家分布在对应的 4 个设备上，比如绿色专家分布在 5,6,7,8 设备上。
 - 下：有 4 个数据分片，每组设备（每个专家）对应一个数据分片，一组设备里的 4 个设备共享一份数据分片。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaYfK6A4Va6GzNrcCrhzWMbTCztt1Orj6xlw3tM1kjhMPqfK2hXb7AtPCgfGKZgH6iaT1sNjwozsKQ/640?wx_fmt=png&from=appmsg&randomid=jjlwb0cd)
+![Image](images/640_0d9a1505b24f.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaYfK6A4Va6GzNrcCrhzWMbhGGZsV0dojGrF13GEY6mNc00dnxQnp555ib47atJmv9DGmsP2YPviacw/640?wx_fmt=png&from=appmsg&randomid=bs631ts9)
+![Image](images/640_775812761502.png)
 
 ### 1.3 补充
 
@@ -64,7 +64,7 @@
 
 MoE 的概念起源自 1991 年的 Paper Adaptive Mixtures of Local Experts，其中每个 Expert Network 和 Gating Network 都会接受 Input，并执行各自的部分，Gating Network 会学习到各个 Expert 的权重，并将输出按照权重进行归一化，如下图所示：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaYfK6A4Va6GzNrcCrhzWMbwNJPSjibwWj6OnKQXKXNckbQofax7hAUIpeXRjHjOvojhBHTvF4oXjw/640?wx_fmt=png&from=appmsg&randomid=xqu5el7z)
+![Image](images/640_c091f0659f92.png)
 
 ## 三、Sparsely-Gated MoE
 
@@ -72,15 +72,15 @@ MoE 的概念起源自 1991 年的 Paper Adaptive Mixtures of Local Experts，�
 
 如下图 Figure 1 所示，作者引入了 Gating Network 机制，该机制可以选出 Topk 的 Expert（深灰色 Expert 2 和 Expert n-1）进行计算。这种稀疏性意味着只有部分专家被激活处理特定的输入，从而可以大大降低计算量：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaYfK6A4Va6GzNrcCrhzWMbuqpicNb9ar7hUsIC0rPXNpQVN8GvoM844MhA0icra0ksnM51HrGJyYhw/640?wx_fmt=png&from=appmsg&randomid=aezix5vx)
+![Image](images/640_c9dae7e730ed.png)
 
 作者也进一步证明通过添加 MoE，可以灵活控制专家数，来获得不同容量的模型。如下图 Table 8 所示，作者分别构建了 32/256/1024/4096/16384/65535/131072 个专家的模型，其最大的为 137B 的 LSTM 模型。由于稀疏性的存在，虽然 137B 参数量很大，但可以比当时 SOTA 模型更低的计算成本下获得更好的效果：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaYfK6A4Va6GzNrcCrhzWMbmwxhytQ9vewO5DpoyicfQje3U3h46knctdPiaibEGAibonb4jsCKBniauYg/640?wx_fmt=png&from=appmsg&randomid=57f0946w)
+![Image](images/640_b6ffd0061a7b.png)
 
 作者观察到，Gating Network 倾向于收敛到不均衡的状态，也就是总是为少数专家产生较大的权重（相应的参数更新也会很不均衡）。为了解决这一问题，作者设计了额外的损失函数，旨在鼓励所有专家具有同等的重要性，如下图所示：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaYfK6A4Va6GzNrcCrhzWMbyibWWRtTlVX5CfwPn9HricDLWVn97mZxCBCLXm3dZCPTLJd5nSwYcktQ/640?wx_fmt=png&from=appmsg&randomid=itiy5578)
+![Image](images/640_f975dc7639dc.png)
 
 ## 四、Gshard
 
@@ -92,7 +92,7 @@ MoE 的概念起源自 1991 年的 Paper Adaptive Mixtures of Local Experts，�
 - 并非是每一层的 FFN 都替换为 MoE，而是间隔一层替换，如果有 12 层，则只有 6 层有 MoE（通常是可配置的）。
 - 采用专家并行（Expert Parallel，EP）策略，每个设备一个专家，除 MoE 之外的模型其它部分在所有设备存储一份相同的副本。（如果有 128 个专家，则使用 128 个 TPU Core；2048 个专家，则使用 2048 个 TPU Core）
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaYfK6A4Va6GzNrcCrhzWMbp0mesIL4qiaC0cZJscIZhx2cjUqSsY5zpCV4UPRUVZucp2QJPbkaC4g/640?wx_fmt=png&from=appmsg&randomid=gxf1z17t)
+![Image](images/640_85c83272c9a4.png)
 
 ## 五、Switch Transformer
 
@@ -108,13 +108,13 @@ MoE 的概念起源自 1991 年的 Paper Adaptive Mixtures of Local Experts，�
 
 如下图 Figure 2 所示，其模型结构和 Gshard 中类似，图中的红框和绿框是同样的 MoE，只是对应不同的输入，经 Router 后也只连接一个专家：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaYfK6A4Va6GzNrcCrhzWMbOvROMbAHM55ZlViaFj81Gd88FHnZ7nYz8WNelDVlOTqby0OHHFicNe1w/640?wx_fmt=png&from=appmsg&randomid=lsvgybai)
+![Image](images/640_962917e9d187.png)
 
 ### 5.2 高效稀疏路由
 
 作者采用了 Mesh-TensorFlow，其提供和 TensorFlow 相似的 API，提供了更简单的分布式数据并行和模型并行。作者的模型主要针对 TPU 设计，其在模型训练中不支持动态 Tensor shape，也就是要求每个专家输入的 Tensor shape 是固定的。然而，路由是动态的，相应路由到每个专家的 Tensor 的 shape 也是动态的，为了解决这一问题，作者提出了专家容量（Expert Capacity）的概念。如下所示，专家容量为每个 Batch 中总的 Token 数除以专家数，然后再乘以容量因子（Capacity Factor），即可得到专家容量（每个专家对应的 Token 数）。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaYfK6A4Va6GzNrcCrhzWMbYomcXXWOg4prN1gwoGs2zU55FiaMlMeo80XuM1ONMuADjrKdBWNVk1A/640?wx_fmt=png&from=appmsg&randomid=ziamcf70)
+![Image](images/640_6df70b9a497a.png)
 
 如下图 Figure 3 所示，有 6 个 Token，3 个专家，平均每个专家 2 个 Token：
 
@@ -127,7 +127,7 @@ MoE 的概念起源自 1991 年的 Paper Adaptive Mixtures of Local Experts，�
 - Expert 2 只有 2 个 Token，需要 Padding 1 个空的 Token。
 - Expert 3 只有 1 个 Token，需要 Padding 2 个空的 Token。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaYfK6A4Va6GzNrcCrhzWMbNJQdwbhNqqtee6yw7dTpZpBme6xaslqiafpcR2oqVqSPYOR4SgNJneQ/640?wx_fmt=png&from=appmsg&randomid=ovq09rgx)
+![Image](images/640_241da11c01e2.png)
 
 从上也可以看出，容量因子越大，需要 Padding 的 Token 也就越多，无效计算越多；负载越不均衡，需要 Padding 的 Token 也就越多，无效计算越多。为了更好地实现负载均衡，作者同样添加了 Load Balancing Loss。
 
@@ -135,15 +135,15 @@ MoE 的概念起源自 1991 年的 Paper Adaptive Mixtures of Local Experts，�
 
 Selective precision：稀疏专家模型相比传统 Transformer 模型训练更加困难，由于每一层 Router 的存在，可能导致训练的不稳定性，此外 BF16 等低精度格式可能加剧 Router 中 Softmax 计算的问题。本文作者提出了在模型的局部部分选择性地转为 FP32 精度，可以实现很好的稳定性，而不会产生昂贵的 FP32 Tensor 通信成本。具体来说，只在 Router 的内部使用 FP32 精度。如下图 Table 2 所示，本文的 Selective precision 可以同时实现高质量和高吞吐：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaYfK6A4Va6GzNrcCrhzWMbGcYj6zEX3OvMS1WhzeVb4friaIOrOQ85VKBic1Udwsc9zoYZjbcRWqdA/640?wx_fmt=png&from=appmsg&randomid=5voqib3j)
+![Image](images/640_673a0fdbca45.png)
 
 小的初始化参数有助于稳定性：如下图所示，作者验证通过使用比较小的初始化参数可以获得更好的模型质量，并减小模型在训练早期的方差：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaYfK6A4Va6GzNrcCrhzWMb0TJnswV3ibxnib4oudIkwPTlH1mtlfmzR0RkmK7Pf4w7nvz4mmNjcHqA/640?wx_fmt=png&from=appmsg&randomid=niyrvscd)
+![Image](images/640_c3ce60f88b0e.png)
 
 Dropout 正则化：当前的这些 Transformer 模型通常是在大规模语料库上进行预训练，然后在较小的下游任务上微调，而当微调数据集比较小时经常出现过拟合，而 Switch Transformer 这类 MoE 模型可能加剧过拟合的程度。为了缓解这一问题，作者增加了专家内部（FFN）的 Dropout 比例，称为专家 Dropout（Expert Dropout，ED）。然而，作者发现所有层增加 Dropout 率会导致性能更差；作者发现，在非专家层使用较小的 Dropout 率可以缓解这一问题：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaYfK6A4Va6GzNrcCrhzWMbxGVPrjW9hhibFlyB9GSQkd585kwzz4CkuPzKOX08pOAk2eBsuWviagibw/640?wx_fmt=png&from=appmsg&randomid=pry99att)
+![Image](images/640_92d7e07cc7ab.png)
 
 ## 六、FastMoE
 
@@ -155,7 +155,7 @@ Dropout 正则化：当前的这些 Transformer 模型通常是在大规模语�
 
 PS：如下图所示（来自 fastmoe/doc/readme-cn.md at master），FastMoE 主要针对的是 Expert 比较多的场景，也就是一个 GPU 上有 1 个或多个 Expert。在 2021 年底的 v0.3.0 版本中集成了 Megatron-LM，通过 Megatron-LM 的 Tensor Parallel 来实现一个 Expert 分布在不同的 GPU 上。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaYfK6A4Va6GzNrcCrhzWMb7IpSTcbvic1jnh0hmbiakIic2ibBxJ6UeheTPMeZmCiauHae0jibQqTPbGdQ/640?wx_fmt=png&from=appmsg&randomid=d9h907u4)
+![Image](images/640_9270cd01b1a3.png)
 
 ### 6.2 系统设计
 
@@ -167,13 +167,13 @@ FastMoE 的灵活性主要体现在以下几个方面：
 - 针对 Transformer 模型高度优化的 FFN。尤其是当多个专家放在一个 Worker 时，常见的方式是通过 for 循环串行的执行 Worker 上的多个专家，而作者实现了并行执行不同专家的方案。（Batched Gemm）
 - 插件式支持 Pytorch 和 Megatron-LM。作者对 FastMoE 进行了必要的抽象，使其很容易与其他框架集成，如下图所示为与 Megatron-LM 集成的示例：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaYfK6A4Va6GzNrcCrhzWMbtib8leXkfwyyvklWe70nRib8kMQwL5ia55m1BcDdvibdfnIibCVxVVqIsibg/640?wx_fmt=png&from=appmsg&randomid=gwrxs1cv)
+![Image](images/640_e177818c0db9.png)
 
 #### 6.2.2 扩展模型容量
 
 FastMoE 的模型并行方案。FastMoE 支持将专家分布在多个节点的多个 Worker 上，并且将不同 Worker 之间的数据通信隐藏起来，模型开发人员不用考虑。此外，在分布式 MoE 系统中的一个主要挑战为：动态路由导致分配给不同专家的输入样本数可能存在很大的差异。作者的方案为：在 Worker 之间交换实际的数据之前，先在 Worker 之间交换大小信息，Worker 根据相应信息分配 Buffer，然后传输真实的数据。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaYfK6A4Va6GzNrcCrhzWMbiaibXE6V21MbCQfiaS9qLE0NF632iad5NKQib0CNO9IuFvfS0808zBDOqzw/640?wx_fmt=png&from=appmsg&randomid=x9re5qkf)
+![Image](images/640_6ca638a896d8.png)
 
 异构同步模块。模型的不同部分可能在不同的 Worker 组间重复，这非常有挑战，因为分布式模块不得不识别是否需要对参数的梯度进行同步，以及与谁同步。因此，FastMoE 引入了数据并行通信组标签：
 
@@ -187,13 +187,13 @@ FastMoE 的模型并行方案。FastMoE 支持将专家分布在多个节点的�
 
 FastMoE 将所有输入样本一起 Batching 后发给同一个专家。由于数据表示的限制，FastMoE 使用专门开发的 CUDA Kernel 进行内存移动，以减少开销。如下图 Figure 4 所示，给定每个样本要进入的索引（Gating 输出），通过 Scatter 操作将所有样本按照对应顺序进行排布，执行完专家计算之后，再按照相反的 Gather 操作进行复原。（gate output 应该为 0, 1, 2, 1, 1, 0 ?）
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaYfK6A4Va6GzNrcCrhzWMb8KM8n3Wia9O6TW8p0jCQREeLQ0FpL8aC1b1cgdkAqX3hTqIrGtzhFxg/640?wx_fmt=png&from=appmsg&randomid=tagw01d2)
+![Image](images/640_aed323302a4b.png)
 
 ### 6.4 多 CUDA Stream 调度
 
 如下图 Figure 8 所示，S 表示 Send，R 表示 Receive，C 表示 Compute，通过利用 CUDA 的 Multi Stream 机制，可以最大限度实现通信和计算的 overlap，实现加速的目的：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaYfK6A4Va6GzNrcCrhzWMbAym9Ffnql52Zl5HGw1nicqmyvZUKfIr7fPjS5CDxFu5am3SN28SEUHA/640?wx_fmt=png&from=appmsg&randomid=qawem7me)
+![Image](images/640_d53776b48412.png)
 
 ## 七、Tutel
 
@@ -214,7 +214,7 @@ FastMoE 将所有输入样本一起 Batching 后发给同一个专家。由于�
 
 如下图 Table 3 所示为一些常见的参数：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaYfK6A4Va6GzNrcCrhzWMb7rmUiaaa4OXpDtb8mM3O3wKZ3IKClV2wIw1r8oRXpZ4wHXiajqr1qSGg/640?wx_fmt=png&from=appmsg&randomid=fcuyc3e3)
+![Image](images/640_27dbeb5a5da5.png)
 
 作者在参数表里没有具体介绍 r 参数，只在后文介绍，表示每个专家的 TP 数，也就是每个专家分布在几个 GPU 上：
 
@@ -227,15 +227,15 @@ FastMoE 将所有输入样本一起 Batching 后发给同一个专家。由于�
 - 对于 MP（2）：仅模型并行，每个 GPU 上都只有模型的 1/W，所有 GPU 加起来有一份完整模型。只要能使用 EP，则总会差于 EP+MP（6）。
 - 对于 EP（3）：只有专家数量 >= GPU 数量才有意义，因此作者假设专家数量 < GPU 数量，这也是当前 LLM-MoE 的现状，不用考虑纯 EP 的方案。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaYfK6A4Va6GzNrcCrhzWMbAuPvIOictCCHXwxc9pQQNrzFTRatUy2guibIKGzOXjPEEH26JXtPMa1g/640?wx_fmt=png&from=appmsg&randomid=gqstuung)
+![Image](images/640_7ea0c3006962.png)
 
 如下图 Figure 6 所示为相应的 Zero-DP，假设有 4 个 GPU，模型有 2 个专家，则每个 GPU 都只存储某个专家的 1/2。在前向计算时需要一次 All-Gather 获取到 2 个完整的专家参数。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaYfK6A4Va6GzNrcCrhzWMbl9DHhkBoGHdaicRa7Sv4SoTiaHuMHb4UnVxSAYcBCWuFn6QHZOH9CL9g/640?wx_fmt=png&from=appmsg&randomid=ex1ybcdt)
+![Image](images/640_977aa26152ab.png)
 
 经过如上的分析后，作者得出了不同的分布式方案，如下图 Figure 8 所示，假设 ZeRO-DP 为 r=0，根据 r 的不同值可以选择不同的策略，特殊情况为上述介绍的 r=1 和 r=W/E：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaYfK6A4Va6GzNrcCrhzWMbHribYGPhR0nY7Iv6QSh0Ajqju7s1lTfMoK56icpCUIiaJ1fjicmkcSia1eA/640?wx_fmt=png&from=appmsg&randomid=bylm2rvh)
+![Image](images/640_7fbf09fb9cfc.png)
 
 ### 7.3 优化
 
@@ -243,13 +243,13 @@ FastMoE 将所有输入样本一起 Batching 后发给同一个专家。由于�
 
 常规的 FFN 层计算时，All-to-All 的 data layout 会和 Word-Size 有关，当 Word-Size（GPU）数目比较大时，性能可能会下降比较多：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaYfK6A4Va6GzNrcCrhzWMbo7px73YOYrzF9ABdfAkq8OBZMoINr11S8dmY9DY64QUQpDplLl9RZQ/640?wx_fmt=png&from=appmsg&randomid=p8fiseyv)
+![Image](images/640_5f2f41bb6965.png)
 
 PS：出现这一问题的主要原因是：FFN layer 主要为矩阵乘法，GPU 处理大矩阵乘法非常高效，而如果矩阵中的某一维度比较小时，会导致矩阵乘法处于 Roofline-Model 的 Memory-Bound 区域，导致无法充分发挥 GPU 算力，并且维度越小此瓶颈越明显。当 World-Size 为 256 时，对应的矩阵短边为 16384/256=64，可能正好在 Roofline-Model 的转折点，这也是为什么当 Worhd-Size 进一步增大时性能会进一步降低。
 
 Flexible All-to-All 的目的是去除和 World-Size 的相关性，如下图为优化后的效果：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaYfK6A4Va6GzNrcCrhzWMbch22fagCsb1FxGRKuq3zrX7ILEEWp13pNSzdOlGjRbdJ0Tcojv4Xjg/640?wx_fmt=png&from=appmsg&randomid=683kqaj2)
+![Image](images/640_a03442a6878e.png)
 
 #### 7.3.2 2DH All-to-All
 
@@ -260,25 +260,25 @@ Flexible All-to-All 的目的是去除和 World-Size 的相关性，如下图为
 - 第三列 -> 第四列：GPU 内部交换数据（无通信）
 - 第四列 -> 第五列：跨 node 的 GPU 间交换数据（网络）
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaYfK6A4Va6GzNrcCrhzWMbB6U4zUiahwmzujHnydoE4icTv5riaRATibrmV3jkh9liaE0wzNt2eTWm8EA/640?wx_fmt=png&from=appmsg&randomid=xxmxzktw)
+![Image](images/640_0800c0fc57b7.png)
 
 如下图 Figure 20 和 Figure 21 所示，提出的 2DH All-to-All 比基线提升明显：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaYfK6A4Va6GzNrcCrhzWMbv9ORZMJzibAU72VuIt2MwacEZ7op6rBAhTyW0rPcKXV2umOe2PiccJYg/640?wx_fmt=png&from=appmsg&randomid=af9rnv3e)
+![Image](images/640_6df6270ed10e.png)
 
 #### 7.3.3 Fast Encode 和 Decode Kernel 优化
 
 如下图 Figure 3 所示，在专家并行模式下，专家层的前后会分别引入 All-to-All 通信操作。前一个 All-to-All 用于将每个 Worker 上的 Token 按照 Router 后对应的专家发送到专家所在的 GPU，也叫 All-to-All（Dispatch）；而后一个 All-to-All 用于将专家计算后的 Token 重新按照原来的方式排列，也叫 All-to-All（Combine）。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaYfK6A4Va6GzNrcCrhzWMb9QammjnJIwDuK8308X4ZqaTgs4ICglsicRRJtfBFib8v5nnnLHZEsKSw/640?wx_fmt=png&from=appmsg&randomid=44vxynfs)
+![Image](images/640_e4388eb847c1.png)
 
 在 All-to-All（Dispatch）操作之前需要准备好 All-to-All 的输入，也叫 Encode；在 All-to-All（Combine）操作之后需要解包 All-to-All 的输出，组织为原始的顺序，也叫 Decode。而很多框架中 Encode 和 Decode 的实现都不够高效，有很多无效计算，因此作者定制了高性能 CUDA Kernel 来优化，如下图（a）为未优化的 Encode，（b）为优化后的 Encode。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaYfK6A4Va6GzNrcCrhzWMbga2YDSDZpnt87LrG6J2ibv0KduXGkgRH98485G24wNVZuJNia4HDMbDQ/640?wx_fmt=png&from=appmsg&randomid=9wplg0j0)
+![Image](images/640_43b36023dda2.png)
 
 如下图 Figure 15 所示，优化后 Encode、Decode 相关的时间大幅降低（此外也可以有效节约显存）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaYfK6A4Va6GzNrcCrhzWMbR9GQvrt4VoBYhRaROzrdyNz9YD5ibUeE3DMLF5zPibJt4GWnC2c1hJEw/640?wx_fmt=png&from=appmsg&randomid=40vmlir5)
+![Image](images/640_e20d287d3329.png)
 
 #### 7.3.4 Adaptive Pipelining
 
@@ -302,11 +302,11 @@ MegaBlocks 主要解决的是 1 个 GPU 上有多个专家时，由于负载不�
 - （B）：可以表示为 Batch Gemm 来计算，输出为 (6, 12288)，但只有对角线上有 3 个 (2, 4096) 的子矩阵，其他位置为 0。采用稀疏计算不会增加额外的计算量。
 - （C）：同样可以表示为 Batch Gemm（可变 Shape），但是不丢弃 Token，也不 Padding，相当于 (3, 1024)，(1, 1024) 和 (2, 1024) 的 3 个矩阵分别不同的 (1024, 4096) 的矩阵相乘，稀疏表示后生成的还是 (6, 12288) 矩阵。PS：这个图很容易让人迷惑，图中的列分块是作者想要支持可变大小的专家，但并没有实现。实际上当前用的专家大小都相同，所以各个专家列分块的大小也应该相同。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaYfK6A4Va6GzNrcCrhzWMbgJWsH9AlrMSGkqcXsM5ZflcELHAZtFcTNytX53N8aezGRJQiaYFUicKw/640?wx_fmt=png&from=appmsg&randomid=gzf1r4wj)
+![Image](images/640_8defb33268ce.png)
 
 如下图 Figure 5 所示为对应的稀疏分块矩阵表示方式：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiaYfK6A4Va6GzNrcCrhzWMbrk9dxMeWHjiaBiaDye9ibMbzcN2GGIhBSsZoRY22SrFa2ZJSDL7xBibB7w/640?wx_fmt=png&from=appmsg&randomid=q9sn9qcz)
+![Image](images/640_7b1e665a139a.png)
 
 ## 九、参考链接
 

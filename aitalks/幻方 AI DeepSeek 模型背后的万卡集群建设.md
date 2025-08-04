@@ -51,19 +51,19 @@ PS：
 
 在 NVIDIA 官方 DGX 方案中，通常会采用 SXM GPU，有 NVLink 和 NVSwitch 实现高速互联，而且通常也会为每个 GPU 配备一个高速 IB 网卡（A100 通常是 200 Gbps）。而本文中作者采用的是 A100 PCIe GPU，无法使用 NVLink 和 NVSwitch 高速互联。此外 PCIe A100 和 SXM A100 在性能上也会略有差异，如下图 Table 2 所示。当然，PCIe GPU 服务器的成本和功耗也会更低一些。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgaSXiadEicTRsYxMtjoaxjOc2l3IgRoW9Iib4ZrutxPTIZ7icYwGHDlwNNjsndC9CxkZETVpQWH3TYZA/640?wx_fmt=png&from=appmsg&randomid=xyjyjasp)
+![Image](images/640_0340f2dd991d.png)
 
 实际上 A100 的各个版本中（甚至 A800 系列），理论算力都是相同的，比如 FP16 Tensor Core 算力都是 312 TFLOPS。作者上图中 A100 PCIe 是 A100 SXM 的 83% 应该是实测性能：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgaSXiadEicTRsYxMtjoaxjOcaNiblA1GgQ7C6aVXpFCQF4FcVhJ99WLiaGic6dLWFE8ypGe2cmwD4jUmg/640?wx_fmt=png&from=appmsg&randomid=ozf6budv)
+![Image](images/640_bc5a41de91d8.png)
 
 成本低的另一个原因是服务器中只配备一个 200Gbps 的 Mellanox CX6 IB 网卡，并且直连到 CPU，没有经过 PCIe Switch，类似于下图红框 NIC 和绿框 NIC 的区别。当然，这里其实还会引入一个问题，不同 NUMA（CPU）下的 GPU 通信，或者 CPU1 下的 GPU 要通过 NIC 通信则都需要通过 UPI，这也额外增加了一些开销。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgaSXiadEicTRsYxMtjoaxjOcD9QD8P08TujOzEMGQl9PpGeaeLwduOMaFFGX4XaSL5ZVS8cOs2rZDA/640?wx_fmt=png&from=appmsg&randomid=88rfvq89)
+![Image](images/640_38083671ec99.png)
 
 上面提到，作者采用的 PCIe A100，没有使用 NVLink + NVSwitch 实现全互联。为了缓解 GPU 间数据交互的瓶颈，作者采用折衷的方案，每两个 GPU 通过 NVLink Bridge 实现高速互联，如下图所示，8 个 GPU 共分为 4 组，每组 2 个 GPU 通过 NVLink Bridge 连接。（PS：需要说明的是，作者早期的服务器没有 NVLink Bridge，而是后期为了适应 LLM 的需求新增加的）
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgaSXiadEicTRsYxMtjoaxjOc060VN95b1eBpyXSm6icDCfyVoP2UjlcfH6h3C9HsqOIOZ13GBtX2OicQ/640?wx_fmt=png&from=appmsg&randomid=x0bqvwwt)
+![Image](images/640_f87418eb6743.png)
 
 ### 3.2 网络拓扑
 
@@ -79,7 +79,7 @@ PS：
 - 15 或 16 个 Port 连接 GPU Node，也就是每个 Zone 有 [40*15=600, 40*16=640] 个 GPU Node。（PS：论文中只说总共大约 1250 GPU Node，每个 Zone 大约 600 GPU Node，因此这里只能推测）
 - 2 或 4 个 Port 连接 Storage Node。（PS：论文中提到两个 Zone 总共大约 200 个 Storage Node，但又介绍每个 Zone 800 个 Node。后文还提到包含 180 个 Storage Node，平均来看每个 Leaf Switch 会连接 2-3 个 Storage Node，Storage Node 包含 2 个 200 Gbps 的 NIC，不确定是否会将一个 Storage Node 连接到不同的 Leaf Switch）
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgaSXiadEicTRsYxMtjoaxjOcTV1KKAMwNkF6ibUBIIXTs2LA3daYg7qic3Fx84JSkm75ok5pZlZZvf3A/640?wx_fmt=png&from=appmsg&randomid=glhfw17h)
+![Image](images/640_bd4d107cabc0.png)
 
 ### 3.3 成本
 
@@ -89,7 +89,7 @@ PS：
 - PCIe 架构 + 3 层 Fat-Tree：每个 Node 1 个 NIC，则共需要 1600/20=80 Leaf Switch，80 Spine Switch 和 40 Core Switch，共 200 Switch。
 - DGX-A100 GPU + 3 层 Fat-Tree：每个 Node 包含 8 个 GPU，有 8 个后向网络 NIC，因此 10000 个 GPU(NIC) 至少需要 10000/(40/2)=500 个 40-Port 的 Leaf Switch，500 个 40-Port 的 Spine Switch 和 320 个 Core Switch（PS：考虑 Full Mesh，这里不是 250），所以总共需要 1320 个 Switch。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgaSXiadEicTRsYxMtjoaxjOclCosvFOyadOibUjnQ0bgFXwfPzarLkyF71ghNuLt3Fn5sVg2CEgCNHQ/640?wx_fmt=png&from=appmsg&randomid=8dt4ajy2)
+![Image](images/640_194f6e25d78b.png)
 
 从上也可以看出，作者方案可以以 11600/23000=50.4% 的成本获得 83% 的 GPU性能。
 
@@ -97,7 +97,7 @@ PS：
 
 作者也在准备构建下一代的 PCIe 架构集群来支持 MoE LLM 的训练，其包含大量的 All2All 通信，因此下一代架构中 GPU 和 NIC 会采用 1:1 配比，也就是每个 GPU 都有一个对应的 NIC，也考虑采用多平面网络。此外，会使用 RoCE 替代 IB Switch 以降低成本。使用 128 Port 的 400 Gbps RoCE Switch，4 平面的 2 层 Fat-Tree 网络可以支持 32,768 个 GPU。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgaSXiadEicTRsYxMtjoaxjOc0PRLXGZ8A0tfVgib5h5OaA8wKN8M9v6aw8icroUawgaGvrLYKD3ibD03A/640?wx_fmt=png&from=appmsg&randomid=nzof8rwt)
+![Image](images/640_2d045c2b8bdf.png)
 
 ## 四、HFReduce：软硬协同网络设计
 
@@ -109,7 +109,7 @@ PS：
 - 第二步：节点间在 CPU 上进行 Reduce 操作。
 - 第三步：将 CPU 上 Reduce 后的数据传输会 GPU。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgaSXiadEicTRsYxMtjoaxjOcr1sfnwkqzEmkVw2m8AXiaOCe7zth886dGEgjpOxQxIABLKm1HichUb6Q/640?wx_fmt=png&from=appmsg&randomid=42ejwwpv)
+![Image](images/640_436379c35ee3.png)
 
 节点内的 Reduce 操作算法如下图 Algorithm 1 所示：
 
@@ -117,14 +117,14 @@ PS：
 - 每个 Chunk 的数据都通过异步的方式传输到 CPU 内存，拷贝操作也可以使用 GPUDirect 来拷贝小数据（可以参考 NVIDIA 的 GitHub - NVIDIA/gdrcopy: A fast GPU memory copy library based on NVIDIA GPUDirect RDMA technology），或者使用 cudaMemcpyAsync 来拷贝大数据。
 - 已经拷贝到 CPU 内存上的 Chunk 可以执行 Reduce 操作，最终的结果也都是在 CPU 内存中。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgaSXiadEicTRsYxMtjoaxjOcg0pudFYrPxaGHAolc2ibQ3X6g5GgWMKkU1PkmicaHlHEMf19cMibpjE0Q/640?wx_fmt=png&from=appmsg&randomid=neaxtycb)
+![Image](images/640_1fdbfa1e8f8e.png)
 
 节点间的 Reduce 操作算法如下图 Algorithm 2 所示：
 
 - 使用 Double Binary Tree Algorithm 算法实现节点间的 AllReduce 操作，节点间传输通过 RDMA 实现。
 - 最后将计算完的数据通过 PCIe 传输到 GPU 显存中。此处的 Host to Device 操作也可以通过 GPUDirect 操作来同时写到同一个 NUMA 下的 4 个 GPU，而减少对 Host Memory 的读取（利用 CPU Cache）。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgaSXiadEicTRsYxMtjoaxjOcq5J2icVov9NmWp7tGA6ANnP1ia8PvPd4uzestTyoAFs6BVWQ2trFOrSQ/640?wx_fmt=png&from=appmsg&randomid=o4rdpe47)
+![Image](images/640_fecfa73a49f8.png)
 
 ### 4.2 HFReduce 对比 NCCL
 
@@ -135,7 +135,7 @@ PS：
 
 如下图（a） 所示，本文的方案在执行 186MiB 数据的 AllReduce 时相比 NCCL获得了更高的带宽。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgaSXiadEicTRsYxMtjoaxjOcCw9zRiahVgXmZUvWkzAqyfBAYWXjRKcqJ1y7H6kUQxmhJR6aGtkSdLQ/640?wx_fmt=png&from=appmsg&randomid=epnvi3tl)
+![Image](images/640_b8382b32cb5e.png)
 
 ### 4.3 HFReduce with NVLink
 
@@ -143,7 +143,7 @@ PS：
 
 作者进一步测试了相应的通信带宽，如下图（b）所示，基本可以达到上述（a）中不带 NVLink 的 2x。其中蓝色为跨 Zone 的情况，因为一个 Leaf Switch 下有 15 或16个 Node，也就是 128 GPU，因此也只考虑超过 128 GPU 的情况：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgaSXiadEicTRsYxMtjoaxjOclljb9hBvboyx7BOYicIAQwFMrT7tvPxdk5YKUXHtNxruvssf0aJ7GAg/640?wx_fmt=png&from=appmsg&randomid=2u2gyqb5)
+![Image](images/640_4830ac6ad51d.png)
 
 ### 4.4 深入分析 HFReduce
 
@@ -173,7 +173,7 @@ HFReduce 的瓶颈：作者统计了一个 Node 上的所有内存操作：
 
 Pytorch DDP 会使用 NCCL 用于梯度聚合时的 AllReduce 操作，而本文中，作者使用 HFReduce 替换 NCCL。如下图（a）所示，训练 VGG 模型时，基于 HFReduce 的时延几乎是 Pytorch DDP（NCCL）的一半。同时，从 32 GPU 扩展到 512 GPU 时可以获得 88% 的线性加速。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgaSXiadEicTRsYxMtjoaxjOcvKuuKumdAbl1FhnRuicAIUfJRFCED7TpdQL7E0RuMrMEWkGh4GzracQ/640?wx_fmt=png&from=appmsg&randomid=icf9yk8k)
+![Image](images/640_dd7ae53dce7f.png)
 
 ### 5.2 LLM 训练优化
 
@@ -183,11 +183,11 @@ Pytorch DDP 会使用 NCCL 用于梯度聚合时的 AllReduce 操作，而本文
 
 针对 PCIe 架构优化 PP。一台机器只有 1 个 NIC，使用 PP 时可能存在瓶颈，为此，作者在调度时将不同的 DP Rank 调度到同一个 Node 上，这样可以交错 DP 和 PP。如下图 Figure 9（a）所示，训练 LLaMA 13B 时，GPU 数从 32 扩展到 512，每一个 Step 的 Latency 从 64.118s 减少到 9.717s，获得了理论加速 91% 的加速效果。如下图 Figure 9（b）所示，DeepSeek-MoE 16B 训练时同样获得了理论加速的 92.92%。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgaSXiadEicTRsYxMtjoaxjOcrRAEnibZ8ibmJiaLGhqo5HEQq4HrQc2hMdQhRHYhcsf0oiaK8CT3bRDpUw/640?wx_fmt=png&from=appmsg&randomid=u0agqsd1)
+![Image](images/640_c0d6bd88f61b.png)
 
 HaiScale FSDP：此外，作者也对 FSDP 进行了适配和优化，如下图（b）所示，从 16 GPU 到 128 GPU，HaiScale 可以获得 95% 的加速。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgaSXiadEicTRsYxMtjoaxjOcEdDP6icOrnRLibQIX3xgBrTvHAfG50iaTjIsWFZFFx1rHZEeOluG2cViaw/640?wx_fmt=png&from=appmsg&randomid=vru34blc)
+![Image](images/640_d710a0444c72.png)
 
 ## 六、联合优化
 
@@ -210,7 +210,7 @@ NCCL 优化：调整了 NCCL 拓扑，以便调整同一个 Node 内的 IB NIC �
 - 总共 2880 NVMe SSD，可以提供 20 PiB 的存储（有1个额外的存储副本）。
 - 总共可以提供 180*2*200 Gbps = 72 Gbps = 9 TB/s 的理论带宽，实测可以达到 8 TB/s。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgaSXiadEicTRsYxMtjoaxjOc4M0LbCpfTUFaIN8nbejVic5cA8Dwy0Qe8OSNtbYoCf1Aj9SnVtm9l1Q/640?wx_fmt=png&from=appmsg&randomid=3wvxdibh)
+![Image](images/640_0043994c8263.png)
 
 3FS 系统包含 4 个角色：Cluster Manager、Meta Service、Storage Service 和 Client。其中 Storage Service 会部署在每个 Storage Node 上，每个 Storage Service 都能提供等分的带宽。根据这个设计，每个 Client 都可以访问每个 Storage Service。峰值负载时，作者在 Client 观察到 Incast 拥塞，为了缓解这个拥塞，作者在 Storage Service 和 Client 之间实现了一种请求发送控制机制（request-to-send），这种机制会增加端到端 IO 延迟，但又是实现可持续高吞吐的必要手段。
 
@@ -243,15 +243,15 @@ NCCL 优化：调整了 NCCL 拓扑，以便调整同一个 Node 内的 IB NIC �
 
 如下图 Table V 所示，作者展示了常见的 Xid Error 和对应的原因：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgaSXiadEicTRsYxMtjoaxjOctfCkltcTCuYCBTyxiciagJUqlKWbrexyQxeO5R5OmVDV5VkiatAmibp8FQ/640?wx_fmt=png&from=appmsg&randomid=lttkbzou)
+![Image](images/640_dd83d14a561b.png)
 
 如下图 Table VI 所示，作者也展示了不同 Xid Error 的数量和比例，可以看出，NVLink Error 占比 42.57%，这可能和作者使用的 NVLink Bridge 有关。而 Xid 31 和 Xid 43 的软件错误总共超过了 50%，这种情况大部分是程序问题，如果排除程序问题那也基本可以确定是硬件故障。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgaSXiadEicTRsYxMtjoaxjOc9zpicXKvpKicTCicPvxBTUic10BetQFlMAJ4Hvkr0znNfbS4vEwY2a0W7Q/640?wx_fmt=png&from=appmsg&randomid=mqalclju)
+![Image](images/640_0e5f3bee918e.png)
 
 如下图 Figure 11 所示，作者同样频繁受到网络抖动的影响：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgaSXiadEicTRsYxMtjoaxjOcQ1uJq4zEHkOKIMh9yib1sIpdZQNhCsvvawjICPKJdH2Q6ibtd2iaEhYmA/640?wx_fmt=png&from=appmsg&randomid=iav710ma)
+![Image](images/640_c830d6f15987.png)
 
 ## 八、参考链接
 

@@ -19,7 +19,7 @@
 
 AllReduce 是集合通信中非常常见的分布式计算操作，主要用于多个设备（如多台服务器或多个 GPU）之间聚合数据的场景，可以包含 Sum、Min、Max 等操作。以 AllReduceSum 为例，假设有 K 个 设备，每个设备上有 N 个数据，则 AllReduce 后每个设备上的 out[i] = in0[i] + in1 [i] + … + in(k-1)[i]，也就是每个设备上的 i 位置都是所有设备 AllReduce 前 i 位置元素的和。可以参考 NCCL 的文档 Collective Operations — NCCL 2.22.3 documentation [1]。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg7JyDc1w2gg1poumLdYab05rQgt6tRsDPMTpsD7g31vz1eeSMPktslLyUicJYsh0XwB5464xGnusQ/640?wx_fmt=png&from=appmsg&randomid=knomxamk)
+![Image](images/640_bc218653f768.png)
 
 ### 2.2 AllReduce 算法
 
@@ -48,45 +48,45 @@ Tree AllReduce：采用树状拓扑结构进行通信。
 
 如下图 Figure 3 所示为 Tree AllReduce 的一个示例，向上箭头是 Reduction 阶段，向下箭头是 Broadcast 阶段：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg7JyDc1w2gg1poumLdYab0sVSyCwYmZFhYEjsGRuscvuibicc10RoLHsCICYQslKibfV3QdlEJDv5NA/640?wx_fmt=png&from=appmsg&randomid=gmxzimh6)
+![Image](images/640_d1737340316a.png)
 
 ### 2.3 ReduceScatter + AllGather
 
 对于常见的基于 Ring 的 AllReduce 实现中，通常将一个 AllReduce 操作拆分为一个 ReduceScatter 和一个 AllGather 操作，如下图所示：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg7JyDc1w2gg1poumLdYab0dTfomsNHF5wBhK0rDicaR7nrILxk4x0lrKHGK6SQAa118kgEmtAgK1g/640?wx_fmt=png&from=appmsg&randomid=kn7vh5g2)
+![Image](images/640_b809676eb710.png)
 
 具体的 ReduceScatter 操作如下，每个设备（GPU）发送一部分数据给下一个节点，同时接收上一个设备的数据并累加。这个过程进行 K-1 步，ReduceScatter 后每个设备都包含一部分数据的 Sum：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg7JyDc1w2gg1poumLdYab0a5CDO7KKCco5phgLoDW00Azr0K0AOCibJpz6ASVp0bde6ZappKyQRVQ/640?wx_fmt=png&from=appmsg&randomid=5lwxp3sk)
+![Image](images/640_59253c53b88f.png)
 
 具体的 AllGather 操作如下，每个设备（GPU）将其持有的部分结果发送给下一个设备，同时接收上一个设备的部分结果，逐步汇集完整的结果，同样需要 K-1 步。AllGather 后，每个设备都包含全量的数据：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg7JyDc1w2gg1poumLdYab01qiccmsgrw5sibttNhEgF2K2WyMSFlpIbKvjRguw4frpSKkOiawghW1UA/640?wx_fmt=png&from=appmsg&randomid=vu5r8qip)
+![Image](images/640_6717b96e99ac.png)
 
 ### 2.4 NCCL AllReduce 实现
 
 如下图所示，在 NCCL 中 RingAllReduce 的实现并不是完全分割成 ReduceScatter 和 AllGather 两个操作，而是合在一起通过 2K-2 个 Step 实现。这里的 K 是设备的数目，设备越多，需要的 Ring Step 个数越大；此外，每个 Ring Step 后都需要保持同步，这也会导致时延的增加。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg7JyDc1w2gg1poumLdYab0Dz9TiaKW7upo8Q7LvKa2oSBVFicAyFuvZFjSibqof2FlGVfoFmnrkfhxA/640?wx_fmt=png&from=appmsg&randomid=59c3j7j1)
+![Image](images/640_7df2b69ce916.png)
 
 ### 2.5 AllReduce 带宽
 
 如上所示，基于 Ring 的 AllReduce 操作可以分成 ReduceScatter 和 AllGather 两个阶段。假设设备数量为 K，每个设备的数据量为 T，并且切分为 K 份，则每一个阶段的通信量为 (K-1) * T * sizeof(dtype)，假设每个设备的总线带宽为 busBW（具体可以参考 nccl-tests/doc/PERFORMANCE.md at master [3]），则 AllReduce 对应的理论通信时延为：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg7JyDc1w2gg1poumLdYab0bY5p7YtgNmdSFJzIzGWGWLxzeLppqlOprYp8RIBJg1rCZ5OLPMZZ7Q/640?wx_fmt=png&from=appmsg&randomid=vk352xzy)
+![Image](images/640_398febe835d9.png)
 
 然而，实际的总线带宽并不能达到理论总线带宽。如下图所示，在 4*V100 GPU 服务器重，4 个 GPU 通过 NVLink 互联（没有 NVSwitch），每两个 GPU 之间 2 个 NVLink 连接，理论双向带宽为 100GB/s，实际测试也可以达到 97GB/s，如果 Disable NVLink（通过 PCIe），则对应的带宽只有 16GB/s。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg7JyDc1w2gg1poumLdYab0vu6C8zZUUfhR2HlXVHgygSM1g9BLq40QFw6XUprQ4BP7yGyKhjkicvA/640?wx_fmt=png&from=appmsg&randomid=v81ngyan)
+![Image](images/640_e7a4244b0a0f.png)
 
 AllReduce 通常更关注的是总线带宽 busBW，对于 4*V100 NVLink 互联（没有 NVSwitch），NCCL 通过如下的方式可以创建 3 个双向环，其中每个颜色都是 1 个双向环。因为每个环的单向通信带宽为 4*25GB/s，理论通信带宽的上限为 6*(4*25GB/s)=600GB/s（等价于 12 个 NVLink * 50GB/s，也就是所有 NVLink 都充分利用），那么平均每个 GPU 的理论 busBW 为 150GB/s。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg7JyDc1w2gg1poumLdYab0lAGUGrZZd7Ue9OzNwAXGZ0OiapCFAp601GH48Pw4lqtfHEPKticyEsmw/640?wx_fmt=png&from=appmsg&randomid=xe5seb5f)
+![Image](images/640_850496e29856.png)
 
 实际总线带宽与理论总线带宽有一定差距存在多发面的因素，比如，数据量、GPU 连接方式、使用的通信算法、NCCL 版本等等。如下图所示为使用 nccl-tests 测试的 AllReduce 总线带宽，可以看出，当数据量比较小时，比如小于 1MB(106B)，测试的 busBW 很低，不到 30GB/s。当通信的数据量达到 128MB 时，相应的 busBW 达到 130GB/s，基本接近极限的 150GB/s。如果没有 NVLink，则实测的 busBW 只有 10GB/s 左右。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg7JyDc1w2gg1poumLdYab0urcoCGPY5EAff0HMtibDl15xHUk2IbBZj3xTMCNGoyPbGMR36EVtvhw/640?wx_fmt=png&from=appmsg&randomid=mxdc6hrj)
+![Image](images/640_56cd4aaeff3a.png)
 
 同样可以在单机 8*H100 GPU 服务器上进行测试，其中 8 个 GPU 通过 NVLink + NVSwitch 实现全互联，理论上每个 GPU 最大可以实现 900GB/s 的双向带宽。如下图所示为使用 nccl-tests 测试出的 AllReduce 总线带宽，其中：
 
@@ -95,11 +95,11 @@ AllReduce 通常更关注的是总线带宽 busBW，对于 4*V100 NVLink 互联�
 - Tree：NCCL_ALGO 设置为 Tree，表示使用 Tree 算法。
 - PCIe：NCCL_P2P_DISABLE 设置为 1，表示不使用 NVLink，这里的带宽比 V100 上明显高很多，主要是在 H100 上使用了 PCIe Gen5。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg7JyDc1w2gg1poumLdYab0A3kicoCr1YIdCPXkicNn0tVmGCejV0avoN2Ih5SUiaMic3o425p8m7ncsQ/640?wx_fmt=png&from=appmsg&randomid=dha9yw97)
+![Image](images/640_59f5ec6fa4e8.png)
 
 如下图为 NVIDIA 官方的结果，在 V100（122），H100 上 NVLink4（360，对应 Ring），H100 上 NVLink4 Sharp（480，对应 NVSL）对应性能与我们实测性能相当：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg7JyDc1w2gg1poumLdYab0Ju63v0fUiaUSzIl6QMBxcSkL9bP5ic8ltO5M0BmkrFfzQq6ZoOreaPJA/640?wx_fmt=png&from=appmsg&randomid=a1qc3lgm)
+![Image](images/640_65face9694ed.png)
 
 ### 2.6 LLM Tensor Parallelism AllReduce
 
@@ -107,11 +107,11 @@ AllReduce 通常更关注的是总线带宽 busBW，对于 4*V100 NVLink 互联�
 
 如下图 （a）所示，MLP 层的两个 Linear 层采用先列切（A，Column Parallelism），然后行切（B，Row Parallelism）的方案，这样两个 Linear 之间不用通信：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg7JyDc1w2gg1poumLdYab0X66Aw6nBdd8gYic3mAlwnyjTibv2DOw6nic1xGibRCcC1K5TKyYmBkjkNA/640?wx_fmt=png&from=appmsg&randomid=40keiqnh)
+![Image](images/640_ac06315f7202.png)
 
 如下图（b）所示，由于每个 Head 的 Attention，Softmax 都可以独立计算，因此可以按照 Head 的方式切分（等价于 Column Parallelism），然后对之后的 Linear 采用行切分（B，Row Parallelism），这样 Self-Attention 中间也不用通信：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg7JyDc1w2gg1poumLdYab0MicRNR69lEQSQZ8GkO0yJrGbuOnica15oowT2hZqZ9V64HsVgRUsfFOA/640?wx_fmt=png&from=appmsg&randomid=6z4wry3w)
+![Image](images/640_38f1d6b2e074.png)
 
 如上所述，采用先列切再行切的方式，每个 Transformer Block 中都需要两个 AllReduce 操作，对于一个 40 层的模型则需要至少 80 个 AllReduce 操作。此外，由于 LLM Inference 中通常会采用 Continuous Batching，并且 Prefill 和 Decoding 阶段分开调度，也就导致 AllReduce 操作无法被很好的 Overlap，出现 AllReduce 操作时 GPU 的闲置。因此，可以通过降低 AllReduce 的时延来降低 LLM Inference 的时延，并进一步提升吞吐。
 
@@ -125,27 +125,27 @@ TensorRT-LLM 中的 MultiShot 实际上是真正的将 AllReduce 分成 ReduceSc
 
 如下图所示为 Ring ReduceScatter 的优化，可以等价为一个 All2All 操作实现数据的重排，然后在 Local 进行 Reduce 操作。此过程只有一个 All2All 的整体通信操作，虽然实际上与 Ring 实现的方式的通信量和计算量没有变化，但可以避免 K-1 个 Ring Step 的同步，进而可以有效降低时延。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_jpg/zhVlwj96tTg7JyDc1w2gg1poumLdYab0tylf4Vr083icZxaFjcKftX8TwpCq7x5V8ZclC3dFmE4OCUWDSiaUD3Bg/640?wx_fmt=jpeg&from=appmsg&randomid=w85yeijm)
+![Image](images/640_5f9a28f17580.jpg)
 
 实际上 NVSwitch 的 Sharp 能力也支持在 NVSwitch 上进行 Reduce 操作。如下图所示，每个 GPU 发送全量数据到 NVSwitch，然后在 NVSwitch 上完成 Reduce，最后每个 GPU 都接收聚合后的数据。在这种情况下除了可以避免 Ring Step 的同步外，还可以将通信量（发送/接收）从 2*(K-1)*T 降低为 (K+1)*T。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_jpg/zhVlwj96tTg7JyDc1w2gg1poumLdYab0t9PoRsyntmSUyVxjp5wAG8561EUBkXtL8UHe3jlrNL2Q9eSoQ5wmyg/640?wx_fmt=jpeg&from=appmsg&randomid=6ol6o5yx)
+![Image](images/640_8108e975b5aa.jpg)
 
-当然，上述方式也可进一步不发送当前 GPU 需要的数据，也就是发送 (K-1)*T，NVSwitch Reduce 后，每个 GPU 接收部分结果并在本地加上剩余的部分，最终得到完整结果，这样总的通信量为 K*T。如下图所示:![Image](https://mmbiz.qpic.cn/sz_mmbiz_jpg/zhVlwj96tTg7JyDc1w2gg1poumLdYab0SlYcnibWB2jHL4RLJnAoZibZtoJ0V4Cmkd1nnKpiayltH1FU5iaXOjlVBA/640?wx_fmt=jpeg&from=appmsg&randomid=fh1e61mu)
+当然，上述方式也可进一步不发送当前 GPU 需要的数据，也就是发送 (K-1)*T，NVSwitch Reduce 后，每个 GPU 接收部分结果并在本地加上剩余的部分，最终得到完整结果，这样总的通信量为 K*T。如下图所示:![Image](images/640_b797ead79ccf.jpg)
 
 如下图所示为 Ring AllGather 的优化，其主要是用了 NVSwitch 的 MultiCast 能力。具体来说，每个 GPU 只用发送 1 份数据，然后 NVSwitch 会将其扩展并发给其他所有 GPU，等价于每个 GPU 都向其他 GPU 发送数据、并从其他 GPU 接收数据。这样有两个好处：
 
 - 相比 Ring AllGather 操作，避免了 K-1 个 Ring Step 的同步，可以降低时延。
 - 总体发送数据变为 Ring AllGather 的 1/(K-1)，也就是 T，接收数据量不变，依然为 (K-1)*T；也就是说 Ring AllGather 发送加接收为 (K-1)*T + (K-1)*T=2(K-1)*T；而优化后变为 T+(K-1)*T=K*T。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_jpg/zhVlwj96tTg7JyDc1w2gg1poumLdYab0FibiaXLm9BnIibdhibibcn1oFhSfkVMV7zdQJHvQJnY5xKwL8c86bXIz5Hw/640?wx_fmt=jpeg&from=appmsg&randomid=5dff0qpt)
+![Image](images/640_21865afaa42f.jpg)
 
 基于以上的两个优化就可以将总的通信量从 Ring 方式的 4*(K-1)*T 降低为 2*T，通信步数也从 2*(K-1) 降低为 2，并且与设备数无关。（PS：这样才能与 NVIDIA Blog 中介绍的数据相匹配）
 ### 3.2 结果
 
 如下图所示为 NVIDIA 进行的相关测试，LLM 推理中 AllReduce 的通信量往往不大，在通信的 Message 为 4KB - 1MB 时，使用优化后的 MultiShot 方案可以将 AllReduce 的通信时延降低到 1/3 左右。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg7JyDc1w2gg1poumLdYab0wNIX9LdPwX7MQ3dw6k0Qmz2bu0WvpHysPjRTWRGznn4HXHgZMEjhVg/640?wx_fmt=png&from=appmsg&randomid=whzpqwqd)
+![Image](images/640_245581e4369b.png)
 
 ### 3.3 讨论
 
@@ -153,7 +153,7 @@ TensorRT-LLM 中的 MultiShot 实际上是真正的将 AllReduce 分成 ReduceSc
 
 此外，对于训练场景，通常 AllReduce 的通信量比较大，并且可以和计算进行 Overlap，因此更关注通信的吞吐，此时该方案的收益并不会特别明显。具体也可以参考 allgather performance using NVLS is poor · Issue #1506 · NVIDIA/nccl · GitHub [5] 中的相关讨论。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg7JyDc1w2gg1poumLdYab0Sue6V3TPy7nrEKsxnVW81DpwBL2jhP2o2anv3nI6Uwb5hmjEjCZicZQ/640?wx_fmt=png&from=appmsg&randomid=ccjkpxan)
+![Image](images/640_fa554e87d833.png)
 
 ## 四、Recogni AllReduce 压缩
 
@@ -167,7 +167,7 @@ PS：需要说明的是，个人认为论文还有不少可以改进的地方，
 
 如下图 Figure 1 所示，其优化的也是 Transformer Block 中的 2 个 AllReduce 操作。不过作者这里不是使用常规的 AllReduce 算法实现，而是通过 AllGather 在每个 GPU 上获取全量数据，然后各自执行 Sum 操作。当然，在 AllGather 之前会各自执行 Encode 压缩操作，AllGather 后每个设备还需要 N-1 次 Decode 操作以反压缩数据（当前 GPU 有对应的非压缩数据，因此每个 GPU 只需要 N-1 次反压缩）。由于 AllGather 传输的是压缩后的数据，因此通信量可以明显降低。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg7JyDc1w2gg1poumLdYab0kxQwVSFubXGwEZq3CRwZx647EIwKKEX2ibwbI0YtyZL36ohiac5ctYxA/640?wx_fmt=png&from=appmsg&randomid=h7g3tlfp)
+![Image](images/640_8f1996c5c5af.png)
 
 在之前的章节我们介绍过，Ring AllReduce 可以分解为 ReduceScatter + AllGather 实现，也可以通过 AllGather + Local Reduce 实现。具体来说，首先通过 AllGather 操作每个设备都可拿到全量数据，然后在本地进行 Reduce 操作即可。这种方式实现简单，但是有几个不足：
 
@@ -181,7 +181,7 @@ PS：从上可以看出，使用 AllGather + Local Reduce 并没有特别明显�
 
 对应的数据类型和配置如下所示：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg7JyDc1w2gg1poumLdYab0wewCmEhFvsMgFTheJsnYZg8c5W7tluVLFibLdGByJzNCWD480Wdaf5A/640?wx_fmt=png&from=appmsg&randomid=cakvmlm1)
+![Image](images/640_b10099237599.png)
 
 ### 4.3 实验&结论
 
@@ -191,11 +191,11 @@ PS：从上可以看出，使用 AllGather + Local Reduce 并没有特别明显�
 
 作者首先评估了不同量化数据类型对精度的影响，如下图 Table 1 所示，可以看出 FP3 会对困惑度产生比较大的影响；FP5 还勉强可以接受，在 1% 以内；而 FP4 的影响其实已经比较大了，更不用说在具体的下游任务：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg7JyDc1w2gg1poumLdYab031ZU8xGGf0SSaBq1d9Q8SNpic6yiawOBsq5UA6gbHiaDjGyCVOX9paicaQ/640?wx_fmt=png&from=appmsg&randomid=l0zjurf9)
+![Image](images/640_d7ac6b57023f.png)
 
 如下图 Table 3 所示，作者也进一步对比了本方案对 LLM 推理中 TTFT 的影响，可以看出，在 8xL4 和 4xL4 的配置中可以获得 2x 左右加速，在其他配置中反而可能导致降速。（PS：这里使用的输入长度都比较短，如果有一些更长序列的对比会更有说服力，比如 512,1024,2048）
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg7JyDc1w2gg1poumLdYab0oO0qlI3Y8ToerpGah2AKZbqJ8nEbduibM4UbzT55evmbJibz6diaojUNg/640?wx_fmt=png&from=appmsg&randomid=glbenouh)
+![Image](images/640_c6909527a440.png)
 
 ## 五、参考链接
 

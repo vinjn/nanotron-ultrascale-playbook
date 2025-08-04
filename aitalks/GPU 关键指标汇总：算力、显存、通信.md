@@ -10,7 +10,7 @@
 
 如下图所示为 NVIDIA GPU 的发展路线图：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia67o2161RNZx99zeJr8LsuHQTRxE0psOPkdvdVricibBlflybDdhD6HMFS9YVx9E4uGBBxDwpanpFQ/640?wx_fmt=png&from=appmsg&randomid=rzy6twal)
+![Image](images/640_df7e41f2887f.png)
 
 ### 1.1. 中国特供 H20、L20、L2
 
@@ -28,9 +28,9 @@
 - L40 : L20 = 90.5 : 59.8
 - L4 : L2 = 30.3 : 48.3
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia67o2161RNZx99zeJr8LsuTsJk11CicMPTVwFwHIXuHf3hgUictpiaoFW1Hm7SmTiaSaRy4VKd4b0Tfg/640?wx_fmt=png&from=appmsg&randomid=nvh8otag)
+![Image](images/640_8dbe5bf2fda0.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia67o2161RNZx99zeJr8Lsul4wicdo3gC1ZHrWSLQ3XZEBrCn9SnnjPK8ptpt7ImJKGMRkCUr44uicw/640?wx_fmt=png&from=appmsg&randomid=b428t4e6)
+![Image](images/640_4cb52f10c760.png)
 
 ## 二、数据类型
 
@@ -40,7 +40,7 @@ NVIDIA GPU 从 Volta 架构开始支持 Tensor Core，专门用于矩阵乘法�
 
 可以看出，V100 是 Volta 架构，其 Tensor Core 只支持 FP16，而 Tensor Core 整体的算力一般是 CUDA Core 算力的几倍，因此如果在 V100 上使用 INT8，只能运行在 CUDA Core 上，其性能可能反而比使用 FP16 还差不少。同样，H100 的 Tensor Core 也不再支持 INT4 计算。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_jpg/zhVlwj96tTia67o2161RNZx99zeJr8LsuUOPvPabichfhgayj4D5iataHAsMZeSnqWfZXJyicK13so7cdxLCDKaoDg/640?wx_fmt=jpeg&from=appmsg&randomid=qxe4233l)
+![Image](images/640_a6ebca31637b.jpg)
 
 ### 2.2. 数据类型表示方式
 
@@ -50,21 +50,21 @@ NVIDIA GPU 从 Volta 架构开始支持 Tensor Core，专门用于矩阵乘法�
 - exponent：表示指数位
 - mantissa：表示小数位
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia67o2161RNZx99zeJr8Lsu30EtW3CBUNP8D4rF88eyUaUbATicM4RIrf46v9dSCRUb6FqZQ0rV5EQ/640?wx_fmt=png&from=appmsg&randomid=081pjvpz)
+![Image](images/640_cd394907b57a.png)
 
 如上图所示，A100 和 H100 还支持 TF32 数据类型，其使用 19 位表示。从 H100 开始又支持了 FP8 类型，而且支持 E5M2 和 E4M3 两种类型，如下图所示：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_jpg/zhVlwj96tTia67o2161RNZx99zeJr8LsubZ2KycIX4UBMMTST0qZqiaN5kF9mNmO54x6PfFGDAjxQnUL1JjtAzXQ/640?wx_fmt=jpeg&from=appmsg&randomid=kl1fu0v4)
+![Image](images/640_9a28a3a6aab0.jpg)
 
 FP8 两种类型的表示范围如下所示：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_jpg/zhVlwj96tTia67o2161RNZx99zeJr8Lsu472vZgynibNusIGz6UAf6vENJRIyCiaCtfaoKowcsKFQ2ou2dQosBS9Q/640?wx_fmt=jpeg&from=appmsg&randomid=u4crvxa6)
+![Image](images/640_6c18f4079e31.jpg)
 
 ### 2.3. 微软 FP8-LM 大模型训练
 
 最近微软也发布了使用 FP8 训练大模型的方案（[2310.18313] FP8-LM: Training FP8 Large Language Models），甚至可以比 BF16 加速 64%，如下图所示：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia67o2161RNZx99zeJr8LsupaQqgEj3VXTF2nuhbSSaqDMRJDU3II1NuKDcYV9K5v5cDfJSWUr3HQ/640?wx_fmt=png&from=appmsg&randomid=camy13ps)
+![Image](images/640_e1c930944c92.png)
 
 ## 三、GPU 硬件架构
 
@@ -75,7 +75,7 @@ FP8 两种类型的表示范围如下所示：
 - 包含 8 个 GPC
 - 包含 12 个 NVLink
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia67o2161RNZx99zeJr8Lsu7ktibIEv6SicqrPsRG1Tgav2XyQ7CyBdwicFYjWBxSNnSmqJd0dpjxa7A/640?wx_fmt=png&from=appmsg&randomid=i69zz5s5)
+![Image](images/640_959302d34e61.png)
 
 GPU 的算力与其中的 CUDA Core、Tensor Core 的数量以及 Boost Clock 成正比，Ampere 架构有多个成员，以 GA100 和 GA102 为例，二者对应配置如下：
 
@@ -97,11 +97,11 @@ GPU 的算力与其中的 CUDA Core、Tensor Core 的数量以及 Boost Clock �
 
 如下图所示为 GA100 的一个SM：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_jpg/zhVlwj96tTia67o2161RNZx99zeJr8LsuDcT2iactQGmLGZesBp7d9Piaar7diaJmotuWibDZZvK99YPWlYzzvichAiaQ/640?wx_fmt=jpeg&from=appmsg&randomid=ia8ffbbl)
+![Image](images/640_ce76cec67502.jpg)
 
 如下图所示为 GA102 的一个 SM：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_jpg/zhVlwj96tTia67o2161RNZx99zeJr8Lsu5wIfnG93UeWJ6oTZuJRazicUjiccvdZgJLc4LcXSb9kv97mxlPExtbXw/640?wx_fmt=jpeg&from=appmsg&randomid=llrbzrnu)
+![Image](images/640_6ee879ebadbe.jpg)
 
 ### 3.2. CUDA Core 算力计算
 
@@ -129,7 +129,7 @@ GPU 的算力与其中的 CUDA Core、Tensor Core 的数量以及 Boost Clock �
 
 Tensor Core 是 NVIDIA GPU 从 Volta 架构开始引入的一种特殊计算单元，专门用于加速矩阵乘法和累积运算（这也是机器学习和深度学习模型中最主要的操作），从而大大加速模型的训练和推理速度。与 CUDA Core 不同，CUDA Core 在一个时钟周期只能完成 1 次浮点乘加操作，而 Tensor Core 可以在一个时钟周期完成 1 组浮点乘加操作，比如一个小型矩阵的乘加操作 D = A ∗ B + C。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia67o2161RNZx99zeJr8LsusEwyhRdPQwNzLAfJeslic1USk5pkzLXuediaCWz4HSeicCqe4Y2PzZiahA/640?wx_fmt=png&from=appmsg&randomid=p6x8enfk)
+![Image](images/640_93a328c03870.png)
 
 针对 Tensor Core，一个时钟周期可以完成多个 FFMA 操作：
 
@@ -143,7 +143,7 @@ Tensor Core 是 NVIDIA GPU 从 Volta 架构开始引入的一种特殊计算单�
 
 如下所示为不同系列 Tensor Core 的支持情况：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia67o2161RNZx99zeJr8Lsu1IP4aibtsE2e7ZAJMPhZ1SCe5px12tiahbNFyCjDZRPl7m0RxVuyCMAQ/640?wx_fmt=png&from=appmsg&randomid=96dd73pb)
+![Image](images/640_400ea425a759.png)
 
 ## 四、显存
 
@@ -153,15 +153,15 @@ NVIDIA GPU 的显存是另外一个大家经常关注的指标，NVIDIA GPU 显�
 
 如下图为常见训练 GPU 的显存信息：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia67o2161RNZx99zeJr8Lsuibwhq0DvlsOIY7wl2aJVNmUcpBIcQJve3VKlibdickG7kCjsLkS5s85MA/640?wx_fmt=png&from=appmsg&randomid=knyq5dyp)
+![Image](images/640_d74f69218bd3.png)
 
 如下图为常见推理 GPU 的显存信息：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia67o2161RNZx99zeJr8LsuxNibRnRWjGwf578l31D2GdEqeGgovxUicHFdtwKKGrO0Nut1PmmRP2ag/640?wx_fmt=png&from=appmsg&randomid=h8bev7xq)
+![Image](images/640_6077f51caef9.png)
 
 如下图为常见游戏 GPU 的显存信息：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia67o2161RNZx99zeJr8LsuK4HEM3q5RIn36yHsOKR3VabrE0fFibXckkpHrPWMNl6YDubCty6j7Qw/640?wx_fmt=png&from=appmsg&randomid=89llz44s)
+![Image](images/640_feef78312bf5.png)
 
 ### 4.2. 显存大小和带宽的影响
 
@@ -169,7 +169,7 @@ NVIDIA GPU 的显存是另外一个大家经常关注的指标，NVIDIA GPU 显�
 
 最近 NVIDIA 正式推出 H200 GPU，相比 H100，其主要的变化就是 GPU 显存从 80GB 升级到 141GB，显存带宽从 3.5TB/s 增加到 4.8TB/s，也就是说算力和 NVLink 没有任何提升，这可能是为了进一步适配大模型推理的需求：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia67o2161RNZx99zeJr8LsuD5dY9BAkpXVftDVHvCXvozmNOvrrjqATuicMjOFkpnYoE6Mx7V8oIzA/640?wx_fmt=png&from=appmsg&randomid=0nts2zbd)
+![Image](images/640_6a56753e22fd.png)
 
 如下所示为 H200 在同样数量情况下相比 H100 的 LLM 推理性能对比：
 
@@ -183,7 +183,7 @@ NVIDIA GPU 的显存是另外一个大家经常关注的指标，NVIDIA GPU 显�
 - 8 个 H100，batch size 为 64
 - 8 个 H200，batch size 为 128
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia67o2161RNZx99zeJr8LsukHf9svbaQo8sSvgLG8YOt5MVbribbHKibatnc1ticR4tShoGMEzAgVKFA/640?wx_fmt=png&from=appmsg&randomid=7lw4rgzf)
+![Image](images/640_ef8cdecdcc41.png)
 
 ## 五、GPU 间通信
 
@@ -199,7 +199,7 @@ NVIDIA 从 2010 年开始发布 GPUDirect 相关技术，旨在优化 GPU 之间
 
 如下图所示，当两个 GPU 直接使用 PCIe 互联时，GPU 只能以 32 GB/s 的最大双向带宽（PCIe 4.0 x16）访问其他 GPU 上的内存。此外，这些交互会与总线上的 CPU 操作竞争，甚至进一步占用可用带宽。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_jpg/zhVlwj96tTia67o2161RNZx99zeJr8LsubicibibcA6Y9libwYopcb7jQsYYlXmDmgynYfA3oSicml6reaM6ENgiaLcgQ/640?wx_fmt=jpeg&from=appmsg&randomid=9dkyxw4a)
+![Image](images/640_6f9071379959.jpg)
 
 #### 5.1.2. GPUDirect v1
 
@@ -207,7 +207,7 @@ NVIDIA 从 2010 年开始发布 GPUDirect 相关技术，旨在优化 GPU 之间
 
 如下图所示，在没有使用 GPUDirect 的情况下，GPU 需要将数据从显存复制到 GPU 驱动在系统内存中 pin 住的 Memory 1（Page-Locked Memory），再从 Memory 1 复制到 Memory 2（需要 CPU 参与），之后才能进一步传输，相当于经过了 3 次数据拷贝。而使用 GPUDirect 之后，仅需 2 次数据拷贝，减少了 1 次，降低了数据交换延迟和 CPU 负载。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia67o2161RNZx99zeJr8LsuGQSwySTd7WSeqInySe9zccYBt4ibbN9CoPKqKNkBSmaMQ50agCshuJg/640?wx_fmt=png&from=appmsg&randomid=l8uyzup4)
+![Image](images/640_5f271c22ba76.png)
 
 需要注意的是，GPUDirect v1 并不是兼容所有的 NIC(Network Interface Card) 设备，需要有专门的 IB 适配器，另一方面也需要应用程序进行特殊的处理才能使用。这也导致 GPUDirect v1 在实践中的应用受到了一定限制。
 
@@ -217,7 +217,7 @@ NVIDIA 从 2010 年开始发布 GPUDirect 相关技术，旨在优化 GPU 之间
 
 如下图所示，在同一 PCIe 总线上，P2P 支持 GPU 之间直接互访显存，不需要将数据复制到系统内存进行中转，进一步降低了数据交换的延迟。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia67o2161RNZx99zeJr8Lsuy1uhOrsvPic1Lc4ibBiaYlF5bvaIqykgrlDGHDg2ticyksEDmQ8oQUdtjw/640?wx_fmt=png&from=appmsg&randomid=w2xh161t)
+![Image](images/640_10ed819c6093.png)
 
 #### 5.1.4. GPUDirect v3
 
@@ -225,9 +225,9 @@ NVIDIA 从 2010 年开始发布 GPUDirect 相关技术，旨在优化 GPU 之间
 
 如下图所示，Server 1 上的 GPU 2 和 Server 2 上的 GPU 1 可以直接通过网络通信。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia67o2161RNZx99zeJr8Lsu2YPfm4rgSvv3l7RqLANKIpOibINyoUECGicviahXWurgXNLGcYSljcYQg/640?wx_fmt=png&from=appmsg&randomid=sgroh896)
+![Image](images/640_ac6be69ceef7.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia67o2161RNZx99zeJr8LsuYA3yXnof3x9T2VZmd8l7vQgVTCPeKcVEwolsH0JWvZ2Z2yHC0TicS7A/640?wx_fmt=png&from=appmsg&randomid=d4f9n8sl)
+![Image](images/640_145d197f9b94.png)
 
 #### 5.1.5. GPUDirect Storage
 
@@ -235,7 +235,7 @@ NVIDIA 从 2010 年开始发布 GPUDirect 相关技术，旨在优化 GPU 之间
 
 GPUDirect Storage 支持本地或远程存储（比如 NVMe 或 NVMe over Fabric）与 GPU 显存之间的直接数据交互，避免了通过 CPU 内存中转所需的额外拷贝。可以直接将数据写入或写成显存，而不给 CPU 增加负担。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia67o2161RNZx99zeJr8LsusqGXia4zObniaLRhG2qkaGNX6QOnNus2u6jwdqKfqjeJibhqiaY1Gb0vrQ/640?wx_fmt=png&from=appmsg&randomid=2m9vwp57)
+![Image](images/640_1659de21ba57.png)
 
 ### 5.2. NVLink 互联通信
 
@@ -243,29 +243,29 @@ GPUDirect Storage 支持本地或远程存储（比如 NVMe 或 NVMe over Fabric
 
 NVLink（点对点结构的串行通信协议） 是 NVIDIA 开发的高速互联技术，其可实现 GPU 之间，GPU 与 CPU 等设备之间的高速、低延迟、高带宽的互联通信，为 GPU 计算和大规模数据处理提供支持。当前 NVLink 已经发展到第四代，如下表所示：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia67o2161RNZx99zeJr8LsusyGd9LicJRDabpnLib1OTGgjaD8pQUIHVvJy4oKSaAYNVqP1nPG7Ynlw/640?wx_fmt=png&from=appmsg&randomid=7xy52lry)
+![Image](images/640_2fd33d8a821c.png)
 
 5.2.2. 两 GPU NVLink Bridge 互联
 
 NVLink 桥接器（Bridge）可以实现两个 GPU 的互联，但也只能实现两个 GPU 的互联，超过 2 个 GPU 必须使用 NVLink。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia67o2161RNZx99zeJr8LsuCaQd9DJRQug9tiaXqyrUoA31g4E9hekYcyeFjjEgMWHENQL9SK8VmAw/640?wx_fmt=png&from=appmsg&randomid=hgoo195a)
+![Image](images/640_3949605564df.png)
 
 不同的 GPU 需要选择不同的 NVLink Bridge，且带宽也不同，大致如下所示：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia67o2161RNZx99zeJr8LsuaHdyDibOmEIhYaewSliaicCzG3bt4iaq4F0FPO6R4rQNDX9caDXULvksibA/640?wx_fmt=png&from=appmsg&randomid=aocgme3u)
+![Image](images/640_dfabb4a91389.png)
 
 如下图所示为两个 PCIe 版本 A100 通过 3 个 NVLink Bridge 互联：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia67o2161RNZx99zeJr8LsuVAyVrKumd0qiblmuGESMqpgZlOn4S6rNNDicfeQlzUfKbXESpzaC5Wiag/640?wx_fmt=png&from=appmsg&randomid=ptnz0p3x)
+![Image](images/640_d674c4defe4f.png)
 
 #### 5.2.3. 两 GPU NVLink 互联
 
 如下图所示，两个 P100 GPU 通过 NVLink v1 互联，可以避免占用 PCIe 总线，并获得 160 GB/s 的通信带宽：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia67o2161RNZx99zeJr8LsuMDCNnL8WhR7Uibn6UCyicQSaXgbfq5ibWjfJDa7LtlytucYcGOrt86cgw/640?wx_fmt=png&from=appmsg&randomid=xitdkkt8)
+![Image](images/640_e7ef479dc994.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia67o2161RNZx99zeJr8LsunyibOjzdpbMhuBO7Triac36QCHU4Jl1y2m53Cia8lNEr20iaJUjB9j3D9g/640?wx_fmt=png&from=appmsg&randomid=2ldjn759)
+![Image](images/640_150b01e054ef.png)
 
 #### 5.2.4. 八 GPU NVLink 互联
 
@@ -279,13 +279,13 @@ NVLink 桥接器（Bridge）可以实现两个 GPU 的互联，但也只能实�
 - GPU 6：不互联
 - GPU 7：不互联
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia67o2161RNZx99zeJr8LsuLwvA32PynlMib78WOjnAorZKDML8u3gFORQOKfejLCueJky2Uggoibpw/640?wx_fmt=png&from=appmsg&randomid=b615795a)
+![Image](images/640_9ca5bf544f68.png)
 
 #### 5.2.5. 四 GPU NVLink 全互联
 
 如下图所示，四个 A100 GPU 通过 NVLink v3 互联，任意两个 GPU 都由 4 个 NVLink 连接，也就是任意两个 GPU 之间都可以提供 200GB/s 的双向带宽，总的带宽是 1.2 TB/s：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia67o2161RNZx99zeJr8LsuS77Z73TtRMMVt65gaR06UoVw0pXE1J9EH2uF3jra25lCibK2OmxS8tQ/640?wx_fmt=png&from=appmsg&randomid=9h66bnud)
+![Image](images/640_fe1e430c3115.png)
 
 ### 5.3. NVSwitch 全互联通信
 
@@ -293,23 +293,23 @@ NVLink 桥接器（Bridge）可以实现两个 GPU 的互联，但也只能实�
 
 NVSwitch 是一款 GPU 桥接设备，可提供所需的 NVLink 交叉网络。端口逻辑模块中的数据包转换使得进出多 GPU 的流量看似是通过单一 GPU 的。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia67o2161RNZx99zeJr8LsuXgYUZ9XTvuqVicPbbzl8icAd8VTxq6os4EeclJibeBZsrpLuzhWjhTv4g/640?wx_fmt=png&from=appmsg&randomid=ky7jywf9)
+![Image](images/640_4aae234513cd.png)
 
 比如 NVSwitch v2，每个 NVSwitch 上包含 18 个 Port，每个 Port 的带宽（双向）都是 50GB/s，每个 Port 都能和其他 Port 互联，整个 NVSwitch 的带宽可以达到 900GB/s。NVSwitch 的路由表由 NVIDIA Fabric Manager 来索引和控制。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_jpg/zhVlwj96tTia67o2161RNZx99zeJr8LsuSNveicPbarIBm9dSBFzicEzd172Vkzh1x2JJKHt21tMUcTqibXUTib2FtA/640?wx_fmt=jpeg&from=appmsg&randomid=na5bmt7l)
+![Image](images/640_4af91f594fbd.jpg)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_jpg/zhVlwj96tTia67o2161RNZx99zeJr8LsuhCCib6lycXQVfopib73qamC70MOx9iaOBvAOz9SR6xfZzciceWHX2qGe1Q/640?wx_fmt=jpeg&from=appmsg&randomid=fglg2b0r)
+![Image](images/640_c2408e7b65cf.jpg)
 
 如下图所示，新的 NVSwitch v3 包含 64 个 Port，整个 NVSwitch 的带宽可以达到 3.2 TB/s：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia67o2161RNZx99zeJr8LsuCkcFV05vLuBqQNPjO9dvF02sRMXy1XiajxE4FQoLSnurvoUwibhbaH7A/640?wx_fmt=png&from=appmsg&randomid=5b5q0amv)
+![Image](images/640_48caa7f3ecad.png)
 
 #### 5.3.2. 八 GPU NVSwitch v2 全互联
 
 DGX-A100 是单主板 8 GPU，每个 GPU 上有 12 个 NVLink，每个主板上有 6 个 NVSwitch，每个 GPU 有 2 个 NVLink 连到一个 NVSwitch，一个 NVSwitch 就有 16 个 port 被占用，也就无法实现两个主板的互联，可以实现 2.4 TB/s 的双向带宽（48 个连接，每个连接单向 25 GB/s）
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia67o2161RNZx99zeJr8LsuYCwUsf4ibIDPicsBk8b5OsJicSyl3BibWQygzBwWnbj0BSpkWSDK0vHNqg/640?wx_fmt=png&from=appmsg&randomid=l3kyocxm)
+![Image](images/640_0b82d3ac424d.png)
 
 #### 5.3.3. 十六 GPU NVSwitch v2 全互联
 
@@ -319,9 +319,9 @@ DGX-2 只有单主板 4 GPU 或单主板 8 GPU，对于 16 卡的是 2 个单主
 
 如下图所示，12 个 NVSwitch 2.0 连接 16 个 A100 实现 0 跳互联（只使用了 18 个 Port 中的 16 个），可以实现 2.4 TB/s 的双向带宽（48 个连接，每个连接单向 25 GB/s）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia67o2161RNZx99zeJr8LsuviaXUiaQMXzVTIfUtYU3LpiaPYzx918qmt2F4kNgCicYJHDQ3tbvricM1hA/640?wx_fmt=png&from=appmsg&randomid=plwg69g3)
+![Image](images/640_aab4f7071c8d.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia67o2161RNZx99zeJr8LsuKiaUU20G50hjnIRjmDXtflN7yliczcSdkV0XCFicAN2KzkpE5Oib9fpUOg/640?wx_fmt=png&from=appmsg&randomid=zlj27y8m)
+![Image](images/640_e52030a39917.png)
 
 ### 5.4. 查看连接拓扑结构
 
@@ -329,15 +329,15 @@ DGX-2 只有单主板 4 GPU 或单主板 8 GPU，对于 16 卡的是 2 个单主
 
 比如，如下为一种 8 卡 V100 的 GPU 互联方式（其中的 NV1 表示有一个 NVLink 连接，NV2 表示有两个 NVLink 连接）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia67o2161RNZx99zeJr8LsuxKegFuz5KJIZSJPPhRzVPcZtpbZI8hOt2YQO1M3cibicVqkC9zub7BHQ/640?wx_fmt=png&from=appmsg&randomid=nbn5ptce)
+![Image](images/640_ce7fa2eb95f8.png)
 
 可见其与如下连接方式一致：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia67o2161RNZx99zeJr8Lsu9yX6iaOJYSN8RZuhhxTkV4qv0bCyiaFL8rLTokEYZ4gwibTVlHM24aqJw/640?wx_fmt=png&from=appmsg&randomid=hg07lpbl)
+![Image](images/640_cb2b712e5778.png)
 
 这是另一种 8 卡 V100 的 GPU 互联方式：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia67o2161RNZx99zeJr8LsuFWVz30kSxw33VPVsMQh5r6GKQTbBpibOljjOjdcemCromRL4N459hXA/640?wx_fmt=png&from=appmsg&randomid=pemkf6e8)
+![Image](images/640_fe0d1d736103.png)
 
 ### 5.5 速度测试
 
@@ -345,15 +345,15 @@ DGX-2 只有单主板 4 GPU 或单主板 8 GPU，对于 16 卡的是 2 个单主
 
 如下图所示为对应的拓扑结构，可以看出使用 NVLink 实现全互联，每两个 GPU 间有两个 NVLink 连接，最大单向带宽 50GB/s，最大双向带宽 100GB/s：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia67o2161RNZx99zeJr8LsuYOYTg7I2WEgDic3hWxWP9eVf6FbUmeh1A0ZibZ1KV0upvfbG5KN3zVow/640?wx_fmt=png&from=appmsg&randomid=tfcupndx)
+![Image](images/640_55450f86df70.png)
 
 如下图所示为使用 cuda-samples 中的 p2pBandwidthLatencyTest 测试的单向通信带宽，可以看出比理论值低一些，大概能到 48.5GB/s：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia67o2161RNZx99zeJr8LsuVgWloPYuFKAlNK49QIZSic4E1VUwvpNV3B9GEJZ6TXg0NvLiauBHYpFw/640?wx_fmt=png&from=appmsg&randomid=pbp47v4v)
+![Image](images/640_c93243cdbe4a.png)
 
 如下图所示为使用 cuda-samples 中的 p2pBandwidthLatencyTest 测试的双向通信带宽，可以看出比理论值低一些，大概能到 97GB/s：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia67o2161RNZx99zeJr8LsuThRFSpA5niaXURSFKyjY4pwqCbma0Wz4SfszU3s6jTBeibeQRsZmf0Xw/640?wx_fmt=png&from=appmsg&randomid=nf42cs8t)
+![Image](images/640_1b4689a7206d.png)
 
 #### 5.5.2. 八卡 A100 P2P 带宽测试
 
@@ -361,11 +361,11 @@ DGX-2 只有单主板 4 GPU 或单主板 8 GPU，对于 16 卡的是 2 个单主
 
 如下图所示为使用 cuda-samples 中的 p2pBandwidthLatencyTest 测试的单向通信带宽，可以看出比理论值低一些，大概能到 270 GB/s：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia67o2161RNZx99zeJr8Lsu5VcHyuJgYeIwlc18gLibkOPKA2rCoiaJ63jSoiaCvUl5zq8Ju6vnUgSVw/640?wx_fmt=png&from=appmsg&randomid=guq155zd)
+![Image](images/640_62abd1d3a1ff.png)
 
 如下图所示为使用 cuda-samples 中的 p2pBandwidthLatencyTest 测试的双向通信带宽，可以看出比理论值低一些，大概能到 500 GB/s：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTia67o2161RNZx99zeJr8LsuZ9UnyfCRpqKCUdhPSfsD34CwFibmZo7OaI40y3ZdNmqkvkv0J5AAatQ/640?wx_fmt=png&from=appmsg&randomid=zwzyndmr)
+![Image](images/640_56303fb1822f.png)
 
 ## 六、参考
 

@@ -46,7 +46,7 @@ DeepEP 是 DeepSeek 开源的专为 MoE 和专家并行（Expert Parallelism, EP
 
 低时延通信：最小化数据传输的延迟时间。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiavRg9XsYLTkxwYOOGHm9icQHmRFpjauTGHXektH2k0dL5NKoocTf5tB7LEDH58ibMKqslKn3ghMalw/640?wx_fmt=png&from=appmsg&randomid=xzi83cqo)
+![Image](images/640_0b012bd15c04.png)
 
 总时延 = 传输时延 + 传播时延 + 处理时延 + 排队时延：
 
@@ -73,7 +73,7 @@ NVSHMEM 是 NVIDIA 开发的一种并行编程接口，基于 OpenSHMEM 标准�
 
 NVSHMEM 通常被视为 MPI（Message-Passing Interface） 的替代方案，特别是在 GPU 集群通信中。与 MPI 不同，NVSHMEM 通过 GPU 发起操作减少了 CPU-GPU 同步开销。虽然它可以与 MPI 结合使用（如在 Host 端通信中），但其核心优势在于 GPU 间的直接通信。相比 NCCL，NVSHMEM 更专注于单边通信，而 NCCL 则更适合集合通信，具体使用场景取决于应用程序的需求。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiavRg9XsYLTkxwYOOGHm9icQ25ibQ79ZsbePQkvexIr9PH6W9qMKFSdIITdoqTFqjIK3MwUMuZ3raibg/640?wx_fmt=png&from=appmsg&randomid=h326xtcc)
+![Image](images/640_db7db1eef01a.png)
 
 我们之前介绍过，字节的通信-计算 Overlap 方案中也提到过使用 NVSHMEM 来加速跨节点通信： [2406.06858] FLUX: Fast Software-based Communication Overlap On GPUs Through Kernel Fusion [2]。NVSHMEM 的官方文档可以参考：NVIDIA OpenSHMEM Library (NVSHMEM) Documentation [3]。
 
@@ -87,15 +87,15 @@ InfiniBand GPUDirect Async（IBGDA）是 NVSHMEM 中的一种新的通信方法�
 - 应用程序调用 NVSHMEM 操作（如 nvshmem_put）与另一个处理元素（PE）通信。在执行细粒度或 Overlap 通信时，可以从 CUDA Kernel 内调用此操作。NVSHMEM 操作将工作描述符（work descriptor）写入 Host 内存中的代理缓冲区。
 - NVSHMEM 代理线程检测 work descriptor 并启动相应的网络操作。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiavRg9XsYLTkxwYOOGHm9icQqVloWqN1v3brLHny1mOdiaaDGDzyJzoCFu0fCosHlIVJb2xXp8onuXA/640?wx_fmt=png&from=appmsg&randomid=7wwplhq2)
+![Image](images/640_727d0dcbfc76.png)
 
 与代理发起的通信相比，IBGDA 利用 GPUDirect Async–Kernel-Initiated (GPUDirect Async–KI) ，使得 GPU SM 能够直接与 NIC 交互。如下图所示为其关键步骤，可以看出，IBGDA 从通信控制链路中消除了 CPU。使用 IBGDA 时，GPU 和 NIC 直接交换通信所需信息。WQ 和 DBR 缓冲区也被移动到 GPU 内存，以提高 SM 访问效率，同时通过 GPUDirect RDMA 保留 NIC 的访问。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiavRg9XsYLTkxwYOOGHm9icQjj1ns5UicgG28SFGLKK2FOqys25gnom6Le5D7O1UFXQW0WP9huPiagsQ/640?wx_fmt=png&from=appmsg&randomid=n4e2pigw)
+![Image](images/640_6b43a042b0c3.png)
 
 如下图所示可以看出两者的主要区别，可以使用 NVSHMEM_IB_ENABLE_IBGDA 环境变量启用，并使用 NVSHMEM_IBGDA_NUM_RC_PER_PE 等环境变量优化吞吐：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiavRg9XsYLTkxwYOOGHm9icQ3Mmq38jE3mGumfciat7M5017Vyw60rVYEXA7iaiaKiccWvGj0df9Ybgf9w/640?wx_fmt=png&from=appmsg&randomid=ua2q94u8)
+![Image](images/640_b9b73a7889aa.png)
 
 IBGDA 特别适合小消息的传输，有以下几方面的原因：
 
@@ -105,7 +105,7 @@ IBGDA 特别适合小消息的传输，有以下几方面的原因：
 
 如下图所示，NVIDIA 也进行了 All2All 的时延测试，以对比 IBRC 和 IBGDA 在小消息下的时延。可以看成，在消息小于 8KiB 时，时延几乎降低一半：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiavRg9XsYLTkxwYOOGHm9icQPZwT4P6uicsN1W2eJMS6WdibWkIRH08ibVJbLicbqlibUXOJLd51ficiabfbw/640?wx_fmt=png&from=appmsg&randomid=5s5vy5v6)
+![Image](images/640_dfe90a628483.png)
 
 以上只是简单介绍，具体内容可以参考：Improving Network Performance of HPC Systems Using NVIDIA Magnum IO NVSHMEM and GPUDirect Async [4]
 
@@ -125,25 +125,25 @@ AlltoAll 是集合通信库（比如 NCCL）中常见的通信原语，用于多
 
 如下图所示是一种标准的 All2All 操作，有 4 个 GPU，每个 GPU 包含 4 个数据。通过 All2All 操作之后每个设备都将 4 个数据分发给 4 个 GPU，同时从 4 个 GPU 接收数据。可以看出，All2All 很像一个矩阵的转置操作：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiavRg9XsYLTkxwYOOGHm9icQYbY5mum4icFpSnj34aMMjPe0icxyUsWIPsI90P1YCuiaejBUNAHNnWrvw/640?wx_fmt=png&from=appmsg&randomid=r7k1w8sy)
+![Image](images/640_4abdb54a4f6a.png)
 
 如下图所示为 Pytorch 实现一个上述标准 AlltoAll 的示例：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiavRg9XsYLTkxwYOOGHm9icQtNoWAluVMJdy8UvFKkb1IukrsXnYXfOZ3aia66EtJdZtibWF2RSCJCxg/640?wx_fmt=png&from=appmsg&randomid=4givu4o2)
+![Image](images/640_9305737644c8.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiavRg9XsYLTkxwYOOGHm9icQYDqiayMHWmJBEPvlaxOzetB1MicpLhsjKlKIY67p9wiaUqEiaur2aibicrkQ/640?wx_fmt=png&from=appmsg&randomid=rt3s5y1a)
+![Image](images/640_2d8a3c10c1c4.png)
 
 实际上 NCCL 中并没有 All2All 通信原语，需要通过 ncclSend 和 ncclRecv 实现，其中 ncclSend 和 ncclRecv 是一个 P2P 通信。如下图所示，每个 Rank 都发送 nranks 块数据，同时接收 nranks 块数据就实现了 AlltoAll 的功能。（可以参考 Point-to-point communication — NCCL 2.22.3 documentation [6]）
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiavRg9XsYLTkxwYOOGHm9icQVho0ZBib5pI1sjLK2LcPE7WJDqIwCqaSEVLvpxJESeuy1Gs1n3fLAWg/640?wx_fmt=png&from=appmsg&randomid=gnokwoy1)
+![Image](images/640_a2d2f9d3c713.png)
 
 类似的方式就可以实现 one2all（Scatter）操作：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiavRg9XsYLTkxwYOOGHm9icQdcibKyuuJVHJBJ6WuJ27cibTw96OvzSibfw21l5AlrtGru5wuu7I6rwzw/640?wx_fmt=png&from=appmsg&randomid=plu8omw9)
+![Image](images/640_b2f29bd17b12.png)
 
 类似的方式也可以实现 all2one（Gather）操作：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiavRg9XsYLTkxwYOOGHm9icQ10licy1CjszIQq6y0zZnL3pQiadpjUIrEJQ1e3mBiavlEicn0EUib2lZrRw/640?wx_fmt=png&from=appmsg&randomid=d8d1u41d)
+![Image](images/640_ba1b38ed2f3c.png)
 
 ### 3.2 非标准 All2All
 
@@ -157,13 +157,13 @@ AlltoAll 是集合通信库（比如 NCCL）中常见的通信原语，用于多
 - 4 个 GPU 都向 GPU k 发送 k+1 个数据（比如，都向 GPU 3 发送 4 个数据）。
 - GPU k 从所有 GPU 都接收 k+1 个数据（比如，GPU 2 从所有 GPU 都接收 3 个数据）。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiavRg9XsYLTkxwYOOGHm9icQmHPC4nD7xCDLMOuDZCzjaLKWoST2pibnHCFQMZ5pX95kVaDiaPNiadAcg/640?wx_fmt=png&from=appmsg&randomid=kog9hd5t)
+![Image](images/640_a6b4b537c980.png)
 
 如下图所示为 Pytorch 实现一个上述非标准 all2all 的示例：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiavRg9XsYLTkxwYOOGHm9icQHcKsibd8WibpFrRF4VDcAxwW5GMrYqbhJnyNkjhqWBClt9UHjSpXXIQQ/640?wx_fmt=png&from=appmsg&randomid=ztgevhkj)
+![Image](images/640_b8d22be7fae4.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiavRg9XsYLTkxwYOOGHm9icQMqHQh61M5hiao2fyicFN60N8ZQ3kvjHDyEXGM1HSUquAKjQtZWPWg5LA/640?wx_fmt=png&from=appmsg&randomid=4nsf4ep3)
+![Image](images/640_12ffb790e036.png)
 
 PS：需要指出的是，上述接口中 output_split_sizes 和 input_split_sizes 的个别值也可以是 0，表示不从某个设备接收，或者不向某个设备发送数据。如上所示，all2all 底层是用 ncclSend 和 ncclRecv 实现，很容易可以做到这一点。
 
@@ -174,9 +174,9 @@ PS：需要指出的是，上述接口中 output_split_sizes 和 input_split_siz
 - 第一次 all2all 交换要传输的数据量信息，这是一个标准的 all2all 操作，如下图红框所示。
 - 第二次 all2all 根据上述获取的数据量信息来执行真正的数据传输，此时是一个非标准 all2all 操作。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiavRg9XsYLTkxwYOOGHm9icQFzfV0lAm6IOrcNel5jiaBO2fIxOib1EYm7cJ5jlfZSRicwTHtojSVQLXA/640?wx_fmt=png&from=appmsg&randomid=94ixc8l3)
+![Image](images/640_26545ded5ef3.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiavRg9XsYLTkxwYOOGHm9icQBqZeS4Qzf4wk87QyoGezIicXfddS3iauFoqwmqb2icXkXgQMIOdWHGnDA/640?wx_fmt=png&from=appmsg&randomid=yan382za)
+![Image](images/640_a7171bd02e30.png)
 
 ## 四、网络配置
 
@@ -208,45 +208,45 @@ AR 是 IB 交换机提供的一项高级路由功能，能够在多条路径间�
 
 对于高吞吐通信，需要关闭 IB 的 AR：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiavRg9XsYLTkxwYOOGHm9icQiaicNCPssZ8fepdAhiaGVlPjTgco0LahhVI8cSz99EriazfqqjUiaaAr6ibA/640?wx_fmt=png&from=appmsg&randomid=cv0f6fxj)
+![Image](images/640_73618d5e0211.png)
 
 在 Dispatch 函数内部可能无法预知当前 Rank 将接收多少个 Token（也就是上述介绍的通过一次 All2All 传输 Size），因此将涉及一个隐式的 CPU 等待 GPU 接收计数信号的过程，如下图所示：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiavRg9XsYLTkxwYOOGHm9icQ1aG79M4w5HEkNFZRWXSluPWxdlBlic5OnED25d6d7VLOZia7LfG0SUGA/640?wx_fmt=png&from=appmsg&randomid=igcnja3g)
+![Image](images/640_42d6884da1f3.png)
 
 如下图所示，作者在配备 H800（NVLink 最大带宽 160GB/s）的环境下测试高吞吐 Kernel，每个 GPU 均连接 CX7 InfiniBand 400Gb/s RDMA 网卡（约 50GB/s 最大带宽）。测试遵循 DeepSeek-V3/R1 预训练配置（每 Batch 4096 个 Token，隐藏层大小 7168，Top-4 组，Top-8 个专家，采用 FP8 Dispatch 与 BF16 Combine）。可以看出，其各种实测带宽基本接近极限：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiavRg9XsYLTkxwYOOGHm9icQOKjjR9xjXjMQiaE6ibdsRJ6tr4WDh1QetnfhDzp7bvicHktQpflIEHqFA/640?wx_fmt=png&from=appmsg&randomid=iud5uxwy)
+![Image](images/640_548c58bfba3e.png)
 
 DeepSeek V3 的技术报告中简单介绍过其 Infra 建设，其训练集群包含 2048 H800 GPU，每个节点包含 8 个 H800 GPU，并使用 NVLink + NVSwitch 实现全互联（需要说明的是，H800 的 NVLink 带宽为 400 GB/s，而 H100 的 NVLink 带宽为 900 GB/s，这也是 H800 与 H100 的主要区别）。此外，节点间通过 IB 网络实现互联。
 
 PS：我们也推测作者在其中提到 NVLink 提供 160 GB/s 的通信带宽，大约是 IB（50 GB/s）的 3.2x。其 160 GB/s 与实际的 400 GB/s（双向）不符，实际是单向实测带宽。如下图所示，我们在 8*H100 GPU 上实测单向的 device to device Memory 带宽，大约为 900 GB/s * 80% / 2 = 360 GB/s。而 160 GB/s 为 400 GB/s * 80% /2 = 160 GB/s。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiavRg9XsYLTkxwYOOGHm9icQdL9o7hJe1Zy4ibZhb4o9kUULm9IUPicd5uiaDulibt407IPGk0icrF5KBlg/640?wx_fmt=png&from=appmsg&randomid=n86rlvnb)
+![Image](images/640_a1230832e679.png)
 
 而 IB（50 GB/s）可以理解为理论或实际 NIC 带宽，H100/H800 上后向网络通常都会采用 400 Gb/s 的 NIC。如下图所示（使用 ib_write_bw 和 ib_read_bw 测试），当 Message 比较大时，发送或者接收实测带宽最大都能达到 400 Gb/s，双向总带宽可以达到 800 Gb/s（这一点与 NVLink 口径不同）。另外，也可以推测每个节点包含 8 个 400 Gb/s 的 NIC。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiavRg9XsYLTkxwYOOGHm9icQ2uDdnF7sTtBuNgnTAiaRnObnLdEOQfv0A3icojhk293FxRNEFxrYnPSw/640?wx_fmt=png&from=appmsg&randomid=r6m7g50e)
+![Image](images/640_17f94be3e986.png)
 
 ## 六、低时延 Kernel
 
 对于低时延通信，需要打开 IBGDA，并相应的配置 NVSHMEM 的一些环境变量，如下所示：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiavRg9XsYLTkxwYOOGHm9icQvyFCcgS7xTAkgicXZklY3M2HauFRhO7dwrF0SjwoDGBIicqQSeicabsicw/640?wx_fmt=png&from=appmsg&randomid=a83f38iw)
+![Image](images/640_f0bacc512bcf.png)
 
 如下所示，低时延 Kernel 仅依赖 RDMA 通信，即使在一个节点内也不会使用 NVLink（PS：当前这样做应该主要是实现比较简单，实际低时延机内通信也可以使用 NVLink，具体也可以对比下 NVLink 在小 Message 下的通信时延）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiavRg9XsYLTkxwYOOGHm9icQ7dDyriccYxVvem3ib13bX7KIribrzHUX5nk2ic9NMaXyTlHl7agKvas8xA/640?wx_fmt=png&from=appmsg&randomid=dno82o57)
+![Image](images/640_f3def31c484f.png)
 
 如下图所示，表示两个 Micro-Batch 的 Overlap，其中上部分表示常规的 Overlap 方案，下图表示作者实现的不需要 SM 参与通信的方案。
 
 对于 DeepEP 的方案，借助 Receiving Hook 接口，RDMA 网络流量可以在后台执行（低时延 Kernel 采用纯 RDMA 通信，可以异步执行，红色箭头为执行顺序），不会占用计算部分的任何 SM。因为有两个 Micro-Batch，因此就需要把一个 Micro Batch 的异步数据传输藏在另一个 Micro-Batch 的计算之后。需要注意的是，Overlap 部分可以调整，比如，其中 Attention、Dispatch、MoE、Combine 执行时间可能不同，可根据实际的工作负载进行阶段配置。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiavRg9XsYLTkxwYOOGHm9icQwztg6Qa2uY9QYS8domdHCCZmmQpvbOMbnJZHOibFcSNTPrAjeMdmaog/640?wx_fmt=png&from=appmsg&randomid=v9icdsdi)
+![Image](images/640_fb76da591d0a.png)
 
 作者也在同样的环境下测试了低时延 Kernel，遵循 DeepSeek-V3/R1 生产环境配置，即每 Batch 处理 128 个 Token，隐藏层维度为 7168，采用 Top-8 专家，Dispatch 使用 FP8 精度，Combine 采用 BF16。可以看出，其依然获得极高带宽和极低时延（低时延 Kernel 采用纯 RDMA 通信）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiavRg9XsYLTkxwYOOGHm9icQqXXL3lxrcxJzSibicaSk2o2OAJkO4I4LiagIuibJicQKkqVKwAicGbZ0LBXA/640?wx_fmt=png&from=appmsg&randomid=wh20ifxv)
+![Image](images/640_513ded0af160.png)
 
 ## 七、灵活的 GPU SM 控制
 
@@ -258,19 +258,19 @@ PS：我们也推测作者在其中提到 NVLink 提供 160 GB/s 的通信带宽
 
 如下图所示，DeepEP 中提供了针对不同 Rank 数的配置，其中允许自由的配置 SM 数量（默认 20）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiavRg9XsYLTkxwYOOGHm9icQUAf1Xw5tJUXA17oibxoDWQQU0AoSvu0NCbGicVKibJia1Dz5yzLiaOzjb8g/640?wx_fmt=png&from=appmsg&randomid=gba5wnrj)
+![Image](images/640_161866ec2ca4.png)
 
 其要求 SM 数量是偶数，因为 1 个通信信道对应 2 个 Block，偶数 Block 用于发送，奇数 Block 用于接收：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiavRg9XsYLTkxwYOOGHm9icQt4QsRxWYTHmoiabqYqLia4JSyiaGEczm6ibibnWicic4wRJJpFXkZe3ljpoHQ/640?wx_fmt=png&from=appmsg&randomid=gmpebn8b)
+![Image](images/640_6c49848eb191.png)
 
 如下图所示，代码中也提供了根据 warp_id 以及配置来确定 warp role 的详细代码（Dispatch）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiavRg9XsYLTkxwYOOGHm9icQCicuZR7B5V57icLRMr2JmYp3NrIksmeaw0jtz8PGZSZqbnPzHvotpRhA/640?wx_fmt=png&from=appmsg&randomid=tx2g703j)
+![Image](images/640_d2100cb4dcf1.png)
 
 如下所示对应 Combine：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTiavRg9XsYLTkxwYOOGHm9icQNAeAhGxHRs2aiavmCgW7HHJ1hef8cyBvHasolJ4iaV06BxkicJHzKGiclw/640?wx_fmt=png&from=appmsg&randomid=ihemvazh)
+![Image](images/640_01e602cc7748.png)
 
 ## 八、参考链接
 

@@ -8,7 +8,7 @@
 
 之前的文章中我们中我们具体介绍过万卡 GPU 集群中的网络拓扑相关信息以及在万卡 GPU 集群中进行大规模 LLM 训练面对的挑战和相应解决方案，也进一步介绍了阿里云的集合通信调度框架 C4。本文中，我们简单介绍 C4 底层的阿里云新一代智算集群网络架构 HPN 7.0。阿里在最近的智源大会上也有介绍，可以参考 https://event.baai.ac.cn/live/795，其提到了几个关键词：双上联，双平面，多轨，以及单层千卡，两层万卡。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjQxwBoB4uMEXvNibiciad7znkJYGNwU0tCmS6OuzrjXEFkLREtrOichnlmMd0LOEzkIpOic8bd9BkovicA/640?wx_fmt=png&from=appmsg&randomid=pqhofipb)
+![Image](images/640_12cd87fd31f1.png)
 
 上面提到的几个介绍可以参考：
 - [万卡 GPU 集群互联：硬件配置和网络设计](http://mp.weixin.qq.com/s?__biz=Mzk0ODU3MjcxNA==&mid=2247486775&idx=1&sn=abf7af24181cf5189e113fb161cc8d30&chksm=c364ca72f4134364f4e3fa4a971f767c2b07e6c2cae38c2a4ae28071fd330abaea68c36542c4&scene=21#wechat_redirect)
@@ -23,7 +23,7 @@
 - Leaf Switch 有 128 个 400 Gbps 的 Port（交换带宽 51.2Tbps），每台机器 8 个 H100/H800，每个 GPU 对应一个 400 Gbps NIC，full mesh 连接一个 Group 里最多 8 个 Leaf Switch。
 - 每个 Leaf Switch 有 64 个下行 400Gbps Port，能连接 64 台机器，也就是 1 个 Group 最多只能 64*8=512 GPU。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjQxwBoB4uMEXvNibiciad7znkR7rQ4a638X3tIZWsVxJwJChfYtS0Yw9a81QMunq8sc4WE1Oyp5JkCQ/640?wx_fmt=png&from=appmsg&randomid=x85bzg9f)
+![Image](images/640_945a27156d9f.png)
 
 如下图所示（图片来自 Revolutionizing Data Center Networks: Alibaba’s SONiC Journey）为阿里云 HPN-7.0 的拓扑。可以看出，其 1 个 Pod 里依然有 8 个 Group（Segment），不过其 1 个 Group 里有 128 个 8 GPU 节点，而不是 64 个 8 GPU 节点。
 
@@ -33,7 +33,7 @@
 - 每个 Pod 里有 8 个 Group（Segment），也就是每个 Pod 有 8192 GPU（两层万卡）。
 - 总共有 128 个 Pod，也就是可以支持 1,048,576 个 GPU（三层 10 万）。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjQxwBoB4uMEXvNibiciad7znk419oBf3U4U7F7jNK9ej12StkupakZeZmOIuRMWQG9xu2uKmKAk5rWg/640?wx_fmt=png&from=appmsg&randomid=2ptsuqt7)
+![Image](images/640_6012c479b7dc.png)
 
 PS：由上述的拓扑图可以知道，一个 Group 里的 GPU 之间的通信只用经过一次通信（只用经过 1 个 Leaf Switch）。在传统的拓扑中，1 个 Group 内最多 512 GPU 互联，总的通信带宽为 512*400Gbps=204.8Tbps；在 HPN-7.0 中，最多可以支持 1024 GPU 互联，总的通信带宽为 1024*2*200Gbps=409.6Tbps，增加了一倍。
 
@@ -48,31 +48,31 @@ PS：由上述的拓扑图可以知道，一个 Group 里的 GPU 之间的通信
 
 在双上联中，某一个上行链路故障或对应交换机故障时，流量可以切换到另一个 Port 提供服务（如下图绿线），并不会导致训练任务中断，只是有可能影响训练速度。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjQxwBoB4uMEXvNibiciad7znkxkO219STxnnD7gMX2nxlRgRsc0ia4OGpL3Qfdviam7zx2vEQQf35RZ2A/640?wx_fmt=png&from=appmsg&randomid=x5wns8hp)
+![Image](images/640_6b430092f385.png)
 
 ## 四、双平面
 
 双上联的方案有助于提高系统的可靠性，然而其同时也会加剧 ECMP（Equal-Cost Multi-Path）哈希不均的可能性。如下图所示，蓝色为发送端，橙色为接收端，发送端可以控制两个上行通路尽量均匀发送，但是由于 Spine 的存在，就很难保证 Spine 再到右侧 Leaf 的流量是均匀的。尤其是训练场景，其通常是流量数目少，但每次流量的数据比较大，会进一步加剧这种流量极度不均的现象，也即哈希极化。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjQxwBoB4uMEXvNibiciad7znkcqibKh3sMnaGnz9olmichMJvvkT9qj8C7Kh6aNv5KYMHw1pmfGnJ4YQg/640?wx_fmt=png&from=appmsg&randomid=g8kv07ig)
+![Image](images/640_3495bc2e83d5.png)
 
 为了解决哈希极化问题，HPN 中在网络拓扑中实现了双平面设计。具体来说，每个 GPU 都对应 2 个 NIC Port，那么就可以将所有 GPU 对应的 NIC Port-0 构建一个网络平面，所有 NIC Port-1 构建一个网络平面，两个网络平面的网络拓扑完全一样，并且没有任何交叉。这样的话，只要发送端保证发送到两个 NIC Port 的流量是均匀的，那么在接收端就会一定接收到均匀的流量，大幅降低哈希极化的概率。如下图所示，平面 1 和平面 2 是完全镜像的，蓝色 GPU 对应的流量会均匀发送到两个平面，并且到每个平面的流量只会在内部转发，如 1,2,3,4 的路径，最终到达橙色 GPU 对应 NIC 的流量也是均匀的。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjQxwBoB4uMEXvNibiciad7znkBSnv0Z9n41bOc0HibUa3OIqAb0jzt8XKLgWuvvomEia2KdQpVubpqh0A/640?wx_fmt=png&from=appmsg&randomid=8syn1j3x)
+![Image](images/640_7b31d121c0b6.png)
 
 更清晰的视角可以参考下图：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjQxwBoB4uMEXvNibiciad7znkFcOBTFoYdncSaCjxHVknC5p7OibMtNrKxk1muibUIAOR7jwFg0zdMlZw/640?wx_fmt=png&from=appmsg&randomid=ylnmran6)
+![Image](images/640_1ade1c262182.png)
 
 ## 五、多轨通信
 
 多轨通信其实就是综合考虑多种通信链路，以实现最优通信效率。比如单节点内部通常有 NVLink 和 NVSwitch 实现全互联，比如对于 8*H100 SXM 节点，可以实现 7.2TBps 的通信能力。而节点间可以通过高速网络互联，一个 Group 的 128 个节点通过一次网络转发即可以连接。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjQxwBoB4uMEXvNibiciad7znkiapR1o3YormKU3kpyia75QRorMrjZp9C1vZQNXj2XdQepVV359qFpa5w/640?wx_fmt=png&from=appmsg&randomid=azsvuzm5)
+![Image](images/640_89c56c5465cf.png)
 
 当然，阿里云也期望未来能在更大范围（超过 8 GPU ）内实现更高性能的互联，类似 NVIDIA 最新的 NVL72 和 SuperPod 576，也就是下图中的 Scale-Up 内部互联（AI Rack）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjQxwBoB4uMEXvNibiciad7znkNDCwncrzNZBc25LjSU4NoxdbRTy5icfHMt501ZkYCBiabPJKGtgWPBCA/640?wx_fmt=png&from=appmsg&randomid=oybzq5ay)
+![Image](images/640_4c1511d89e0c.png)
 
 ## 六、参考链接
 

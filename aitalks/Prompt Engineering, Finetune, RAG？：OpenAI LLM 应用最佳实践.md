@@ -22,14 +22,14 @@
 
 如何综合考虑以上的因素并合理利用相关技术是一个比较有挑战的工作，其中一种常见的错误是认为这个过程是线性的，如下图所示，首先 Prompt Engineering，再 RAG，最后 Finetune，按照这个顺序完成：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg6wxiatRokkdGl79rda7LGia2kXibqU3ERL3Uqse4NJDPLvZ5kgqKL6ORvXqicIUUicEuHF37eZghH6dw/640?wx_fmt=png&from=appmsg&randomid=ydkar6tb)
+![Image](images/640_714e6ae4db30.png)
 
 作者认为最好沿着两个轴来考虑这个问题:
 
 - Context Optimization：如果模型没有相应的知识，比如一些私有数据。
 - LLM Optimization：如果模型不能产生正确的输出，比如不够准确或者不能遵循指令按照特定的格式或风格输出。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg6wxiatRokkdGl79rda7LGiaIm6qvs75SSHGiaMa7IibbdvdUp2u1KyLJqZCic8gzFDiaAphjCpWABaoTQ/640?wx_fmt=png&from=appmsg&randomid=pq65022z)
+![Image](images/640_307c4d5dcc27.png)
 
 在实践中，通常是利用各种技术不断地迭代来达到生产部署的需求，很多时候这些技术是可以累加的，需要找到有效的方法将这些改进组合起来，以获得最佳效果。如下图所示为作者总结的优化路线图，不过其涉及的优化点依旧没变，还是三点：
 
@@ -37,7 +37,7 @@
 - RAG：通过检索的方式查找问题相关内容，并扩展到 LLM 的 Prompt 中，以供 LLM 参考。此优化需要引入一个检索系统，不过当前相关方案已经比较成熟，实施代价不高，比如 Milvus + LangChain。
 - Fine-tuning：通过增强 LLM 本身的能力来提升性能。依旧不需要额外组件，但是可能需要大量标注数据来微调模型，这个代价也可能比较高。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg6wxiatRokkdGl79rda7LGiaYXIGeXduGliaBoIN3DSvnQzEpeUPXXm1rcGwAjKtzNchPjd1rO3CJzQ/640?wx_fmt=png&from=appmsg&randomid=ixc6a8ry)
+![Image](images/640_a5d749fd2f71.png)
 
 ## 三、Evaluation
 
@@ -59,7 +59,7 @@
 - 给定一些参考文本：比如当前一些 LLM 的上下文窗口很大，甚至可以放下几本书，此时可以将其整体作为参考
 - 使用外部的工具：比如调用 Python，互联网搜索等
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg6wxiatRokkdGl79rda7LGia6F1Xx5pqNNfE0tC4JgXWPKo4kVh7CbnpLqrxzuh1ROibyD7VH7eHmEg/640?wx_fmt=png&from=appmsg&randomid=k7s2rl3y)
+![Image](images/640_eaeb218b4782.png)
 
 虽然说首先要尝试的是 Prompt Engineering，但并不是适合所有场景：
 
@@ -71,32 +71,32 @@
 - 可靠的复制复杂的样式或方法，比如学习新的编程语言
 - 最小化 Token 使用：Prompt Engineering 通常会增加输入 Token，导致计算量和时延的增加
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg6wxiatRokkdGl79rda7LGiatPzG1wteBWUTVOic6DAMAPrfNyRlibboU2c0xLN16x2K1yzZyyrLA4hg/640?wx_fmt=png&from=appmsg&randomid=ucgm97vs)
+![Image](images/640_574945b7df53.png)
 
 如下图所示就是一个比较模糊的指令：“以结构化方式提取有用的信息”，导致最终模型只是简单按照列表输出，输出内容也不符合要求。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg6wxiatRokkdGl79rda7LGiaibzIrrEpyNJ1s8BtWvI5iaNUfcZjfiaQNuoz9cw90sTetbzV4zPSoo2yA/640?wx_fmt=png&from=appmsg&randomid=zo0zffj0)
+![Image](images/640_d0f0e26cd453.png)
 
 如下图所示，作者提供了更详细的示例，给定了清晰的指令，加了 “step by step”，要求模型不能跳过关键步骤，并且进行了任务拆解及格式约定，最终模型获得了不错的结果：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg6wxiatRokkdGl79rda7LGiad0czXN9BNzuTo4qpYTQhKdjL2SjQr5cWOa1upFXyrjOfYBAibfxXfNw/640?wx_fmt=png&from=appmsg&randomid=9c7rqjsu)
+![Image](images/640_9053c04b1d4d.png)
 
 如下图所示，同样可以给定模型一些 few-shot 示例，帮助模型更好的理解：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg6wxiatRokkdGl79rda7LGialnD5b9Kt1khWOLzfERp4s8IAVBkws66ycffEb8ToBGTmgYjf9Kz8fQ/640?wx_fmt=png&from=appmsg&randomid=mrdbx4rf)
+![Image](images/640_4f9e2a788dc4.png)
 
 评估应该贯穿 LLM 应用开发的整个生命周期，不仅是为了衡量每个阶段修改的影响，也为后续的改进提供参考。当完成 Prompt Engineering 阶段后，需要根据评估判断最可能的提升点是什么，判断模型是需要提升短期记忆（Short-term Memory）还是长期记忆（Long-term Memory）：
 
 - 短期记忆：是指模型在处理单一输入时的临时存储信息，这些信息仅在模型处理当前输入时有效，一旦输入完成就会遗忘。它负责当前任务的理解和生成能力，不会影响模型对未来输入的处理。比如，模型缺乏特定的信息来回答问题。
 - 长期记忆：是指模型通过训练数据学到的知识，这些知识被永久的存储在模型参数中，包括语言规则、世界知识和常识等。比如，模型不能遵循特定的结构、风格或格式输出。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg6wxiatRokkdGl79rda7LGia5jqsO4LENHzKRz68wpPURZ4gOuKtRfDGlld1d35Ijh4eUOePzf9BiaA/640?wx_fmt=png&from=appmsg&randomid=86kbjk27)
+![Image](images/640_7e97459198f5.png)
 
 ## 五、RAG
 
 RAG（Retrieval Augmented Generation，检索增强生成）通过集成外部知识库（私有数据、特定领域数据等）并使用 ICL（In-Context-Learning，上下文学习）来解决模型幻觉、知识不足等问题。如下图所示为 RAG 的常见范式，这里就不再具体陈述：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg6wxiatRokkdGl79rda7LGiagkB9286Q1nNicX5JsrUzEerKgkUwBMpYKmDsMJiauBctbQiaVxINTua6g/640?wx_fmt=png&from=appmsg&randomid=kboo4tsq)
+![Image](images/640_79596b073242.png)
 
 当然，RAG 也不是万能的，也有其优势和不足：
 
@@ -108,7 +108,7 @@ RAG（Retrieval Augmented Generation，检索增强生成）通过集成外部�
 - 教模型掌握新的语言或特定格式、风格输出（当前模型上下文长度已经到了百万 Token 规模，似乎成为了一种可能）
 - 减少 Token 使用
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg6wxiatRokkdGl79rda7LGiatAqEr3aVmWy08evkf9PYVlEzxmtKxB0ImOUS71ic40zlms4icrOlAuIQ/640?wx_fmt=png&from=appmsg&randomid=qunieem0)
+![Image](images/640_1d73d9948891.png)
 
 如下图所示为一个使用 RAG 的成功案例，通过各种手段将 Accuracy 从 Baseline 的 45% 提升到最终的 98%：
 
@@ -117,7 +117,7 @@ RAG（Retrieval Augmented Generation，检索增强生成）通过集成外部�
 - 65%：
 - HyDE（Hypothetical Document Embeddings），如下图所示，主要是指利用 LLM 生成一个假设答案，然后利用假设答案去检索，最终再由 LLM 生成答案。尝试后没有取得很好的效果，所以未采用。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg6wxiatRokkdGl79rda7LGia5opuTx9I6klZb7T4BBoGEq7kTVD7LHE3XBd6uPicWhk3V7pabyNjW8w/640?wx_fmt=png&from=appmsg&randomid=a7ycj203)
+![Image](images/640_9bd62c4f99cc.png)
 
 - 微调 Embedding，但是代价比较高，并且比较慢，所以放弃。
 - RAG 中常用的 Chunking 方案（需要实验选择最优的 Chunk 大小），取得不错的结果。
@@ -130,13 +130,13 @@ RAG（Retrieval Augmented Generation，检索增强生成）通过集成外部�
 - 使用工具，对于一些特定场景，允许模型使用工具能获得进一步的提升，比如访问 SQL database。
 - Query 扩展，也是搜索场景经常使用的手段，可以提升检索出的内容质量，进而提升最终的生成质量。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg6wxiatRokkdGl79rda7LGiajPGV0cJ3YCI1naiae8n7ChnGJ4NB6A3ZUicXev0Pk0bF6AwFcfVKtXAw/640?wx_fmt=png&from=appmsg&randomid=5wxdew08)
+![Image](images/640_8b74966b6981.png)
 
 当检索质量不好时，LLM 最终生成的结果也可能很差，比如有用户使用 GPT + RAG 的方式生成内容，并且告知模型只能根据用户提供的内容输出，然后用户认为模型输出的结果可能是包含了幻觉，但最终查看提供的内容时发现检索结果中确实有相关内容。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg6wxiatRokkdGl79rda7LGiashla6Vqh5iaGia9ibuxedrN1IM3gKsItHuNFhcibc5rttJ34ax3ypO0U2A/640?wx_fmt=png&from=appmsg&randomid=0d7tlfgi)
+![Image](images/640_2d643caf7477.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg6wxiatRokkdGl79rda7LGiaaUZOg9mwu1cpkcrNohuCdJ1LL7agxxpR7ibYuSicX0pxABFAExgz41nw/640?wx_fmt=png&from=appmsg&randomid=5529x6ev)
+![Image](images/640_ab4b95ced3b7.png)
 
 因此，在 RAG 阶段评估时，不仅要评估 LLM 生成的性能，也要评估 RAG 检索的性能，作者介绍了 Ragas 工具（GitHub - explodinggradients/ragas: Evaluation framework for your Retrieval Augmented Generation (RAG) pipelines），其提供了几个评估维度：
 
@@ -147,7 +147,7 @@ RAG（Retrieval Augmented Generation，检索增强生成）通过集成外部�
 - 上下文精度：用于评估上下文中存在的所有与基于事实相关的条目是否排名更高。理想情况下，所有相关块都必须出现在最高排名中。该指标是使用问题和上下文计算的，值范围介于 0 和 1 之间，分数越高表示精度越高。
 - 上下文召回：衡量检索到的上下文与标注答案的一致程度。它是根据 ground truth 和检索到的上下文计算的，值范围介于 0 和 1 之间，值越高表示性能越好。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg6wxiatRokkdGl79rda7LGialrORUJ00sNwbHy9licicmxv09MeX47BiarAIWGkML9dZVw2AODuI9TuKQ/640?wx_fmt=png&from=appmsg&randomid=0mpg0nfh)
+![Image](images/640_c92f38c19070.png)
 
 ## 六、Fine-tuning
 
@@ -156,15 +156,15 @@ RAG（Retrieval Augmented Generation，检索增强生成）通过集成外部�
 - 提升模型在特定领域、特定任务上的性能。
 - 由于可以避免在 Prompt 中加入检索到的内容，因此可以降低 Token 数量，从而提升效率。此外，也可以通过蒸馏的方式把大模型的能力蒸馏到小模型里，比如用 70B 的模型蒸馏 13B 的模型。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg6wxiatRokkdGl79rda7LGiahVIv4akIQxzAcwhIjoxIQ53nby7GRpkSkNcpB9LqRNe2AfzyuqbTlw/640?wx_fmt=png&from=appmsg&randomid=7jyojx05)
+![Image](images/640_6b1e01a9b6e2.png)
 
 如下图所示作者提供了一个示例，需要提取文档中的结构化信息，并按特定格式输出，作者提供了复杂的指令，并提供了一个示例，模型确实按照格式要求输出，但是其中有些内容却出错了：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg6wxiatRokkdGl79rda7LGiaEhzneU6ZFJicbd0tDvDWMY9WbMeKodIT1kJCCicNAK4tvmKyW2t1p7Ew/640?wx_fmt=png&from=appmsg&randomid=glbxe0q7)
+![Image](images/640_2627d8eacb34.png)
 
 如下图所示，经过微调后，不用输入复杂的指令，也不用在 Prompt 中提供示例，模型即可生成符合要求的输出：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg6wxiatRokkdGl79rda7LGianOP2wZBnAgzW0bJzB62VtHSibiclvQMw3FV0cTAK9skewLODGaQVM6eQ/640?wx_fmt=png&from=appmsg&randomid=08t3iysk)
+![Image](images/640_2d7d0e7c536e.png)
 
 同样，Fine-tuning 也不是万能的，有其适合的场景也有不适合的场景（如果 Prompt Engineering 没有什么效果，那么 Fine-tuning 可能不是一个正确的选择）：
 
@@ -176,11 +176,11 @@ RAG（Retrieval Augmented Generation，检索增强生成）通过集成外部�
 - 向 base 模型中注入新知识
 - 快速在新场景验证
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg6wxiatRokkdGl79rda7LGiaeQCpOkBv9Fiat1WgEPSlsWI0gyaZre6fzfhOolMjTmhmMLJwMNDAiaibw/640?wx_fmt=png&from=appmsg&randomid=pmyv2wob)
+![Image](images/640_d655ca586bc5.png)
 
 作者提供了一个 Canva 的案例，该任务要求按照特定的格式输出内容，并提供特定字段，比如 “Titile”、“Style”、“Hero Image”，从结果可以看出，经过微调的 GPT-3.5 模型效果优于原始的 GPT-4，更优于原始的 GPT-3.5：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg6wxiatRokkdGl79rda7LGiahYsjLialXzvJ3O5q8vR88KeATIEic1piaM7YoNFUdGo4NWnDMTywFaxpA/640?wx_fmt=png&from=appmsg&randomid=o64spxo8)
+![Image](images/640_5e0631bb9acb.png)
 
 此外，作者也提供了一个失败案例，具体可以参考：Fine-tuning GPT3.5-turbo based on 140k slack messages · Ross Lazerowitz。用户想要使用 GPT 按照自己的语气和风格自动生成 Twitter 和 LinkedIn 的博文。
 
@@ -188,7 +188,7 @@ RAG（Retrieval Augmented Generation，检索增强生成）通过集成外部�
 - 用户还尝试了让 GPT 提取他以往博文的风格，比如语气、修辞等，可能由于数据太少，也没有成功。
 - 用户最后尝试了使用 GPT 3.5 Turbo 进行 Fine-tuning，选择的数据是自己过往的 140K Slack （一种国外流行的商务聊天应用，可以理解为聊天软件）聊天记录，并将其规范化为可以训练的数据格式，然后使用 GPT-3.5 Turbo 微调。得到的结果如下所示，确实很像工作中的聊天场景，完全偏离了用户的需求。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg6wxiatRokkdGl79rda7LGiayXOr5NFrNZ0xakb7U2aen197v9xFXXFruyZXp8mcUvnPrTRYbGghsg/640?wx_fmt=png&from=appmsg&randomid=r1fyvt2i)
+![Image](images/640_25c1b7768126.png)
 
 虽然上述例子中微调没有满足用户的需求，但是微调确实朝着本应该正确的方向前进了（种瓜得瓜），只是用户的微调数据集偏离了他的需求，也因此可以看出数据集的重要性。
 
@@ -199,7 +199,7 @@ RAG（Retrieval Augmented Generation，检索增强生成）通过集成外部�
 - Evaluation：有各种评估指标，此外也要看是否有针对微调任务的测试集；也可以使用 GPT-4 等高质量的模型进行评估。
 - Inference：也可以进一步收集数据，并标注用于后续迭代。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg6wxiatRokkdGl79rda7LGiaJC2J2Dics7Ay94ict5a9RRxqsDr5wNbiaWibTua9icfS6a0wsf7ZJTW7oiaA/640?wx_fmt=png&from=appmsg&randomid=c1tozdfr)
+![Image](images/640_40bd76744862.png)
 
 作者总结了一个微调的最佳实践：
 
@@ -207,7 +207,7 @@ RAG（Retrieval Augmented Generation，检索增强生成）通过集成外部�
 - 建立基线，以便了解核心问题及后续更好地评估和对比
 - 数据集收集的代价比较高，从小的、高质量的数据集开始，可以验证模型是否沿着正确的方向前进，此外也可以结合主动学习（Active Learning）技术，不断迭代，构建高质量的数据。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg6wxiatRokkdGl79rda7LGiaJibZXM26Emls3icZyLeGzr84V9dOaGvzYFmvlmADltGicMK4h1u5ibVBicg/640?wx_fmt=png&from=appmsg&randomid=ggw00nn1)
+![Image](images/640_ea3f93f8b134.png)
 
 ## 七、Fine-tuning + RAG
 
@@ -216,23 +216,23 @@ RAG（Retrieval Augmented Generation，检索增强生成）通过集成外部�
 - Fine-tuning 可以使模型更好地理解复杂指令，使模型遵循特定的格式、风格等，也就避免了复杂指令的需求，降低 Token 的使用，为 RAG 提供更大的空间。
 - RAG 可以将相关知识注入到上下文中，增强模型的短期记忆能力。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg6wxiatRokkdGl79rda7LGiab8cwFUeRvQ7XzLygWoD49Jia2Pv4SW9icNeUGUZ7pU27XPZjib0IvBLJA/640?wx_fmt=png&from=appmsg&randomid=4lzyugbh)
+![Image](images/640_bc4cc03b2dfe.png)
 
 作者提供了一个典型的 Text-to-SQL 任务案例：给定一个自然语言文本，以及数据库的 Schema，需要生成 SQL 查询并回答问题。如下图所示，左侧为对应的 Schema 和自然语言文本，右侧为生成的 SQL 语句：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg6wxiatRokkdGl79rda7LGiarQmFRtwpMW4Szfggk7qTT50Wrw0HiaibeUnCiaEEO3mOzktpwu4AwbbBA/640?wx_fmt=png&from=appmsg&randomid=qoo00jjh)
+![Image](images/640_0a3634bda7ca.png)
 
 如下图所示，作者首先尝试了 RAG，并逐步使用了各种检索优化技术：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg6wxiatRokkdGl79rda7LGiayTOEf087UC1VIdoXyzNagjyRIzFD43NB9png5sTC9gkaRgicArDMEsg/640?wx_fmt=png&from=appmsg&randomid=im8lbrho)
+![Image](images/640_dcb1e312ff55.png)
 
 如下图所示，其中 Baseline 的 69% 是经过了 Prompt Engineering 得到的结果，然后经过 RAG 逐步将其提升到 80%：但是离目标还有一定距离：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg6wxiatRokkdGl79rda7LGiaw9OJhvF1PMtWiacfuLkCInp8mYBC94EKO5jN8tM3RpHznXB7mIQyhUQ/640?wx_fmt=png&from=appmsg&randomid=gfs5onyl)
+![Image](images/640_9c31c59d3641.png)
 
 如下图所示，作者进一步尝试了 Fine-tuning，首先通过 FT + Reduced Schema 可以将 Accuracy 从 69% 提升到 81.7%，进一步使用 Fine-tuning + RAG 可以提升到 83.5%，基本符合目标 84%。其中使用的都是比较简单的 Prompt Engineering 和 RAG 方案，没有采用特别复杂的技术，可以看出 Fine-tuning + RAG 的潜力。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTg6wxiatRokkdGl79rda7LGiar6oTP9CuaKIULduDLGlv939snQktO8TTvqy5icfSFDdYq9XCy1ict2xA/640?wx_fmt=png&from=appmsg&randomid=lfekwwm8)
+![Image](images/640_dc0d21274d67.png)
 
 ## 八、相关链接
 

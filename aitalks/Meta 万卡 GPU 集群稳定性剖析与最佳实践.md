@@ -44,7 +44,7 @@
 
 RSC-1 和 RSC-2 集群设计以易用性为优先考量，同时追求简洁性。其优势在于整个技术栈相对成熟，无需大规模定制相关数据中心设计。此外，设计也力求在不附加任何条件的情况下为用户提供所需数量的 GPU，以最大化生产力——用户无需应对新型硬件或虚拟化带来的复杂性。如下图 Fig 1 展示了用户如何与集群进行交互，用户提交包含多个任务的作业，每个任务均可运行于节点的 GPU 上：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTh3qaHrFicwx6BZfhxeEhMVntK0I6XicRMhHvQs2W3k5SlYkS1LtP071WPw6VRafZ2sG5LVvZbvvp5w/640?wx_fmt=png&from=appmsg&randomid=v8pxkphr)
+![Image](images/640_e31b82268d1d.png)
 
 调度器（Scheduler）：依托高性能计算（HPC）技术栈，作者的机器采用基于裸金属分配的 Slurm 调度器（Slurm Workload Manager [2]）。用户通过 Shell 脚本（sbatch）或 Python 装饰器（submitit）提交作业。Slurm 则根据物理网络拓扑放置任务。作业运行 2 小时后可以被抢占，并且最长生命周期为 7 天。Scheduler 根据优先级顺序安排任务，优先级受多种变量影响，包括项目配额以及任务时长。
 
@@ -60,7 +60,7 @@ ML工作负载遵循 Gang Scheduling 语义。Gang Scheduling 确保同一作业
 
 高性能计算集群的核心硬件组件包括计算、网络和存储。用户通过提交给 Scheduler 的作业来提供使用这些组件的指令。集群的拓扑结构如下图 Fig 2 所示，其中展示了节点系统的布局以及单个节点的内部结构：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTh3qaHrFicwx6BZfhxeEhMVntsuc5rQ9XRK0pwtQzMegYkiciaXmzLIxwTp70iaZoBJZj1ebFhnZIMV2Q/640?wx_fmt=png&from=appmsg&randomid=b0dhaina)
+![Image](images/640_80a073dd6e50.png)
 
 计算（Compute）：RSC-1 和 RSC-2 两个集群均为基于 DGX 的裸金属集群，每个节点配备双 AMD Rome 7742 CPU 和 8 块 NVIDIA A100 80GB GPU。GPU 之间通过高带宽的 NVLink + NVSwitch 互联。
 
@@ -108,7 +108,7 @@ ETTR 的取值范围从 0（作业从未取得实质性进展）到 1（100% 的
 
 因此，如下图 Table 1 所示，作者的故障分类法基于以下原则：任何给定症状可能存在多种潜在根因，限制假设空间的唯一途径是排除不太可能的原因。作者因此提出了通过故障域的差异诊断来诊断并根除错误——利用多种性能指标标记错误可能发生的区域，从而将特定故障限定于少数可能的原因。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTh3qaHrFicwx6BZfhxeEhMVnicJbpJV85ic1XNSFZ7SiamicwYl1M3jxs9ibUCzjStNkIecjhL0M121X4NA/640?wx_fmt=png&from=appmsg&randomid=o8hoe40a)
+![Image](images/640_bec6017559f7.png)
 
 作者的故障域涵盖用户代码、系统软件（如驱动程序、Pytorch、操作系统）以及硬件。正常情况下，用户应确保其程序无明显错误。从集群运维角度考虑，硬件错误需进一步分类为瞬态错误（如 ECC 错误、链路抖动）或永久性错误（如需要供应商维修或更换硬件）。与故障分类相关的信息追踪必须实现自动化管理（例如，通过健康检查），原因在于：1）程序与机器的配对具有不确定性；2）故障通常是罕见事件。
 
@@ -116,25 +116,25 @@ ETTR 的取值范围从 0（作业从未取得实质性进展）到 1（100% 的
 
 如下图所示，以我们的一个 Case 为例，训练时遇到过 Pytorch 抛出 CUDA error: an illegal memory access was encountered 错误：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTh3qaHrFicwx6BZfhxeEhMVn2Ds5LGAWiba9QRhibd6o4TJQlZJGDibjFQdf9ND96ibdt3yyfFNa6y3kMg/640?wx_fmt=png&from=appmsg&randomid=feyv4ie7)
+![Image](images/640_1949cf0a6c19.png)
 
 同时查看相关系统信息发现 GPU 有 Xid 31 的错误：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTh3qaHrFicwx6BZfhxeEhMVnJRxgfRr2RmStWXAuUmZGeHPIQIlSZcCicMTOXADlXSceWHDmzicgwfLA/640?wx_fmt=png&from=appmsg&randomid=8hpn2e34)
+![Image](images/640_75bc23542df6.png)
 
 进一步根据 NVIDIA Xid 文档（1. Introduction — XID Errors r555 documentation [3]）可知，Xid 31 大部分为用户程序问题，比如访存越界等，但也有一定可能是驱动 Bug 或硬件 Bug：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTh3qaHrFicwx6BZfhxeEhMVnlCJswYbxkWTDOefhRBzeRPpdIfkON4WhicStgtTgjiaUHIiaiax4WG7mtg/640?wx_fmt=png&from=appmsg&randomid=yirfpj5b)
+![Image](images/640_dae568eceae4.png)
 
 见解 3：警惕误导性线索。具有多种潜在成因的错误难以诊断，例如，NCCL 超时错误可能被简单归咎于近因（proximal cause），比如网络问题而非死锁。网络具有更广泛的影响范围，导致可能横跨整个系统堆栈。其他错误则与特定节点硬件相关，随着其发生频率增加，可能性也随之上升，如上图 Table 1 是作者总结的分类法和相关经验。
 
 同样以我们自己的一个 Case 为例，如下图所示，训练中可能会遇到 NCCL timeout 的错误，由于缺乏有用的信息，通常很难稳定复现这类异常，调试起来非常困难。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTh3qaHrFicwx6BZfhxeEhMVnw1MBRhqsuKJhYTiaS2gUZT6JTQYnqh7UbsXibJLHQDQ2BmJ4QLXsDfqg/640?wx_fmt=png&from=appmsg&randomid=slmz1x19)
+![Image](images/640_812d07678ab3.png)
 
 为了解决这个问题，常见的方式是 Fork NCCL 代码，添加相应的时间戳信息，以便更好地显示崩溃发生时正在执行的消息或操作，从而确定哪个 Node 或 GPU 可能阻塞了，如下图所示为 ImbueAI 在解决类似问题时的方案（https://github.com/boweiliu/nccl/commit/0966031bdb5905b8ea5aef3fb2a8ce6317040234）。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTh3qaHrFicwx6BZfhxeEhMVnp2qFnvrQQszgJ5ESGAeDaXCgZ67b8lQsKX8twCTxlicUJoYPTUDUk7g/640?wx_fmt=png&from=appmsg&randomid=lex4t0t3)
+![Image](images/640_fd410423b5a5.png)
 
 Meta 在 LLaMA 3 的技术报告（The Llama 3 Herd of Models | Research - AI at Meta [4]）也提到相关的解决方案。具体来说，为了增加有效训练时间，减少作业启动和 Checkpointing 时间，LLaMA 3 作者开发了用于快速诊断和解决问题的工具。其主要是利用 Pytorch 内置的 NCCL flight recorder（参考 PyTorch 2: Faster Machine Learning Through Dynamic Python Bytecode Transformation and Graph Compilation [5]），将集合通信的元数据以及堆栈信息捕获到 ring buffer 中，基于此可以快速诊断 Hang 以及性能相关问题，尤其是与 NCCLX（Meta 的内部 NCCL 版本） 相关的问题。利用此功能，可以有效地记录每个通信事件以及每个集合通信操作的持续时间，并且可以自动将 Trace 信息转存到 NCCLX Watchdog 或 Heart timeout。也可以在生产环境中在线修改配置，以便根据需要选择性地实现计算密集型的跟踪操作和元数据收集，而无需发布代码或重新启动作业。
 
@@ -144,7 +144,7 @@ Meta 在 LLaMA 3 的技术报告（The Llama 3 Herd of Models | Research - AI at
 
 Scheduler 作业状态细分：Slurm 作业可能处于以下状态之一：Cancelled（取消）、Completed（完成）、Out_of_Memory（内存不足）、Failed（应用返回非零退出码）、Node_Fail（节点故障）、Preempted（为更高优先级作业让位）、Requeued（重新排队）或 Timeout（超时）。如下图 Fig 3 展示了 RSC-1 集群的 Scheduler 作业状态细分。60% 的作业成功完成，24% 和 0.1% 的作业分别有 Failed 和 Node_fail 失败，10% 的作业被抢占，2% 的作业重新排队，0.1% 的作业内存不足失败，0.6% 的作业超时。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTh3qaHrFicwx6BZfhxeEhMVnt6icEXnXibS2rHWTrQ90JeuvCLPtEZCJvyDQECial8xZwTNxEpPDUibNMw/640?wx_fmt=png&from=appmsg&randomid=3tbwzw00)
+![Image](images/640_ac360e2d9e38.png)
 
 如上图 Fig 3 所示，其中 Infra 故障（HW）只影响了 0.2% 的作业，但影响了 18.7% 的运行时间。鉴于预期 Infra 故障会影响大型作业（这类作业数量很少，但占用大量运行资源），这一现象也并不意外（可以参考后文 Fig 6）。
 
@@ -152,29 +152,29 @@ Scheduler 作业状态细分：Slurm 作业可能处于以下状态之一：Canc
 
 作业级故障刻画：归因于硬件的故障可根据归因进一步细分。这些原因可以按照节点级组件细分，如 GPU、网络及各种系统组件，如文件系统。如下图 Fig 4 中展示了 RSC-1 和 RSC-2 集群每小时每 GPU 的故障率。若故障原因在作业失败前 10 分钟内或失败后 5 分钟内被检测到（Failed 或 Node_Fail），则将故障归因于该原因。需要注意的是，作者根据所开发的启发式方法报告了最可能的故障原因，该方法指示节点是否应被隔离以进行相关修复。某些故障可能有多重原因。一些 Node_Fail 事件并未与任何健康检查相关联，这可能是节点本身变得无响应。其中 IB 链路、文件系统挂载、GPU 内存错误和 PCIe 错误占比最大。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTh3qaHrFicwx6BZfhxeEhMVnpXAE17LxcozHBqFXboalUtdEhmYic7ZSiagia2MOT1VPjtQeDDPSt6atQ/640?wx_fmt=png&from=appmsg&randomid=jafvw4rw)
+![Image](images/640_7f0cf56c4a7d.png)
 
 对于 IB 链路而言，似乎主要由 2024 年夏季少数节点在短时间内发生的众多 IB 链路故障相关，如下图 Fig 5 的黄色部分。其中 GSP 超时是由代码回退引起，该问题通过驱动补丁得以修复。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTh3qaHrFicwx6BZfhxeEhMVnbsa6kba28Cyt3qosVV8r7ZYb5e5MeaERmnAVgYiavjZtJ1jk7Sea50w/640?wx_fmt=png&from=appmsg&randomid=coqu6zti)
+![Image](images/640_63e3931b838b.png)
 
 我们在 A100 中也遇到过 GSP（GPU System Processor） 相关问题，通过关闭 GSP 可以解决。阿里云的 FAQ 中也有相关介绍，如下所示，具体可以参考 ACK集群GPU使用常见问题和解决方法- 容器服务Kubernetes 版 ACK - 阿里云 [6]：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTh3qaHrFicwx6BZfhxeEhMVnicOOK5NhHa9zDLKAo2YxIWpuE2ibDSDhdxxb8CBZ4iah71tSOtgImAecw/640?wx_fmt=png&from=appmsg&randomid=ebql7ngp)
+![Image](images/640_715322a94622.png)
 
 故障可能同时发生：RSC-1/RSC-2 上 3% 和 5% 的硬件故障伴随着类似优先级的共现事件，例如，作者观察到 PCIe 错误常与 XID 79（通常意味着掉卡，比如从 PCIe 总线上断开链接）和 IPMI “Critical Interrupt” 同时发生。在 RSC-1（及 RSC-2）上，作者观察到 43%（63%）的 PCIe 错误与 XID 79 共现，21%（49%）则同时包含所有上述 3 种事件类型。这是预料之中的，因为所有这些检查都与 PCIe 总线健康状况有重叠。此外，作者还观察到 2%（6%）的 IB 链路故障与 GPU 故障（如与总线断开连接）同时发生，这可能表明与 PCIe 存在关联。
 
 同样以我们的一个 Case 为例，如下图所示，使用 Pytorch 训练时遇到 CUDA error: unknown error 的问题：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTh3qaHrFicwx6BZfhxeEhMVnia8m2roG70foM7eObGD8sFlHdT67KsewQ95cK6aQzHsmvBZiby2ygKow/640?wx_fmt=png&from=appmsg&randomid=wjb4i6gp)
+![Image](images/640_1d7138530ae5.png)
 
 进一步排查发现系统中同时出现了 pciehp Link Down，Xid 79（GPU fallen off the bus）以及 NVSwitch timeout 的错误，与此同时还在后续出现 Xid 45 的错误，这个就是常见的掉卡问题。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTh3qaHrFicwx6BZfhxeEhMVnKUDPVJoaYCkFCv6MKictCIoBWnPKVW97ukMdavMgLTxUIaJsttULlBA/640?wx_fmt=png&from=appmsg&randomid=7utwyp2f)
+![Image](images/640_a45e0f32dc95.png)
 
 其实 Xid 也经常会一起出现，如下图所示，一个 uncorrectable 的 ECC Error 往往会伴随多个不同的 Xid 同时出现：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTh3qaHrFicwx6BZfhxeEhMVnLApmljPjGveqfG45oJnWoHTpt0nrJnoBejbqFU1eZIkd1UQs6wibu3w/640?wx_fmt=png&from=appmsg&randomid=tdq841a0)
+![Image](images/640_bcdda18324be.png)
 
 见解 5：许多硬件故障未被归因，而最常见的故障归因于后端网络、文件系统和 GPU。GPU 有细粒度的 Xid，也有丰富的错误类别，不过主要的错误都与内存相关。PCIe 总线错误和 GPU 脱离总线也非常常见并且相关联。CPU 内存和 Host 服务对应用影响较小。
 
@@ -186,25 +186,25 @@ Scheduler 作业状态细分：Slurm 作业可能处于以下状态之一：Canc
 
 如下图所示，上海 AI Lab 等团队在 [2403.07648] Characterization of Large Language Model Development in the Datacenter [7] 中提到一个类似的故障，其 AI 集群在 2023.07（最热的月份） 时，机房温度升高了 5 度，导致故障率明显增加：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTh3qaHrFicwx6BZfhxeEhMVn6nbw9dwrEBKibW92KO8pTLKOkjlia61eRfIhRAn96s6rsoNwLLJgfJRw/640?wx_fmt=png&from=appmsg&randomid=pt8g5gqc)
+![Image](images/640_9d5cee7d582d.png)
 
 见解 6：集群故障具有动态性，集群故障是一场持续战斗，新的软件更新也就意味着集群在不断变化，工作负载和性能也在持续调整。
 
 训练任务多样性：必须考虑任务规模和时间，以在整体多样性和训练 GPU 小时数之间取得平衡。Scheduler 需要权衡单个训练作业的公平性、整体集群利用率及训练性能。如下图 Fig 6 所示，描绘了 RSC-1 集群中作业规模的分布，超过 40% 的训练作业使用单个 GPU 进行开发或者模型评估，仅有少数大模型作业，比如超过 1000 GPU。在同一个图中，作者还展示了相对于单个 GPU 作业的 GPU 时长的归一化结果。虽然有众多单 GPU 作业，但是 RSC-1 和 RSC-2 中分别有 66% 和 52% 的总 GPU 时间来自 256+ GPU 的作业。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTh3qaHrFicwx6BZfhxeEhMVnu1LUWbFibibicuwxZJF5Zicv7V9hRK53yAJdMkmG2TqRpuPXlDiazuUJH2A/640?wx_fmt=png&from=appmsg&randomid=0ue6pcb9)
+![Image](images/640_fe1c68b7bc89.png)
 
 见解 7：超过 90% 的作业规模小于一台机器（包含 8 个 GPU），但仅占不到 10% 的 GPU 时间。RSC-1 集群倾向拥有更多 8 GPU 作业，而 RSC-2 则更倾向于 1 GPU 作业。RSC-1 集群往往包含规模最大的作业。
 
 MTTF 随规模减小：如下图 Fig 7 所示，1024 GPU 作业的平均故障时间（MTTF）为 7.9 小时，比 8 个 GPU 作业（47.7 天）低约两个数量级。这也符合预期，经验上，硬件可靠性与 GPU 数量成反比，且在 32 个 GPU 以上时趋势更为一致。图 Fig 7 还展示了从集群节点故障率推导出的理论预期 MTTF（MTTF ∝ 1/Ngpus）：MTTF=(Nnodesrf)-1，其中 rf 根据所有超过 128 个 GPU 作业的总故障数和节点运行天数计算，与较大作业（>32 GPU）的实际 MRRF 数据吻合：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTh3qaHrFicwx6BZfhxeEhMVnj64KdFKvDV8UmjcPQ3icVmQ11RsRDOJrfPXkeOHSKfaoiaSV8JnlTEqQ/640?wx_fmt=png&from=appmsg&randomid=um59bi9b)
+![Image](images/640_02e7a2b8ca97.png)
 
 基于在上述集群中大规模训练任务所观测到的故障概率，作者预测 16384 个 GPU 任务的 MTTF 为 1.8 小时，131072 个 GPU 任务的 MTTF 为 0.23 小时。为了在故障发生时最大化 ETTR，必须加快故障检测与恢复过程。
 
 如下图 Table 5 所示，Meta 在 LLaMA 3 的技术报告（The Llama 3 Herd of Models | Research - AI at Meta [4]）中也描述了相关故障率，其提到在 54 天的训练中，共遇到 466 个任务中断，包括 47 次的有计划中断，以及 419 次的预期外中断。在这些非预期中断中，78% 是硬件问题，例如 GPU 或物理机其他组件的异常，其中 GPU 相关问题占到 58.7%。其训练使用了 16384 H100 GPU，对应的平均故障时间为 54*24/419=3 小时，也就是平均每 3 小时出现一次故障。当然，组着通过自动化运维手段仍然可以获得超过 90% 的有效训练时间。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTh3qaHrFicwx6BZfhxeEhMVnDdKeoMhm7UKgrz9SeFI2FmDOX0ic0L2RUxJ4C2YOwdKeuqJu2ektxhw/640?wx_fmt=png&from=appmsg&randomid=aef00gol)
+![Image](images/640_255b6457958d.png)
 
 见解 8：尽管故障并不直接影响多数作业，但大型作业受其影响显著，故障率与理论趋势相符。在 4K 规模下，MTTF 约为 10 小时，并预计在 RSC-1 的更大规模下会进一步下降。MTFF 预测与 RSC-1 的 4-512 节点实测 MTTF 吻合。对于 RSC-2，预测趋势类似，但是 16 个 GPU 的实测 MTTF 数据波动较大，部分原因是一组相关任务引发多次 Node_Fail。总体上 RSC-1 和 RSC-2 趋势类似，部分差异可以归因于两个集群工作负载稍有不同触发了不同的故障。
 
@@ -214,7 +214,7 @@ MTTF 随规模减小：如下图 Fig 7 所示，1024 GPU 作业的平均故障�
 
 如下图 Fig 8 所示，RSC-1 因故障和二次抢占导致的大部分 Goodput 损失（y 轴），主要源自规模在 2K-4K 个 GPU （x轴）的大型作业。在 RSC-2 集群，由于作业构成的差异，中等规模作业占据 Goodput 损失的比例更高。此外，RSC-2 上 Goodput 损失比 RSC-1 上小一个数量级，这是作业构成和故障率差异的结果。尽管优化大型作业至关重要，但硬件故障导致的 Goodput 损失中，依然有 16% 源于二次抢占。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTh3qaHrFicwx6BZfhxeEhMVndaUAMuBJSzPDzgxcUFl4IHP8s56M6IgW2YIvR0N7z7JgKbad8Hptmw/640?wx_fmt=png&from=appmsg&randomid=j3we52wp)
+![Image](images/640_3f7edf811095.png)
 
 见解 9：大型、高优先级作业在故障时会使 Scheduler 产生波动。虽然 1K+ GPU 作业故障的一级效应显著，但总故障开销的 16% 来自于抢占其他作业。因此，作业多样性的增加为优化提供了额外的途径。
 
@@ -227,7 +227,7 @@ MTTF 随规模减小：如下图 Fig 7 所示，1024 GPU 作业的平均故障�
 
 解析近似 E[ETTR]：首先，定义 Q 为符合调度条件但处于排队等待的作业的时间，R 为有效运行时间，U 为无效运行时间。总时间为 W=Q+R+U。Checkpointing 之间的间隔为 Δtcp，初始化任务所需时间（如加载 Checkpoint）为 u0，提交后及每次中断后的期望排队时间为 q（假设排队时间服从独立正态分布 i.i.d，且在遭遇中断后并未系统性地缩短）。作业需要的节点数为 Nnodes，集群故障率 rf 表示每节点、每天内预期发生的故障次数。如下图所示可以得出期望 ETTR 的解析公式：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTh3qaHrFicwx6BZfhxeEhMVnk2CSgePxTHzKwy2mB3UEYMWeRMTrTeLe0YhqdTdgx8xVZLyreUuc0w/640?wx_fmt=png&from=appmsg&randomid=6d3cg68f)
+![Image](images/640_476647ab0764.png)
 
 对于 RSC 集群，每个 GPU 节点（8 GPU）每天的故障率 rf 约为 5x10-3，tcp 约为 1 小时，也就是 0.04 天，u0 约为 5-20 分钟，而 (Nnodesrf)-1 >= 0.1 天。与预测各种期望值的蒙特卡洛方法相比，即便对于大型、长时间运行的假设性任务（例如 8000 GPU），上述近似值的误差也在 5% 以内。
 
@@ -239,11 +239,11 @@ ETTR 结果分析：如下图 Fig 9 展示了作者的研究结果。除较小�
 
 在假设情景中，若 RSC-1 集群用于单一 16,000 GPU 训练任务，占据整个集群，60 分钟 Checkpointing 间隔下的期望 ETTR 为 0.7，缩短为 5 分钟 Checkpointing 间隔，期望 ETTR 增至 0.93，凸显了频繁 Checkpointing 对抵御中断的价值（PS：假设 Checkpointing 写入为非阻塞，可以通过异步、分布式存储实现，当前很多框架已经提供该能力）。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTh3qaHrFicwx6BZfhxeEhMVnos3HqJgGrRbicP8JZO1PImHh2viaGNibZDxAuTgSPxTYzTTNjSn7XJquQ/640?wx_fmt=png&from=appmsg&randomid=ao6rcqzt)
+![Image](images/640_f328c1827688.png)
 
 展望未来：对于未来需要 O(105) GPU 的其他集群，基于类 RSC-1 故障率（每千节点日 6.50 次故障）推导的 MTTF 为 15 分钟。这意味着 1 小时的 Checkpointing 间隔不可行。如图 Fig 10 展示了故障率与 Checkpointing 间隔的权衡，例如，对于类 RSC-1 故障率，需要 7 分钟的 Checkpointing 间隔才能实现 E[ETTR]=0.5，若故障率接近 RSC-2，则需 21 分钟。在类 RSC-2 故障率下要达到 E[ETTR] 0.9，需 2 分钟的 Checkpointing 间隔和 2 分钟的重启开销。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTh3qaHrFicwx6BZfhxeEhMVnPsDhicHWrO3CTcibtmjaLJj5LiaBEa8p2UlmKdiaBYzFuCEXoMrhnd5lhA/640?wx_fmt=png&from=appmsg&randomid=hn3rrt0y)
+![Image](images/640_0792f4b66810.png)
 
 见解 10：RSC 集群对最大及最高优先级作业极为高效（ETTR > 0.9）。尽管 RSC-1 集群资源紧张且共享，在其上运行 2048-4096 GPU 且超过 1 天的作业，假设 1 小时的 Checkpointing 间隔，可以实现 ETTR 超过 0.9。若每次故障后的排队时间为 1 分钟， Checkpointing 间隔为 30 分钟，在 RSC-1 上可以实现最大可行训练（8,000 GPU，占 RSC-1 一半资源）ETTR 达到 0.9。在假设具有类 RSC-2 类故障率的集群上进行 100,000 GPU 训练时间，要达到 ETTR 0.9，Checkpointing 间隔和 Restart 开销需要为 2 分钟。（PS：如上所示，Meta 在 LLaMA 3 技术报告中也提到，其 LLaMA 3 在 16K H100 GPU 集群实现了 90% 的有效训练时间）
 
@@ -271,9 +271,9 @@ lemon 检测信号：在每个节点上可用的数十种检测信号中，以�
 
 如下图 11 所示，展示了基于 RSC-1 的 28 天数据快照信号分布情况，可以据此设定检测标准的阈值。x 轴表示每个 GPU 节点信号出现的归一化次数。y 轴表示经历每种信号的 GPU 节点的累积数量，同样进行归一化处理。作者发现，excl_jobid_count 信号与节点故障之间并无显著相关性，大量节点因至少一个作业而被排除。这促使作者主动检测 lemon node，而非将其留给用户。超过 85% 的已识别 lemon node 在某一测试中失败，失败类型详见 Table II。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTh3qaHrFicwx6BZfhxeEhMVnoV6E0CSB4BXd8u1HicI7zBg6OibIduPhNuOleZPMuxXKqnibC4oN9BXjQ/640?wx_fmt=png&from=appmsg&randomid=jy95u7x4)
+![Image](images/640_67247823d300.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTh3qaHrFicwx6BZfhxeEhMVnyoBRMZo0BRad4gTn8tuUIA2bTvVPUloYgH3bE0rJ8a0ccQIgFwzyvg/640?wx_fmt=png&from=appmsg&randomid=puuxx3my)
+![Image](images/640_1923a3c61ba5.png)
 
 作者设计、实施并评估了 lemon 检测机制，成功识别出 RSC-1（24 个节点）和 RSC-2（16 个节点）中的 40 个故障节点，准确率超过 85%。这些被识别的 lemon node 占 RSC-1 总规模的 1.2%，每日作业的 13%。这种 lemon 检测机制使得大规模作业（512+ GPU）的失败率降低 10%，从 14% 降低至 4%。
 
@@ -292,7 +292,7 @@ lemon 检测信号：在每个节点上可用的数十种检测信号中，以�
 - 第一个实验中，使用 mlxreg 工具修改网络中的端口寄存器，引入位错误（BER）。随后，针对 512 GPU，在启用与未启用 AR 的情况下，运行 nccl-tests 中的 AllReduce 基准测试。如下图 Fig 12a 所示，在链路错误条件下，AR 能够维持更高的带宽。
 - 第二实验中，在 64 个节点上分组进行 AllReduce 的多轮迭代，每组包含两个节点（16 个 GPU），以展示 AR 在资源竞争环境下的表现。如下图 Fig 12b 所示，网络中充斥着多个 NCCL 环路时，使用 AR 的性能波动较小，且 AR 能实现更高的性能。这是因为 AR 能够保护 GPU 免受拥塞链路的瓶颈效应。通过使用交换机根据端口负载选择的输出端口，AR 将不良链路的影响分散到各个任务中，而非仅惩罚恰好映射到这些不良链路的训练任务。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTh3qaHrFicwx6BZfhxeEhMVn39uYFt8140Wn4aFu3NZTI6Dzqb4jHglLq3uxX0Gibn6sKicAicxdly8qA/640?wx_fmt=png&from=appmsg&randomid=xmgebni3)
+![Image](images/640_a71ff64922e8.png)
 
 见解 12：网络必须具备故障排除和绕行能力，若缺乏弹性机制，可能会损失超过 50% 的带宽。
 

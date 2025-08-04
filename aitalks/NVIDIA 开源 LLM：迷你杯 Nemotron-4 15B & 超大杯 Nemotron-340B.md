@@ -10,7 +10,7 @@ NVIDIA 最近公布了其超大杯的 340B 模型 Nemotron-4 340B，实际上其
 
 如下图所示：在最新的 LMSys Chatbot Arena Leader中，Nemotron-4 340B 已经排到开源模型的 Top1：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjQxwBoB4uMEXvNibiciad7znkyfvluAPmjPFVlribSKhTC6I6d5j3WHiapKWibjn6IsXww1ztknl2XnIdg/640?wx_fmt=png&from=appmsg&randomid=w5pqw442)
+![Image](images/640_3476c9e0c194.png)
 
 Nemotron-4 15B 对应论文为：[2402.16819] Nemotron-4 15B Technical Report
 
@@ -32,7 +32,7 @@ NVIDIA 在 2024.02 发布了自研的 Nemotron-4 15B 模型，其在 8T 的预�
 - 在 MLP Layer 中采用 Squared ReLU 激活，没有 bias，Dropout rate 为 0
 - 使用了 GQA
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjpKjQtveFS8DhVE5MAdW7oT2fGEeTsYT2dgAD5bDw0Oq03fyLSficDujNicchGVplZfffqoVV34jfA/640?wx_fmt=png&from=appmsg&randomid=yquxrxck)
+![Image](images/640_6e463a5cc939.png)
 
 ### 2.3 数据
 
@@ -44,11 +44,11 @@ NVIDIA 在 2024.02 发布了自研的 Nemotron-4 15B 模型，其在 8T 的预�
 
 其英文预料包含多个来源，比如网络抓取，书籍，新闻等等，具体如下图 Figure 2 所示：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjpKjQtveFS8DhVE5MAdW7ojaq3Td5eMibPbgEzUveicynMQ7Pgb39SiaKK4VUmQW4WY24B39AGp9lAw/640?wx_fmt=png&from=appmsg&randomid=sdv829sl)
+![Image](images/640_1b06f2c56c8f.png)
 
 其源代码数据包含 43 种编程语言，其中最多的是 Markdown、JavaScript、Python、C、CPP、Java、Html 等，具体分布如下图 Figure 3 所示：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjpKjQtveFS8DhVE5MAdW7ocnlWmM1icmkJCWgYd42NvVPzm9mibI6XFd5SgTn8T6zmic6nTSyxvZz0Q/640?wx_fmt=png&from=appmsg&randomid=1usy38p4)
+![Image](images/640_8febf57fa771.png)
 
 ### 2.4 预训练
 
@@ -56,7 +56,7 @@ NVIDIA 在 2024.02 发布了自研的 Nemotron-4 15B 模型，其在 8T 的预�
 
 分布式策略：在节点内使用 8 TP（Tensor Parallelism），跨节点使用 96/192/288 DP（Data Parallelism）。DP 数有 3 种是因为使用了 Ramp-Up Schedule Warmup（PS：如果使用课程学习，序列长度逐渐增加，则一般不会使用 Ramp-Up），其 Batch Size 逐渐扩大，单 DP 的 batch size 是固定的，所以总的 Batch Size 与 DP 数成正比。其 MFU 只有 30%-34% 之间，总共训练了 13 天。（PS：NVIDIA 有钱任性，社区中大家普遍把 MFU 优化到 50%-60%，NVIDIA 依然还只有 30%-34%）
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjpKjQtveFS8DhVE5MAdW7op4JnvJFjbZGG6CXElFqPbOdpevVIIVqgZGRMaGKK7zFceJUcLYY9iaw/640?wx_fmt=png&from=appmsg&randomid=o6g6g3vh)
+![Image](images/640_acc1364633e1.png)
 
 Continued Training：在 Pretraining 之后，作者参考 Google [2312.11805] Gemini: A Family of Highly Capable Multimodal Models 的方案，会额外进行一个继续训练。在 Gemini 中是将其与 SFT 和 RLHF 统称为 Post Training。具体来说，作者使用两个分布的数据继续训练，一个是从预训练语料中采样，当然会给高质量数据更高的权重；另一个是少量的 Benchmark 风格的对齐样本。训练中 Loss 函数保持不变，只说使用了少量数据，未具体介绍是多少，通过这种方式可以进一步提升模型质量。
 
@@ -64,15 +64,15 @@ Continued Training：在 Pretraining 之后，作者参考 Google [2312.11805] G
 
 如下图 Table 3 所示，作者使用 Harness 评估，最终模型效果优于类似规模的 LLaMA-2 13B/34B 以及 Qwen 14B 等：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjpKjQtveFS8DhVE5MAdW7oJVNvreQfBmGNeWMe3GAR3xkm7EcTfKFg6lszVZ8mP2rxODrYqN5ibag/640?wx_fmt=png&from=appmsg&randomid=wz6bl5vt)
+![Image](images/640_d6b95701832c.png)
 
 如下图 Table 5 所示，其数学和代码评估也取得不错的结果：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjpKjQtveFS8DhVE5MAdW7ofdCIeqW1nKX5Xaibfm9WsibQXlGFpibibXXW7BibgJFGp7rg9DVGdcLInrA/640?wx_fmt=png&from=appmsg&randomid=076ojxby)
+![Image](images/640_e49ca23f74e9.png)
 
 如下图 Table 7 所示，其多语言能力优于之前专门的多语言模型：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjpKjQtveFS8DhVE5MAdW7ovlqoXicHEZNoGfogrdxV6NbXmVdUjeT08Q1qdia1NNLWdROQ0OVFOotA/640?wx_fmt=png&from=appmsg&randomid=vt19qkr2)
+![Image](images/640_1e9e3813e632.png)
 
 ## 三、Nemotron-4 340B
 
@@ -86,7 +86,7 @@ PS：340B 参数量，FP16 推理仅参数量就要占用 680 GB 显存，至少
 
 其模型结构和 Nemotron-4 15B 几乎一致，只是改了部分超参数，使模型更大，具体如下图 Table 1 所示，其 Embedding 参数有 9.4B，非 Embedding 参数有 331.6B：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjpKjQtveFS8DhVE5MAdW7obGjw1otY1icYUC9ySJ1UCC6hyKWk8kibqu6Jsmz2Uhhfjxrx3VKjnEow/640?wx_fmt=png&from=appmsg&randomid=26ckwrme)
+![Image](images/640_7097cc690609.png)
 
 ### 3.3 数据
 
@@ -98,7 +98,7 @@ PS：340B 参数量，FP16 推理仅参数量就要占用 680 GB 显存，至少
 
 分布式策略：在节点内使用 8 TP（Tensor Parallelism），由于模型更大，单个节点放不下，因此额外使用了 12 PP（Pipeline Parallelism），此外使用 16/32/64 DP（Data Parallelism）。DP 数有 3 种同样是因为使用了 Ramp-Up Schedule Warmup。其 MFU 只有 41%-42.4% 之间。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjpKjQtveFS8DhVE5MAdW7oxiclPpIeS7Xr2O25NcF6kRfnczmAPydvdNXHSvgWLUjTspvt0AJicWKw/640?wx_fmt=png&from=appmsg&randomid=smm7wuwj)
+![Image](images/640_db997815c38a.png)
 
 Continued Training：在 Pretraining 之后，同样进行了 Continued Training。同样使用了预训练语料加问答风格的对齐样本，这里介绍了共使用 1T Token。
 
@@ -112,7 +112,7 @@ PS：综合考虑模型大小、数据量、GPU 数、MFU 等因素，猜测 340
 
 如下图 Table 3 所示，作者在 Reward Bench 上对比了不同模型的表现，其获得了最高的表现：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjpKjQtveFS8DhVE5MAdW7oHxgZzWMknzQAiaaWTbGaHK238XJUia4DgugOs75NO70QmaWOI23nibHFA/640?wx_fmt=png&from=appmsg&randomid=k5ht4vcj)
+![Image](images/640_7b67c08304db.png)
 
 #### 3.5.2 对齐数据
 
@@ -132,27 +132,27 @@ Groundtruth 作为评委：每个 Prompt 会包含多个响应，作者会使用
 
 如下图 Table 3 所示为其 Base 模型的评估结果，可以看出，在不少指标上都超过了当前 Top 开源模型 Qwen-2 72B、LLama-3 70B 以及 Mistral 8x22B：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjpKjQtveFS8DhVE5MAdW7oN1vAPJeEgNbjrJKmLMabtgt9JYXefk2vibuC7QgCgaGLGNQ2ecbzn8A/640?wx_fmt=png&from=appmsg&randomid=cnsuhcdv)
+![Image](images/640_c00c6173d8f7.png)
 
 如下图 Table 5 所示，其 Instruct 模型也同样和当前的 Top 开源模型相当（PS：需要说明的是，常规的 MT-Bench 只使用早期 GPT-4 作为 judge，而下述指标中使用的是 GPT-4-Turbo，因此得分会和开源 Leaderboard 有所不同）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjpKjQtveFS8DhVE5MAdW7oXBiaicG5F6fpuh6brkkCkPicslHoAI9AJ9g7BTeRQSjxBhVtasPBqjQ9Q/640?wx_fmt=png&from=appmsg&randomid=dp2uhl02)
+![Image](images/640_c5caba32e508.png)
 
 如下图所示，作者进一步展示微调 Instruct 模型时中间阶段模型的评估指标，可以看出，通过多阶段微调，各种指标不断提升，尤其通过 DPO，IFEval Prompt-Strict-Acc 从 61.7 增长到 79.9，MT-Bench 从 7.90 增长到 8.22：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjpKjQtveFS8DhVE5MAdW7oRc4IoBEOM1JroTxFVd9pNn2ufibXNA0o4icEBM2EWSxFqoJSjSZHKbBg/640?wx_fmt=png&from=appmsg&randomid=ch7qb33i)
+![Image](images/640_5e58b35e1c36.png)
 
 ## 四、附录
 
 我们介绍这篇文章的另一个原因是其在各种评估实验中都会具体介绍相应评估的配置是什么；如果是参考数据，也会提供具体的参考来源。相比很多文章，比如只说使用了 GPQA、MATH、ARC-C，具体的配置都不介绍清楚，甚至还有错误，Nemotron-4 340B 的数据就会更加可信，至少可复现性会更强一些：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjpKjQtveFS8DhVE5MAdW7o1EibFyEZBbwR0HibDT7iaMhuFCiauz0TicyuorF4Czzof1MIibUIFic50y9uQ/640?wx_fmt=png&from=appmsg&randomid=djmk8x5j)
+![Image](images/640_b49d58264e41.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjpKjQtveFS8DhVE5MAdW7oyVc1XwRzUiaicKdvQegltuU89xmzdNArzZTWNG6LDUfrSNxqlhJVUCjA/640?wx_fmt=png&from=appmsg&randomid=zvfzwan4)
+![Image](images/640_54dc805f48d3.png)
 
 Claude 3 的 Paper The Claude 3 Model Family: Opus, Sonnet, Haiku 也是个很好的例子，如下图所示为 Claude 3 中的评估结果：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjpKjQtveFS8DhVE5MAdW7oQvQRRSyS5Tv1VjuGiavjFSGia3XxXpuMWrI6FiajRibY5m6btAAicOJ5Hibw/640?wx_fmt=png&from=appmsg&randomid=6vrbw6ig)
+![Image](images/640_45893b67b8ec.png)
 
 ## 五、参考链接
 
