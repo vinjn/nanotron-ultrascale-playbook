@@ -1,0 +1,599 @@
+/* style.css */
+/* Define colors */
+:root {
+    --distill-gray: rgb(107, 114, 128);
+    --distill-gray-light: rgb(185, 185, 185);
+    --distill-gray-lighter: rgb(228, 228, 228);
+    --distill-gray-lightest: rgb(245, 245, 245);
+    --distill-blue: #007BFF;
+}
+
+/* Container for the controls */
+[id^="plot-"] {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px; /* Adjust the gap between controls as needed */
+}
+[id^="plot-"] figure {
+    margin-bottom: 0px;
+    margin-top: 0px;
+    padding: 0px;
+}
+.plotly_caption {
+    font-style: italic;
+    margin-top: 10px;
+}
+
+.plotly_controls {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 30px;
+}
+
+
+.plotly_input_container {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Style for the select dropdown */
+.plotly_input_container > select {
+    padding: 2px 4px;
+    /* border: 1px solid #ccc; */
+    line-height: 1.5em;
+    text-align: center;
+    border-radius: 4px;
+    font-size: 12px;
+    background-color: var(--distill-gray-lightest);
+    outline: none;
+}
+
+/* Style for the range input */
+
+.plotly_slider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.plotly_slider > input[type="range"] {
+    -webkit-appearance: none;
+    height: 2px;
+    background: var(--distill-gray-light);
+    border-radius: 5px;
+    outline: none;
+}
+
+.plotly_slider > span {
+    font-size: 14px;
+    line-height: 1.6em;
+    min-width: 16px;
+}
+
+.plotly_slider > input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--distill-blue);
+    cursor: pointer;
+}
+
+.plotly_slider > input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--distill-blue);
+    cursor: pointer;
+}
+
+/* Style for the labels */
+.plotly_input_container > label {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.main-plot-container {
+    margin-top: 21px;
+    margin-bottom: 35px;
+}
+
+.main-plot-container > figure {
+    display: block !important;
+    /* Let this be handled by graph-container */
+    margin-bottom: 0px;
+    margin-top: 0px;
+}
+.main-plot-container > div {
+    display: none !important;
+}
+
+
+@media (min-width: 768px) {
+    .main-plot-container > figure {
+        display: none !important;
+    }
+    .main-plot-container > div {
+        display: flex !important;
+    }
+}
+
+d-byline .byline {
+  grid-template-columns: 1fr;
+  grid-column: text;
+  font-size: 0.9rem;
+  line-height: 1.8em;
+}
+
+@media (min-width: 768px) {
+  d-byline .byline {
+    grid-template-columns: 5fr 1fr 1fr;
+  }
+}
+
+#title-plot {
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+d-contents > nav a.active {
+    text-decoration: underline;
+}
+
+@media (max-width: 1199px) {
+    d-contents {
+        display: none;
+        background: white;
+        justify-self: start;
+        align-self: start;
+        padding-bottom: 0.5em;
+        margin-bottom: 1em;
+        padding-left: 0.25em;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        border-bottom-width: 1px;
+        border-bottom-style: solid;
+        border-bottom-color: rgba(0, 0, 0, 0.1);
+        overflow-y: scroll;
+        height: calc(100vh - 40px);
+        scrollbar-width: none;
+        z-index: -100;
+    }
+}
+
+d-contents a:hover {
+    border-bottom: none;
+}
+
+toc-title {
+    font-weight: bold;
+    font-size: 1.2em;
+    color: #333;
+}
+
+toggle-icon {
+    transition: transform 0.3s;
+}
+
+toggle-icon.collapsed {
+    transform: rotate(90deg);
+}
+
+.toc-content {
+    margin-top: 15px;
+    overflow: hidden;
+    /* max-height: 1000px; */
+    transition: max-height 0.3s ease-out;
+}
+
+.toc-content.collapsed {
+    max-height: 0;
+    margin-top: 0;
+}
+
+@media (min-width: 1200px) {
+    d-article {
+        /* Ensure d-article does not prevent sticky positioning */
+        overflow: visible;
+    }
+
+    d-contents {
+        align-self: start;
+        background: white;
+        grid-column-start: 1 !important;
+        grid-column-end: 4 !important;
+        grid-row: auto / span 6;
+        justify-self: end;
+        margin-top: 0em;
+        padding-right: 3em;
+        padding-left: 2em;
+        /* border-right: 1px solid rgba(0, 0, 0, 0.1);
+        border-right-width: 1px;
+        border-right-style: solid;
+        border-right-color: rgba(0, 0, 0, 0.1); */
+        position: -webkit-sticky; /* For Safari */
+        position: sticky;
+        top: 10px; /* Adjust this value if needed */
+        overflow-y: auto;
+        height: calc(100vh - 40px);
+        scrollbar-width: none;
+        transition: max-height 0.3s ease-out;
+        z-index: -100;
+    }
+}
+
+d-contents nav h3 {
+    margin-top: 0;
+    margin-bottom: 1em;
+}
+
+d-contents nav div div {
+    color: rgba(0, 0, 0, 0.8);
+    font-weight: bold;
+}
+
+d-contents nav a {
+    color: rgba(0, 0, 0, 0.8);
+    border-bottom: none;
+    text-decoration: none;
+}
+
+d-contents li {
+    list-style-type: none;
+}
+
+d-contents ul, d-article d-contents ul {
+    padding-left: 1em;
+}
+
+d-contents nav ul li {
+    margin-bottom: .25em;
+}
+
+d-contents nav a:hover {
+    text-decoration: underline solid rgba(0, 0, 0, 0.6);
+}
+
+d-contents nav ul {
+    margin-top: 0;
+    margin-bottom: 6px;
+}
+
+
+d-contents nav > div {
+    display: block;
+    outline: none;
+    margin-bottom: 0.5em;
+}
+
+d-contents nav > div > a {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+d-article aside {
+    margin-bottom: 1em;
+}
+
+d-article img {
+    max-width: 100%;
+}
+
+@media (min-width: 768px) {
+    d-article aside {
+        margin-bottom: 0;
+    }
+}
+
+d-contents nav > div > a:hover,
+d-contents nav > ul > li > a:hover {
+    text-decoration: none;
+}
+
+.note-box {
+    background-color: #f6f8fa;
+    border-left: 4px solid #444444;
+    padding: 1rem;
+    margin: 1rem 0;  /* Keep this modest margin */
+    border-radius: 6px;
+    /* Add this to ensure the box only takes up needed space */
+    display: inline-block;
+    width: 100%;
+}
+
+.note-box-title {
+    margin: 0;
+    color: #444444;
+    font-weight: 600;
+    font-size: 1em;
+}
+
+.note-box-content {
+    margin-top: 0.5rem;
+    margin-bottom: 0;  /* Ensure no bottom margin */
+    color: #24292f;
+    font-size: 0.9em;
+    line-height: 1.5em;
+}
+
+/* For dark mode support */
+@media (prefers-color-scheme: dark) {
+    .note-box {
+        background-color: #1c1c1c;
+        border-left-color: #888888;
+    }
+    .note-box-title {
+        color: #888888;
+    }
+    .note-box-content {
+        color: #d4d4d4;
+    }
+}
+
+d-article {
+    font-size: 1.0em;
+}
+
+.figure-legend {
+    font-size: 0.9em;
+    font-style: italic;
+    color: var(--distill-gray);
+    line-height: 1.5em;
+}
+
+d-code {
+    font-size: 12px;
+}
+
+.large-image-background {
+        width: 100vw;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        margin-left: calc(-50vw + 50%);
+        margin-right: calc(-50vw + 50%);
+        background: white;
+        height: fit-content; /* This will make it match the image height */
+        display: flex;
+        justify-content: center; /* This will center your image */
+}
+
+.large-image-background-transparent {
+    /* width: 100vw; */
+    padding-top: 10px;
+    padding-bottom: 10px;
+    /* margin-left: calc(-50vw + 50%); */
+    margin-left:-100px;
+    margin-right: -100px;
+    /* margin-right: calc(-50vw + 50%); */
+    /* background: white; */
+    height: fit-content; /* This will make it match the image height */
+    display: flex;
+    justify-content: center; /* This will center your image */
+}
+
+.boxed-image {
+    padding: 0.5rem;
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+d-article li {
+    margin-bottom: 0.0em;
+}
+
+d-article ul ul {
+    margin-bottom: 0.0em;
+}
+
+d-article ol ol {
+    margin-bottom: 0.0em;
+}
+
+d-article hr {
+    grid-column: text;
+}
+
+/* Memory visualization */
+#graph-all {
+    min-width: 500px;
+    margin-right: 10px;
+    margin-bottom: 2rem;
+    padding: 0.5rem;
+    background: #f9fafb;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+
+/* Main container styles */
+#controls {
+    max-width: 1200px;
+    /* margin: 2rem auto; */
+    margin-bottom: 2rem;
+    margin-left: 10px;
+    padding: 0.6rem;
+    background: #f9fafb;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Grid layout */
+#controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    /* gap: 2rem; */
+}
+
+/* Cell styles */
+.cell {
+    margin-bottom: 0.2rem;
+}
+
+/* Label styles */
+label {
+    display: block;
+    /* margin-bottom: 0.5rem; */
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #374151;
+}
+
+/* Input container for range + number combination */
+.input-container {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+/* Range input styling */
+input[type="range"] {
+    flex: 1;
+    height: 6px;
+    background: #e5e7eb;
+    border-radius: 3px;
+    appearance: none;
+    outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background: #3b82f6;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+    background: #2563eb;
+}
+
+/* Number input styling */
+input[type="number"] {
+    width: 80px;
+    padding: 0.5rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    color: #374151;
+}
+
+/* Select styling */
+select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    background: white;
+    font-size: 0.9rem;
+    color: #374151;
+    cursor: pointer;
+}
+
+/* Checkbox styling */
+input[type="checkbox"] {
+    width: 1.2rem;
+    height: 1.2rem;
+    margin-right: 0.5rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Column specific styles */
+.column-1 {
+    padding-right: 0.5rem;
+}
+
+.column-2 {
+    padding-left: 0.5rem;
+}
+
+/* Checkbox container */
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+/* Memory visualization styles */
+.memory-block {
+    background: #fff;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.memory-title {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 0.5rem;
+}
+
+.memory-value {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #3b82f6;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    #controls {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+    }
+
+    .column-1, .column-2 {
+        padding: 0;
+    }
+}
+
+/* Hover states and transitions */
+input:hover, select:hover {
+    border-color: #3b82f6;
+}
+
+input:focus, select:focus {
+    border-color: #2563eb;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+/* Add smooth transitions */
+input, select, button {
+    transition: all 0.15s ease;
+}
+
+/* Preset dropdown special styling */
+select[name="presets"] {
+    background-color: #f3f4f6;
+    font-weight: 500;
+}
+
+/* Memory graph enhancements */
+.activation-memory {
+    background: #dbeafe;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.gradient-memory {
+    background: #ede9fe;
+    padding: 1rem;
+    border-radius: 8px;
+}
+
