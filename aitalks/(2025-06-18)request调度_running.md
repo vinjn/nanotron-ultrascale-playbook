@@ -10,21 +10,21 @@
 
 request请求首先会进入entrypoints/llm.py文件中的[LLM](https://zhida.zhihu.com/search?content_id=258861280&content_type=Article&match_order=1&q=LLM&zhida_source=entity)类中的[generate](https://zhida.zhihu.com/search?content_id=258861280&content_type=Article&match_order=1&q=generate&zhida_source=entity)方法中，执行add\_request。
 
-![](https://pic3.zhimg.com/v2-0badff029b2d135859f9410e374e6f48_1440w.jpg)
+![](images/v2-0badff029b2d135859f9410e374e6f48_1440w_9eee06e7beba.jpg)
 
 之后，遍历每一条prompt，挨个调用\_add\_request方法，在执行此方法时就会来到engine层。在engine中，会通过input\_process进行处理，获取prompts的token\_id。
 
-![](https://pic1.zhimg.com/v2-552c8cf36670180a341d60dea61513ea_1440w.jpg)
+![](images/v2-552c8cf36670180a341d60dea61513ea_1440w_9a194c7d8887.jpg)
 
 \_add\_request方法
 
-![](https://pic4.zhimg.com/v2-28fc631447766f78ecbb9eb36f149005_1440w.jpg)
+![](images/v2-28fc631447766f78ecbb9eb36f149005_1440w_597aa62ab1d1.jpg)
 
 \_add\_request由llm\_engine中的add\_request实现
 
-![](https://pic3.zhimg.com/v2-6316b5820e655fca9a7e02145cd8bdfc_1440w.jpg)
+![](images/v2-6316b5820e655fca9a7e02145cd8bdfc_1440w_be73db2a3377.jpg)
 
-![](https://pic2.zhimg.com/v2-2ff4393b952a5f4e17cd0af26606a47d_1440w.jpg)
+![](images/v2-2ff4393b952a5f4e17cd0af26606a47d_1440w_fa051c999d75.jpg)
 
 这样，一个prompt就被处理成了一个request，用于后续的scheduler和[executor](https://zhida.zhihu.com/search?content_id=258861280&content_type=Article&match_order=1&q=executor&zhida_source=entity)的调度。
 
@@ -41,7 +41,7 @@ v1的调度器不区分prefill和decode阶段，调度决策以一个简单的�
 
 主要的调度方法在：
 
-![](https://pic1.zhimg.com/v2-a33c8e6c4a8d3e3d6d13f95bbb54914c_1440w.jpg)
+![](images/v2-a33c8e6c4a8d3e3d6d13f95bbb54914c_1440w_d619ee01dd94.jpg)
 
 大概 总体的调度循环类似：
 

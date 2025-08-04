@@ -32,11 +32,11 @@ vllm\\v1\\[request.py](https://link.zhihu.com/?target=http%3A//request.py/)
 
 对于完成的请求和新请求之间的衔接是：
 
-![](https://pica.zhimg.com/v2-50b923bf9175c3d55f475afcb29c781c_1440w.jpg)
+![](images/v2-50b923bf9175c3d55f475afcb29c781c_1440w_91e545a0f89c.jpg)
 
 我发现这里有一个整理机制，因为推理过程中一个batch中可能有一些中间的seq已经完成且没有添加新的req，那么就把所有的这些都整理到batch队尾，然后整体删除：
 
-![](https://pica.zhimg.com/v2-c9878c50dd86c2e6f9253f9d6cfbd24a_1440w.jpg)
+![](images/v2-c9878c50dd86c2e6f9253f9d6cfbd24a_1440w_7d54da2afebb.jpg)
 
 vllm\\v1\\worker\\gpu\_input\_batch.py
 
@@ -118,7 +118,7 @@ def forward(self, query, key, value, kv_cache, attn_metadata):
 
 此方法会在prefill阶段和decoder阶段进行复用。
 
-![](https://pic4.zhimg.com/v2-324e4f5ad3c1d4e1c23d6afcae46aec3_1440w.jpg)
+![](images/v2-324e4f5ad3c1d4e1c23d6afcae46aec3_1440w_f9cc16069bf5.jpg)
 
 标注：
 
@@ -245,7 +245,7 @@ for kv_cache_group in kv_cache_config.kv_cache_groups:
 
 通过函数bind\_kv\_cache（）进行转化，在kv\_cache中根据便利结果开辟相关的存储空间：
 
-![](https://pic2.zhimg.com/v2-89712bcf7829d64c54aeec742a85c215_1440w.jpg)
+![](images/v2-89712bcf7829d64c54aeec742a85c215_1440w_f8fee6bfb435.jpg)
 
 转化的核心代码：
 

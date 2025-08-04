@@ -55,13 +55,13 @@ SGLang作者也是来自UCB和Stanford的团队的青年才俊，很多人都是
 
 SGLang采用了编译器方式的设计。当输入和输出是多对多的，就有很多Lazy方式来优化调度的空间，这就很自然的映射到编译器设计，可以分frontend和backend两部分。
 
-![](https://pic4.zhimg.com/v2-3592cbae899d45f449577807ed914b8f_1440w.jpg)
+![](images/v2-3592cbae899d45f449577807ed914b8f_1440w_b7d134c5862f.jpg)
 
 前端定义一种DSL，嵌入在Python中。下图展示了一个使用分支-解决-合并提示方法评估关于图像的论文的LLM Program。函数multi\_dimensional\_judge接受三个参数：s、path和essay。s管理提示状态，path是图像文件路径，essay是论文文本。可以使用+=操作符将新字符串和SGLang原语附加到状态s中以供执行。首先，函数将图像和论文添加到提示中。然后，它使用select检查论文是否与图像相关，并将结果存储在s\["related"\]中。如果相关，提示会分成三个副本进行不同维度的并行评估，使用gen将结果存储在f\["judgment"\]中。接着，它合并判断结果，生成总结，并评分ABCD。最后，它按照正则表达式约束regex定义的模式，以JSON格式返回结果。
 
 SGLang后端执行时极大地简化了这一程序，如果使用类似OpenAI API的接口编写等效程序需要多出2.1倍的代码。
 
-![](https://pic1.zhimg.com/v2-a677137c3fab4013c4240be5f4dd567e_1440w.jpg)
+![](images/v2-a677137c3fab4013c4240be5f4dd567e_1440w_c68105e7e658.jpg)
 
 SGLang的后端Runtime有三个核心创新优化点，我下面分别介绍：
 
@@ -71,7 +71,7 @@ SGLang的后端Runtime有三个核心创新优化点，我下面分别介绍：
 
   
 
-![](https://pica.zhimg.com/v2-05961f2a5d95d1d5e7fc5a2996227fb2_1440w.jpg)
+![](images/v2-05961f2a5d95d1d5e7fc5a2996227fb2_1440w_02cc865ebd0b.jpg)
 
 SGLang V1版本论文就提出了RadixAttention，这是一种在运行时自动和系统化重用KVCache的新技术。与现有系统在生成请求完成后丢弃KV缓存不同，我们的系统在RadixTree中保留prompt和生成结果的KVCache，实现高效的前缀搜索、重用、插入和驱逐。SGLang用LRU驱逐策略和缓存感知调度策略，以提高缓存命中率。
 
@@ -89,7 +89,7 @@ Constrained Decoding我去年也有关注，微软的[Guidance](https://link.zhi
 
 SGLang通过创建一个带有压缩FSM的快速约束解码运行时来克服这一限制。该运行时分析FSM并将FSM中相邻的单一转换边压缩为单一边，如图Figure（b）所示，使其能够识别何时可以一起解码多个token。在Figure 4（d）中，压缩转换边上的多个token可以在一次前向传递中解码，这大大加速了解码过程。它也是通用的，适用于所有正则表达式。
 
-![](https://pica.zhimg.com/v2-84c2c532eb1508e5e438aea131a2ef2a_1440w.jpg)
+![](images/v2-84c2c532eb1508e5e438aea131a2ef2a_1440w_60924a7a3b65.jpg)
 
 ### 3\. Efficient Endpoint Calling with API Speculative Execution
 
@@ -107,7 +107,7 @@ SGLang通过创建一个带有压缩FSM的快速约束解码运行时来克服�
 
 [Achieving Faster Open-Source Llama3 Serving with SGLang Runtime (vs. TensorRT-LLM, vLLM) | LMSYS Org](https://link.zhihu.com/?target=https%3A//lmsys.org/blog/2024-07-25-sglang-llama3/)
 
-![](https://picx.zhimg.com/v2-3b2fd5d2f20c441e1bbcb195a85a2a01_1440w.jpg)
+![](images/v2-3b2fd5d2f20c441e1bbcb195a85a2a01_1440w_6cac1fb11b6f.jpg)
 
 ## 总结
 

@@ -76,7 +76,7 @@ Triton作者[Tillet](https://link.zhihu.com/?target=https%3A//github.com/ptillet
 
   
 
-![](https://pic1.zhimg.com/v2-e3881beb71a1dd510055bd41b93126fc_1440w.jpg)
+![](images/v2-e3881beb71a1dd510055bd41b93126fc_1440w_b97394794edd.jpg)
 
   
 
@@ -84,7 +84,7 @@ Triton作者[Tillet](https://link.zhihu.com/?target=https%3A//github.com/ptillet
 
 Triton能很轻松得写出性能不错的kernel，在矩阵乘的kernel上你能很轻松得用上tma，对比native的CUDA kernel，可以在B200上获得_近5倍_的加速。[matmul.cu](https://link.zhihu.com/?target=https%3A//github.com/OpenMLIR/LeetGPU/blob/52cb480f4427ab7c38e715850656ca57b05fde01/02-matrix-multiplication/CUDA/native.cu) vs [matmul-with-tma.py](https://link.zhihu.com/?target=https%3A//github.com/OpenMLIR/LeetGPU/blob/52cb480f4427ab7c38e715850656ca57b05fde01/02-matrix-multiplication/Triton/use_tma.py) **2025.6.29更 不止5倍，**这里搞了个大乌龙，因为input\_precision="ieee" 还是**fma**，这是fma**被展开**的性能。
 
-![](https://pic3.zhimg.com/v2-3772e1555a026a1d5ca1286a6d02bab4_1440w.jpg)
+![](images/v2-3772e1555a026a1d5ca1286a6d02bab4_1440w_89875da1ba89.jpg)
 
   
 
@@ -149,7 +149,7 @@ Python还能为用户带来什么呢，Nvidia不得不暴露一些interface出�
 
 基于[TVM](https://zhida.zhihu.com/search?content_id=259380445&content_type=Article&match_order=1&q=TVM&zhida_source=entity)的thread级别的primitives(原语)，有如下三种编程接口。
 
-![](https://pic4.zhimg.com/v2-cecdc6046001f4e8266135b2ec817e3b_1440w.jpg)
+![](images/v2-cecdc6046001f4e8266135b2ec817e3b_1440w_90f24d3cb865.jpg)
 
   
 
@@ -193,13 +193,13 @@ Tiramisu 受到 Halide 启发，但设计目标更偏向多层嵌套循环、复
 
 准备阻击 Triton 的DSL，对标Triton。Vendor比用户更容易拿到性能，估计不会开源。
 
-![](https://pic3.zhimg.com/v2-14c354948222132dc90c27e6352416e4_1440w.jpg)
+![](images/v2-14c354948222132dc90c27e6352416e4_1440w_4f61554cdcfe.jpg)
 
   
 
 cuTile 软件设计
 
-![](https://pic1.zhimg.com/v2-dfcbbabe781298abe6b032d5ae801890_1440w.jpg)
+![](images/v2-dfcbbabe781298abe6b032d5ae801890_1440w_7ce879fa4435.jpg)
 
   
 
@@ -212,7 +212,7 @@ cuTile 软件设计
 ###   
 **1、flash\_attention**
 
-![](https://pic2.zhimg.com/v2-292a6c96f748ccb5de5d5f6e5b4cb0cb_1440w.jpg)
+![](images/v2-292a6c96f748ccb5de5d5f6e5b4cb0cb_1440w_f949dfdc9698.jpg)
 
 说明：
 
@@ -224,7 +224,7 @@ sdpa：torch.nn.functional.scaled\_dot\_product\_attention（现代版本 PyTorc
 
 flash\_attention\_v3 应该还没针对h20做优化，当然h20的计算能力本来就弱。下图是评论区小伙伴在H100的bench。
 
-![](https://pic2.zhimg.com/v2-3de67c21c0a9ee1b0944bf6da0aa82bf_1440w.jpg)
+![](images/v2-3de67c21c0a9ee1b0944bf6da0aa82bf_1440w_3c9e2b775d09.jpg)
 
 是不是硬件变多了根本来不及优化啊，当然h20是国内特供，肯定有闭源的性能好的。另外Tri dao大概已经在做Blackwell的优化了，这个组的人是真的喜欢写kernel。
 
@@ -232,31 +232,31 @@ flash\_attention\_v3 应该还没针对h20做优化，当然h20的计算能力�
 
 针对(256, 256, 256)的shape
 
-![](https://picx.zhimg.com/v2-cfc3a6566a71f0d36a87c7159309bf87_1440w.jpg)
+![](images/v2-cfc3a6566a71f0d36a87c7159309bf87_1440w_3850b7f0ea5d.jpg)
 
 ### 3、fp8gemm
 
-![](https://pic4.zhimg.com/v2-da875e4aaa49b7aab3c38b71a9271c0d_1440w.jpg)
+![](images/v2-da875e4aaa49b7aab3c38b71a9271c0d_1440w_00d83c458289.jpg)
 
-![](https://picx.zhimg.com/v2-d3674641cd1c5c94cf14b68797589b61_1440w.jpg)
+![](images/v2-d3674641cd1c5c94cf14b68797589b61_1440w_01fe336fb9d8.jpg)
 
 ### 4、int4\_gemm
 
-![](https://picx.zhimg.com/v2-5b2bde291f66b9e4716589d7c59ed563_1440w.jpg)
+![](images/v2-5b2bde291f66b9e4716589d7c59ed563_1440w_79c684096ed1.jpg)
 
-![](https://pic1.zhimg.com/v2-cee90eb6bc059a9b2d01a5f9355f86f4_1440w.jpg)
+![](images/v2-cee90eb6bc059a9b2d01a5f9355f86f4_1440w_f10cc8a5f36f.jpg)
 
 ### 5、layer\_norm
 
-![](https://pic1.zhimg.com/v2-a8364a026c769f785abe6bb1ee866dbc_1440w.jpg)
+![](images/v2-a8364a026c769f785abe6bb1ee866dbc_1440w_405333df8c08.jpg)
 
 ### 6、softmax
 
-![](https://pic3.zhimg.com/v2-9fbd2ea47d65ccbb6ad942f2af0efc60_1440w.jpg)
+![](images/v2-9fbd2ea47d65ccbb6ad942f2af0efc60_1440w_71c165e686a3.jpg)
 
 ### 7、Triton launch\_latency
 
-![](https://pic2.zhimg.com/v2-af530bff2eed2df8ce813d832c12ce6f_1440w.jpg)
+![](images/v2-af530bff2eed2df8ce813d832c12ce6f_1440w_f040883e2781.jpg)
 
 ### 附录
 

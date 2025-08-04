@@ -12,7 +12,7 @@
 
 此方法会在prefill阶段和decoder阶段进行复用。
 
-![](https://pic4.zhimg.com/v2-324e4f5ad3c1d4e1c23d6afcae46aec3_1440w.jpg)
+![](images/v2-324e4f5ad3c1d4e1c23d6afcae46aec3_1440w_f9cc16069bf5.jpg)
 
 标注：
 

@@ -43,11 +43,11 @@ grid = lambda META: (
 
 EM = M \* top\_k，网格大小与 top\_k 成正比，增加 top\_k 直接增加并行块数量，提升并行效率。
 
-![](https://pic4.zhimg.com/v2-87586d78dfab23a8c197b7ecb6828731_1440w.jpg)
+![](images/v2-87586d78dfab23a8c197b7ecb6828731_1440w_71874c5b8faf.jpg)
 
 trition修饰器用于读取trition的配置
 
-![](https://pic3.zhimg.com/v2-d15af1d52e61399dfce0b44c9d4b8b86_1440w.jpg)
+![](images/v2-d15af1d52e61399dfce0b44c9d4b8b86_1440w_3d486f91b63a.jpg)
 
 加入\[grid\]执行trition的配置
 

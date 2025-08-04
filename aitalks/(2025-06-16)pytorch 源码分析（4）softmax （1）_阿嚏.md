@@ -384,7 +384,7 @@ max\_value\[i\] = max\_value\[i\] > elements\[i\]\[it\] ? max\_value\[i\] : elem
 
 下面就是算exp后总和，和上面逻辑差不多，这里主要记录一下log\_softmax, 就是在softmax基础上加个Log，防止溢出，而且计算方便，从算法原理上没有太大区别
 
-![](https://pic2.zhimg.com/v2-49d85c504cdee2999a30d16f3454bc67_1440w.jpg)
+![](images/v2-49d85c504cdee2999a30d16f3454bc67_1440w_0356e76751ad.jpg)
 
 https://www.zhihu.com/question/358069078
 

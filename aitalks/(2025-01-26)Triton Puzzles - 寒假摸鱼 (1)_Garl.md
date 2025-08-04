@@ -8,7 +8,7 @@
 
 Cornell Tech 的 [Sasha Rush 教授](https://link.zhihu.com/?target=https%3A//rush-nlp.com/) 有7个puzzle (triton, [llm training](https://zhida.zhihu.com/search?content_id=253076219&content_type=Article&match_order=1&q=llm+training&zhida_source=entity), [transformer](https://zhida.zhihu.com/search?content_id=253076219&content_type=Article&match_order=1&q=transformer&zhida_source=entity), etc.)。我挑了其中的
 
-[![](https://pic4.zhimg.com/v2-838cf2a3e8eaddd7b3d275e0c3e8a25b_ipico.jpg)GitHub - srush/Triton-Puzzles: Puzzles for learning Triton​github.com/srush/Triton-Puzzles/](https://link.zhihu.com/?target=https%3A//github.com/srush/Triton-Puzzles/)
+[![](images/v2-838cf2a3e8eaddd7b3d275e0c3e8a25b_ipico_d41defb22071.jpg)GitHub - srush/Triton-Puzzles: Puzzles for learning Triton​github.com/srush/Triton-Puzzles/](https://link.zhihu.com/?target=https%3A//github.com/srush/Triton-Puzzles/)
 
 和 [LLM Training Puzzles](https://link.zhihu.com/?target=https%3A//github.com/srush/LLM-Training-Puzzles/tree/main) 来学习（摸鱼）一下。
 
@@ -35,13 +35,13 @@ Cornell Tech 的 [Sasha Rush 教授](https://link.zhihu.com/?target=https%3A//ru
 
 ## Puzzle 1
 
-![](https://pic2.zhimg.com/v2-682fb22a80d13c6f8f346f5c9e622297_1440w.jpg)
+![](images/v2-682fb22a80d13c6f8f346f5c9e622297_1440w_c38719685e1b.jpg)
 
 注意这里 block size B0 和 vector size N0 一样
 
 ### PyTorch Ref Impl
 
-![](https://pic3.zhimg.com/v2-76d5a471cd58c5a32d85315c8f883420_1440w.jpg)
+![](images/v2-76d5a471cd58c5a32d85315c8f883420_1440w_4732f54bd5d5.jpg)
 
 ### [Triton Kernel Impl](https://zhida.zhihu.com/search?content_id=253076219&content_type=Article&match_order=1&q=Triton+Kernel+Impl&zhida_source=entity)
 
@@ -49,7 +49,7 @@ Cornell Tech 的 [Sasha Rush 教授](https://link.zhihu.com/?target=https%3A//ru
 
 （我看不懂为什么还需要一个 program id axis，在 B0 = N0 的情况下）
 
-![](https://picx.zhimg.com/v2-ea79b60872f83cabe835f34d27526387_1440w.jpg)
+![](images/v2-ea79b60872f83cabe835f34d27526387_1440w_183cbeb11ffc.jpg)
 
   
 
@@ -57,7 +57,7 @@ Cornell Tech 的 [Sasha Rush 教授](https://link.zhihu.com/?target=https%3A//ru
 
 ## Puzzle 2
 
-![](https://pica.zhimg.com/v2-a0eb48c4053521d9311f9afe539b2b52_1440w.jpg)
+![](images/v2-a0eb48c4053521d9311f9afe539b2b52_1440w_da0abd95e0d4.jpg)
 
 这里 B0 &lt; N0，我们要创建一个一维的 thread block
 
@@ -67,7 +67,7 @@ Cornell Tech 的 [Sasha Rush 教授](https://link.zhihu.com/?target=https%3A//ru
 
 每个thread读取 x\_ptr 时 加一个 pid \* B0 loading offset 就行。
 
-![](https://pica.zhimg.com/v2-f814193de15fd98fe993b75b492e6a88_1440w.jpg)
+![](images/v2-f814193de15fd98fe993b75b492e6a88_1440w_4aa9d779021e.jpg)
 
 PyTorch Ref Impl 和第一题一样，这里每个thread 要加上 pid \* B0
 
@@ -77,13 +77,13 @@ PyTorch Ref Impl 和第一题一样，这里每个thread 要加上 pid \* B0
 
 ## Puzzle 3
 
-![](https://picx.zhimg.com/v2-db015e530805229fd0f070aed625b2ad_1440w.jpg)
+![](images/v2-db015e530805229fd0f070aed625b2ad_1440w_72c0d8a78000.jpg)
 
 注意这里是类似于 outer product 的形式，然后 B0=N0, B1=N1
 
 ### PyTorch
 
-![](https://picx.zhimg.com/v2-7384a503127927e95fd3fb1868997247_1440w.jpg)
+![](images/v2-7384a503127927e95fd3fb1868997247_1440w_6b061d0819d5.jpg)
 
 这里是类似于 外积，不过 x 在 column, y 在 row。我把原题的 32 32 改成了 64 32 以更好的显示出 x 和 y 的区别
 
@@ -93,7 +93,7 @@ PyTorch Ref Impl 和第一题一样，这里每个thread 要加上 pid \* B0
 
 注意 z 的 stride 是 (N0, 1)
 
-![](https://pic4.zhimg.com/v2-3e1d1ccc0737a5b33bad9801045e2191_1440w.jpg)
+![](images/v2-3e1d1ccc0737a5b33bad9801045e2191_1440w_4dffb8bc6220.jpg)
 
 如图所示
 
@@ -103,13 +103,13 @@ PyTorch Ref Impl 和第一题一样，这里每个thread 要加上 pid \* B0
 
 ## Puzzle 4
 
-![](https://pic3.zhimg.com/v2-f809c9f131125d3b35ed26c37b0f9bb4_1440w.jpg)
+![](images/v2-f809c9f131125d3b35ed26c37b0f9bb4_1440w_eb3bf149df96.jpg)
 
 这道题和 Puzzle 3 的区别是 B0 &lt; N0, B1 &lt; N1，然后我们要用两个 thread block axis
 
 ### Triton
 
-![](https://pic3.zhimg.com/v2-8b3e1acc76a5c42dc1a9151d243ad7ec_1440w.jpg)
+![](images/v2-8b3e1acc76a5c42dc1a9151d243ad7ec_1440w_6aba6f62714c.jpg)
 
 和前一道题的唯一区别是 我们在读 x 和 y 的时候 要按各自的 thread block axis 多算一个offset，挺公式化的
 
@@ -119,13 +119,13 @@ PyTorch Ref Impl 和第一题一样，这里每个thread 要加上 pid \* B0
 
 ## Puzzle 5
 
-![](https://pica.zhimg.com/v2-acccdb6606572cc4b41c83e530c47de2_1440w.jpg)
+![](images/v2-acccdb6606572cc4b41c83e530c47de2_1440w_c49547eed689.jpg)
 
 和 Puzzle 4 的唯一区别是 x + y 变成了 relu(x \* y)
 
 ### Triton
 
-![](https://pic2.zhimg.com/v2-5ce95434e3201e7aa65a15cd72a2142d_1440w.jpg)
+![](images/v2-5ce95434e3201e7aa65a15cd72a2142d_1440w_bc7b87ee362f.jpg)
 
 我们只需要相应地改变 最后一行 计算的一步 就行
 
@@ -135,25 +135,25 @@ PyTorch Ref Impl 和第一题一样，这里每个thread 要加上 pid \* B0
 
 ## Puzzle 6
 
-![](https://picx.zhimg.com/v2-075a3f90a69c9952dd9cfc48bfe78b75_1440w.jpg)
+![](images/v2-075a3f90a69c9952dd9cfc48bfe78b75_1440w_033eb3a5776c.jpg)
 
 我们要算 dx，注意这里 X: (N1, N0), Y: (N1), Z: (N1, N0)
 
 ### PyTorch
 
-![](https://pic2.zhimg.com/v2-1bc38b06a7666c9570647ae21b8fb575_1440w.jpg)
+![](images/v2-1bc38b06a7666c9570647ae21b8fb575_1440w_7c53153491a5.jpg)
 
 PyTorch的实现比较清晰，但要注意 row, col 在这里分别对应 N1, N0 (这个写法确实很怪，但下面的函数调用是这样要求的）
 
 PS: 我当时卡在这里20分钟琢磨为啥 (N0, N1) 的写法不work，才发现这里其实是 (N1, N0)
 
-![](https://pica.zhimg.com/v2-ab8c5ea085ae3b17101bbc6cfce93940_1440w.jpg)
+![](images/v2-ab8c5ea085ae3b17101bbc6cfce93940_1440w_881e65bfe321.jpg)
 
 可以看出 X: (90, 100) 对应 (N1, N0)
 
 ### Triton
 
-![](https://picx.zhimg.com/v2-2fbfbe58c113d6496cdc36c9f8094aab_1440w.jpg)
+![](images/v2-2fbfbe58c113d6496cdc36c9f8094aab_1440w_5d8a7d734ee6.jpg)
 
 关键的计算步 tl.where 直接解决，其他的 load & store 和 Puzzle 5 类似
 
@@ -163,19 +163,19 @@ PS: 我当时卡在这里20分钟琢磨为啥 (N0, N1) 的写法不work，才发
 
 ## Puzzle 7
 
-![](https://pic2.zhimg.com/v2-d02b941bf0ef720b9de24578bfc423a3_1440w.jpg)
+![](images/v2-d02b941bf0ef720b9de24578bfc423a3_1440w_7b6da716c2a9.jpg)
 
 1维grid，要实现 .sum(dim=1)
 
 ### PyTorch
 
-![](https://picx.zhimg.com/v2-aac7c89a4c74b832a0bc309b7183a76f_1440w.jpg)
+![](images/v2-aac7c89a4c74b832a0bc309b7183a76f_1440w_7f2141c28307.jpg)
 
 ### Triton
 
 我们需要循环读 ceil(T/B1) 个 column block，每次读 (B0, B1) 个元素然后累加到 acc (B0) 最后写回 z 就行
 
-![](https://pica.zhimg.com/v2-bfb68b7df42ea74389b31bdb0445ae68_1440w.jpg)
+![](images/v2-bfb68b7df42ea74389b31bdb0445ae68_1440w_34a1e5f93fcb.jpg)
 
 acc: (B0,), 每次读 (B0, B1) 个 x 元素并写入结果到 acc，循环的时候算好 col\_mask 就行
 
@@ -185,13 +185,13 @@ acc: (B0,), 每次读 (B0, B1) 个 x 元素并写入结果到 acc，循环的时
 
 ## Puzzle 8
 
-![](https://pic3.zhimg.com/v2-0151f22c2bd9d231c8856286eadde1d0_1440w.jpg)
+![](images/v2-0151f22c2bd9d231c8856286eadde1d0_1440w_8c1aa5bd0e43.jpg)
 
 这里用两次 loop 要用到 online softmax trick
 
 ### PyTorch
 
-![](https://pic1.zhimg.com/v2-58bd11bcf11991d24e8203b1b1dbee0c_1440w.jpg)
+![](images/v2-58bd11bcf11991d24e8203b1b1dbee0c_1440w_39daa2d4cccb.jpg)
 
 标准的 numerically stable softmax: 为了数值稳定性在算 exp(x) 前 分子分母同时减掉 max(x, dim=1)
 
@@ -205,19 +205,19 @@ acc: (B0,), 每次读 (B0, B1) 个 x 元素并写入结果到 acc，循环的时
 
 伪代码长这样
 
-![](https://pic1.zhimg.com/v2-5fca39220268e4bab82df387aa484156_1440w.jpg)
+![](images/v2-5fca39220268e4bab82df387aa484156_1440w_dad375601e00.jpg)
 
 我们要破局的关键在于把 loop1 和 loop2 合并起来，“动态地”计算 safe row\_sum\_exp
 
 这里我们参考 [online softmax](https://link.zhihu.com/?target=https%3A//arxiv.org/pdf/1805.02867)
 
-![](https://pica.zhimg.com/v2-6385b293cc6182f375cc92667747ad6a_1440w.jpg)
+![](images/v2-6385b293cc6182f375cc92667747ad6a_1440w_79c704ae2843.jpg)
 
 破局关键：第一次循环的时候 用新的 row\_max 来更新旧的 row\_sum\_exp
 
 解法其实挺直接的
 
-![](https://picx.zhimg.com/v2-f811e3e5493c267f4bd2a7b517cffacd_1440w.jpg)
+![](images/v2-f811e3e5493c267f4bd2a7b517cffacd_1440w_85342e3356fe.jpg)
 
 最关键的就 Loop 1 的 online update of row\_sum\_exp 这一行，然后 Loop 2 算算softmax结果就行
 
@@ -227,19 +227,19 @@ acc: (B0,), 每次读 (B0, B1) 个 x 元素并写入结果到 acc，循环的时
 
 ## Puzzle 9
 
-![](https://pic4.zhimg.com/v2-48b33ef4afd5e2cc152a6db8cfe273c9_1440w.jpg)
+![](images/v2-48b33ef4afd5e2cc152a6db8cfe273c9_1440w_8ec95c5cdb06.jpg)
 
 老板的FA1终极简化版lol，这里我们要用单线程，然后顺序遍历整个 sequence 来算 attention （不包含O）。同时 embed dim = 1
 
 ### PyTorch
 
-![](https://pic1.zhimg.com/v2-f869840201aa1cddfed9fbc2ff43fbf4_1440w.jpg)
+![](images/v2-f869840201aa1cddfed9fbc2ff43fbf4_1440w_92c09dc1432c.jpg)
 
 简化版的FA1: 注意这里 q k v 是 (T) 向量而不是 (T, d) 矩阵
 
 ### Triton
 
-![](https://pic3.zhimg.com/v2-bfc19b42f5985986ea4684b56aae1c26_1440w.jpg)
+![](images/v2-bfc19b42f5985986ea4684b56aae1c26_1440w_bbf01d629caf.jpg)
 
 把 row\_qkv\_sum 的在线更新搞对就行，最后直接写回 z。其他的基本照抄 pytorch 版本就行了lol
 
@@ -247,7 +247,7 @@ acc: (B0,), 每次读 (B0, B1) 个 x 元素并写入结果到 acc，循环的时
 
 ## Puzzle 10
 
-![](https://pica.zhimg.com/v2-319f971ea3262dbe08cdef537b9ca336_1440w.jpg)
+![](images/v2-319f971ea3262dbe08cdef537b9ca336_1440w_9b18fd9e278a.jpg)
 
 2D Convolution，其中 #channel = 1。一维 grid 实现 data-parallel (batching)
 
@@ -259,13 +259,13 @@ acc: (B0,), 每次读 (B0, B1) 个 x 元素并写入结果到 acc，循环的时
 
 ### PyTorch
 
-![](https://pic2.zhimg.com/v2-e4b1b527e1aac00c9818f290bc1e6017_1440w.jpg)
+![](images/v2-e4b1b527e1aac00c9818f290bc1e6017_1440w_68adcb6a2c3a.jpg)
 
 注意 PyTorch 实现需要 padding，但 triton 直接 tl.load(..., other=0) 可以解决
 
 ### Triton
 
-![](https://pica.zhimg.com/v2-5d0282bfaf65a936947f93eb5a3ff496_1440w.jpg)
+![](images/v2-5d0282bfaf65a936947f93eb5a3ff496_1440w_92c41e03877b.jpg)
 
 这里 tl.make\_block\_ptr 可以更易懂，关键在于 (1) 几处 loading 的 offset 算对 (2) padding 通过正确的 mask + other=0 解决
 
@@ -277,7 +277,7 @@ acc: (B0,), 每次读 (B0, B1) 个 x 元素并写入结果到 acc，循环的时
 
 PS: 这道题我花了3小时。我第一次写的时候手动画了一个 (2, 2, 2) @ (2, 2, 2) 的矩阵乘法来手动验证所有indices是否正确 最有耐心的一集
 
-![](https://picx.zhimg.com/v2-94eb3c031ed62fb625bec1c801899239_1440w.jpg)
+![](images/v2-94eb3c031ed62fb625bec1c801899239_1440w_c80f82866a51.jpg)
 
 矩阵乘法（这里是 BMM）我们先回顾一下 triton tutorials 的部分
 
@@ -290,7 +290,7 @@ PS: 这道题我花了3小时。我第一次写的时候手动画了一个 (2, 2
 -   我们用一个loop来遍历 MID，每次累加到一个 acc 里面。这是 红色箭头 的意思（真正要实现的）。
 -   我们对 batch, x\_row, y\_col 来并行，这是 蓝色箭头的意思。
 
-![](https://pic3.zhimg.com/v2-28a0b84cae9033f38e90b817ad0bb96a_1440w.jpg)
+![](images/v2-28a0b84cae9033f38e90b817ad0bb96a_1440w_2a86ea9cfe9e.jpg)
 
 给定 3维grid (batch, x\_row, y\_col)，我们只需一个loop来遍历 MID，如图中的红色箭头的移动方向 并且累加到 C 就行
 
@@ -310,7 +310,7 @@ PS: 这道题我花了3小时。我第一次写的时候手动画了一个 (2, 2
 
 ### Triton
 
-![](https://picx.zhimg.com/v2-f97be06957b62f27ef0dd29167367bef_1440w.jpg)
+![](images/v2-f97be06957b62f27ef0dd29167367bef_1440w_94c108b8c508.jpg)
 
 tl.make\_block\_ptr 应该会简化不少。这道题想明白 我要读什么，我要怎么遍历 （上面的红色蓝色箭头）就迎刃而解了
 
@@ -332,7 +332,7 @@ PS：这道题我花了3小时，其中 2.5 小时在算/检查 indices 有无�
 
 **注意** 这道题的 PyTorch ref impl 我修改成了更普遍的情况（因为原先 MID = 64 = 8 group of 8，我改成了 MID = 128 = 16 group of 8）这样 # group in mid 16 != group size 8
 
-![](https://pic4.zhimg.com/v2-a30d174b576029cd03da7f965c471eb3_1440w.jpg)
+![](images/v2-a30d174b576029cd03da7f965c471eb3_1440w_a6918c7b2cfa.jpg)
 
 我们要实现 MM (W @ A)，不过 W 是 Int4，我们要先 dequantize 到 FP32
 
@@ -350,7 +350,7 @@ W 是沿着 col (mid) 进行的 uniform int4 quant.
 
 很直观
 
-![](https://pica.zhimg.com/v2-2764fd3147c60970cbf7612275581b92_1440w.jpg)
+![](images/v2-2764fd3147c60970cbf7612275581b92_1440w_f7d03ee330e2.jpg)
 
 我第一次读也花了点时间，不过其实挺直观的
 
@@ -358,7 +358,7 @@ W 是沿着 col (mid) 进行的 uniform int4 quant.
 
 具体的分析懒得写了 白纸上走一遍流程就行，写起来都是些很无聊的代码。
 
-![](https://pic1.zhimg.com/v2-da8b30d3085fd6ff613b106d92d4d96a_1440w.jpg)
+![](images/v2-da8b30d3085fd6ff613b106d92d4d96a_1440w_cdcae35880d3.jpg)
 
 大部分代码在算正确的indices，少部分才是核心的 dequantize，最后一行才是 W @ A
 

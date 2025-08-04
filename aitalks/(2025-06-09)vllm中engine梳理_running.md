@@ -8,19 +8,19 @@
 
 参考：[BoLi2001：vLLM V1 源码阅读](https://zhuanlan.zhihu.com/p/32045324831)
 
-![](https://pic1.zhimg.com/v2-6c6438d4ed3b27fb3479dd594b12814c_1440w.jpg)
+![](images/v2-6c6438d4ed3b27fb3479dd594b12814c_1440w_097e2cd5069a.jpg)
 
 上图比较清晰的反映了vllm中在实例化引擎时需要进行处理的类，由于嵌套比较多，有个还是选择性的，所以很容易混乱，[BoLi2001：vLLM V1 源码阅读](https://zhuanlan.zhihu.com/p/32045324831)中得图罗列的比较清晰，很清楚，方便理解engine建立时需要用到的主要的类以及他们的嵌套关系。
 
 在V1中，scheduler实例化的地方在engine实例化时实现，入口：vllm\\v1\\engine\\[core.py](https://link.zhihu.com/?target=http%3A//core.py/)文件中的EngineCore类
 
-![](https://pic2.zhimg.com/v2-81f7adb25186b6813b22b576cbf81e29_1440w.jpg)
+![](images/v2-81f7adb25186b6813b22b576cbf81e29_1440w_3a55a499bf6d.jpg)
 
 注意此处使用的是v1的scheduler不是v0的scheduler （vllm\\v1\\core\\sched\\scheduler.py）
 
 逻辑关系，EngineCore中维护了scheduler调度工具，scheduler中定义了kv\_cache管理工具。
 
-![](https://pic1.zhimg.com/v2-a10a99faa5467e9f33605aca4833bfbe_1440w.jpg)
+![](images/v2-a10a99faa5467e9f33605aca4833bfbe_1440w_58e8f6364298.jpg)
 
 V1调度器相比之前的调度器有一个转变**：**
 
@@ -55,7 +55,7 @@ class Scheduler(SchedulerInterface):
 
 调度的主体：
 
-![](https://picx.zhimg.com/v2-3cd1dc6c66e243f5a7410986a7acf377_1440w.jpg)
+![](images/v2-3cd1dc6c66e243f5a7410986a7acf377_1440w_bea7a0a75cbb.jpg)
 
 schedule（）方法设定了调度的主体。  
 

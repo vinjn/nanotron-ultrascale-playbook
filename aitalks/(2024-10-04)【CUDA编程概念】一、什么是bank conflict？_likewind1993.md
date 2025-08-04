@@ -41,7 +41,7 @@ $Bank Index = （addr / BankSize）\% BankNum（32）$
 
 所以，Bank中的数据是分层组织的，借用[CUDA Shared Memory](https://link.zhihu.com/?target=https%3A//www.cnblogs.com/1024incn/p/4605502.html)这篇博客中的图来做个示意（图中BankSize = 4Byte），在这种情况下，**Bank0的实际大小是 4Byte \* 层数**
 
-![](https://pic1.zhimg.com/v2-7cb74504a5c7b81130bc6ad4d562220c_1440w.jpg)
+![](images/v2-7cb74504a5c7b81130bc6ad4d562220c_1440w_aa386127ef35.jpg)
 
   
 
@@ -62,7 +62,7 @@ $Bank Index = （addr / BankSize）\% BankNum（32）$
 
   
 
-![](https://pica.zhimg.com/v2-bda838be655464250983e4b723c2f1be_1440w.jpg)
+![](images/v2-bda838be655464250983e4b723c2f1be_1440w_89e755d7f33d.jpg)
 
 这里有个问题，当不同线程读写同一个Bank中的数据时，会发生什么？
 
@@ -91,7 +91,7 @@ $Bank Index = （addr / BankSize）\% BankNum（32）$
 
 依据Bank Conflict 的定义以及BroadCast的触发条件 来看，该图中的左/中/右三种访问形式，**均没有“Bank Conflict”情况**
 
-![](https://picx.zhimg.com/v2-58cf88e53e0c0501b51d320ddc1927a1_1440w.jpg)
+![](images/v2-58cf88e53e0c0501b51d320ddc1927a1_1440w_bb3dd6ec1274.jpg)
 
   
 
