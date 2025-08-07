@@ -8,11 +8,11 @@ By Dylan Patel, Daniel Nishball, AJ Kourabi and Reyk Knuhtsen
 
 There has been an increasing amount of fear, uncertainty and doubt (FUD) regarding AI Scaling laws. A cavalcade of [part-time AI industry prognosticators](https://www.youtube.com/watch?v=AqwSZEQkknU) have latched on to any bearish narrative they can find, declaring the end of scaling laws that have driven the rapid improvement in Large Language Model (LLM) capabilities in the last few years. Journalists have joined the dogpile and have supported these narratives, armed with [noisy leaks filled with vague information](https://www.bloomberg.com/news/articles/2024-11-13/openai-google-and-anthropic-are-struggling-to-build-more-advanced-ai) around the [failure of models to scale successfully](https://www.ft.com/content/f24ba8d5-4c33-47ef-a91e-8f76340b08c4) due to alleged underperformance. Other skeptics point to saturated benchmarks, with newer models showing little sign of improvement said benchmarks. Critics also point to the exhaustion of available training data and slowing hardware scaling for training.
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2024/12/0-hugging-face-evals.png?resize=704%2C450&ssl=1)
+![](images/0-hugging-face-evals_fd4d14077f74.png)
 
 Despite this angst, large AI Labs and hyperscalers’ accelerating datacenter buildouts and capital expenditure speaks for itself. From Amazon investing considerable sums to accelerate its [Trainium2 custom silicon](https://semianalysis.com/2024/12/03/amazons-ai-self-sufficiency-trainium2-architecture-networking/) and preparing [400k chips for Anthropic](https://semianalysis.com/2024/12/03/amazons-ai-self-sufficiency-trainium2-architecture-networking/) at an estimated cost of $6.5B in total IT and datacenter investment, to [Meta’s 2GW datacenter plans for 2026 in Louisiana](https://semianalysis.com/datacenter-industry-model/), [to OpenAI and Google’s aggressive multi-datacenter training plans to overcome single-site power limitations](https://semianalysis.com/2024/09/04/multi-datacenter-training-openais/) – key decision makers appear to be unwavering in their conviction that scaling laws are alive and well. Why?
 
-[![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2024/11/b53514eb-a47a-494d-923d-bd6bf065404a_1792x1024.webp?fit=300%2C171&ssl=1)
+[![](images/b53514eb-a47a-494d-923d-bd6bf065404a_1792x1024_84e51eebe4c0.webp)
 
 Sep 04, 2024
 
@@ -36,19 +36,19 @@ Scaling Sings Odes to the Greatest Scaling Law of Computing, Moore’s Law
 
 Today’s debate on AI scaling laws is not dissimilar to the decades-long debate around compute scaling and Moore’s law. Anyone who tries to measure CPU compute primarily by clock speed – a common metric used before the late 2000s around the time of the [end of Dennard Scaling](https://www.youtube.com/watch?v=7p8ZeSbblec) – would argue that we have not made any progress at all since then. In reality, compute has been advancing all along – when we hit a wall on processor clock speed, the focus shifted to multi-core architectures and other methods to drive performance, despite power density and cooling constraints.
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2024/12/001-CPU-transistor-densities-clock-speeds-power-and-performance-from-1970-2015-Courtesy-of.png?resize=850%2C518&ssl=1)
+![](images/001-CPU-transistor-densities-clock-speeds-power-an_4a5feeb0dbbe.png)
 
 Source: CPU transistor densities, clock speeds, power and performance from 1970-2015 – [Charles Leggett](https://www.researchgate.net/figure/CPU-transistor-densities-clock-speeds-power-and-performance-from-1970-2015-Courtesy-of_fig1_321233071)
 
 The end of Moore’s Law is another wall that with which the semiconductor industry has contended, but this debate has been quieter lately as AI pioneers like Nvidia have provided massive compute gains by scaling along a few entirely new dimensions. Advanced packaging has enabling continued advances in compute by scaling input/output (I/Os) and enabling chips to harness a total silicon area beyond the reticle size limit. Parallel computing within and across chips and [building larger high-bandwidth networking domains](https://semianalysis.com/2024/04/10/nvidia-blackwell-perf-tco-analysis/) has enabled chips to work better together at scale, [especially for inference](https://semianalysis.com/2024/04/10/nvidia-blackwell-perf-tco-analysis/).
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2024/12/11-the-time-has-comeGIMP.png?resize=1600%2C1000&ssl=1)
+![](images/11-the-time-has-comeGIMP_e5b33fdae859.png)
 
 Source: Nvidia
 
 As with computer enthusiasts in 2004, mainstream analysts and journalists are missing the forest for the trees: despite the slowing down of one trend, the industry collectively remains moving forward at a breakneck pace due to other new emerging paradigms that are ripe for scaling and expansion. It is possible to stack “scaling laws” – pre-training will become just one of the vectors of improvement, and the aggregate “scaling law” will continue scaling just like Moore’s Law has over last 50+ years.
 
-[![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2024/11/https3A2F2Fsubstack-post-media.s3.amazonaws.com2Fpublic2Fimages2F44e4e3df-897f-45a3-955a-f7434ec401d3_936x368.png?fit=300%2C118&ssl=1)
+[![](images/https3A2F2Fsubstack-post-media.s3.amazonaws.com2Fp_e270eaf038a4.png)
 
 Feb 21, 2023
 
@@ -67,7 +67,7 @@ One obvious speed bump is that data is increasingly difficult to collect – whi
 
 > Chinchilla scaling refers to the optimal increases in data versus parameter counts relative to increases in compute. Not enough data causes the model to generalize poorly, while too much data results in overtraining, which wastes compute resources. There are some instances where deviating from the optimal ratio makes sense: over-training models (e.g. GPT-4o and Llama) can decrease inference costs significantly and is preferrable for providers that have a larger user base to serve said model to.
 
-[![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2024/11/df459822-81b7-49ed-a556-d1dc6dab57f8_960x510.webp?fit=300%2C159&ssl=1)
+[![](images/df459822-81b7-49ed-a556-d1dc6dab57f8_960x510_13cf4748a8b7.webp)
 
 Jun 17, 2024
 
@@ -79,7 +79,7 @@ Dylan Patel, Daniel Nishball
 
 In January of 2023, before the launch of GPT-4, we wrote about the practical limits for scaling and how GPT-4 planned to break through them. Since then, models have ping-ponged from being more than Chinchilla Optimal (much greater data than model parameters) to less than Chinchilla Optimal (when data became constrained). The compute availability speedbump was overcome in the past when improvements in training and inference hardware alleviated constraints.
 
-[![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2024/11/d12ec990-8d8e-48fc-a1f1-0357cd4f076e_1338x774.png?fit=300%2C174&ssl=1)
+[![](images/d12ec990-8d8e-48fc-a1f1-0357cd4f076e_1338x774_b9453dcc2937.png)
 
 Jan 24, 2023
 
@@ -95,7 +95,7 @@ Also, if labs train models with an insufficient amount of data as they keep scal
 
 Though, this issue applies less to the main AI Labs. Meta alone has approximately 100x more data available to them than is on the public internet (if they can harness this data in a compliant manner). This may give them an edge in continuing to scale with fewer issues than others. YouTube has 720,000 new hours of video uploaded every day – and we think that AI Labs have only begun to contemplate training on the vast amount of data contained within video. This is in addition to their ability to generate quality synthetically generated data, which we discuss the architecture for later.
 
-[![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2024/11/b71d16ae-df41-4763-8c4e-3a144ac514c4_2560x1707.jpeg?fit=300%2C200&ssl=1)
+[![](images/b71d16ae-df41-4763-8c4e-3a144ac514c4_2560x1707_142eb49fae90.jpeg)
 
 Jul 10, 2023
 
@@ -120,7 +120,7 @@ Newer evaluations have sprung up that aim to better differentiate models and foc
 
 Another example is a benchmark investigating AI R&D capabilities, which some [describe](https://x.com/_sholtodouglas/status/1860228530338152587) as “the most important capability to track.” Research Engineering Benchmark (RE) consists of seven challenging and open-ended ML research environments. Humans generally perform better on evals over longer time horizons, but, on a 2-hour time horizon, the best AI agents achieved a score 4x higher than humans. Important tasks such as the above, in which humans currently dominate, are the perfect ground for scaling inference time compute. We expect that models that better leverage this form of scaling will outperform humans in the future.
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2024/12/30-Best-Observed-Score%40k-by-Time-Budget-95-CIGIMP.png?resize=1738%2C949&ssl=1)
+![](images/30-Best-Observed-Score_40k-by-Time-Budget-95-CIGIM_bdeec3876eaf.png)
 
 Source: [RE-Bench: Evaluating frontier AI R&D capabilities of language model agents against human experts](https://metr.org/AI_R_D_Evaluation_Report.pdf)
 
@@ -128,7 +128,7 @@ Yet another trend is for evaluations to include extremely difficult expert-level
 
 Another example of the trend towards using extremely tough questions is FrontierMath (FM). FM is a benchmark of hundreds of original math questions that can take humans hours and even up to days to solve. It covers a broad range of mathematical topics, including number theory, real analysis, etc. The special sauce with this eval is that it is not published, minimizing the risk of data contamination, and can be graded via an automated verifier – simplifying the evaluation process.
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2024/12/40-Complicated-Math-Eval-FrontierMathGIMP.png?resize=1654%2C1002&ssl=1)
+![](images/40-Complicated-Math-Eval-FrontierMathGIMP_b2bb79079063.png)
 
 Source[: FrontierMath: A Benchmark for Evaluating Advanced Mathematical Reasoning in AI](https://arxiv.org/pdf/2411.04872)
 
@@ -175,7 +175,7 @@ This methodology for building a synthetic dataset for use in fine-tuning has bee
 
 But Rejection Sampling can be more complicated than it appears. In Llama’s case, the model was prompted to revise its answer if the initial response was incorrect, and the model got the answer right on its second try 20% of the time. In another illustration of the usefulness of synthetic data, the Meta team translated Python code into PHP, ensuring quality via syntax parsing and execution, and fed this additional data into the SFT data set to account for the lack of public PHP code. This effectively demonstrates synthetic data being used to generate useful data reliably and predictably for underrepresented areas.
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2024/12/70-Pyhton-PHP-synthetic-data-imageGIMP.png?resize=1717%2C784&ssl=1)
+![](images/70-Pyhton-PHP-synthetic-data-imageGIMP_788edbdd7501.png)
 
 Source: [Meta](https://arxiv.org/pdf/2407.21783)
 
@@ -210,13 +210,13 @@ There are a few main approaches to incorporate feedback and determine the action
 
 Value-based methods instead determine the value of getting to a given state and define values for each possible state. Each state is assigned a value based on the expected discounted return the agent can get if it starts in that state and then determines its action at each step based on the value of each action available to it. Historically, value-based methods were more commonly used in RL, but modern applications are much better served with Policy-based methods.
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2024/12/71-hugging-face-numbers-diagramGIMP.png?resize=856%2C606&ssl=1)
+![](images/71-hugging-face-numbers-diagramGIMP_0a94dca392bf.png)
 
 Source: Huggingface
 
 In Policy-based methods, the Agent is driven by a policy function that identifies a set of actions that can be taken for a given state and assigns a probability distribution over those set of actions. Actions to be performed at a given state can be deterministic, meaning that being in each state will always lead to the same action, or stochastic, where a probability distribution instead describes potential actions at that given state. The policy function is then trained to direct the Agent towards actions that maximize expected reward.
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2024/12/72-hugging-face-diagram-arrowsGIMP.png?resize=879%2C597&ssl=1)
+![](images/72-hugging-face-diagram-arrowsGIMP_304d409087d0.png)
 
 Source: Huggingface
 
@@ -250,7 +250,7 @@ As discussed above, PPO is used to iteratively update the policy function of the
 
 Broadly speaking, RLHF allows models to perform better on tasks that real end users care about and have provided preference data on. Meta’s Llama 2-Chat achieved much better performance on factors such as helpfulness and harmlessness after rounds of RLHF. The paper demonstrates that the additional compute used to scale models during RL delivers clear results. The potential benefits from using synthetic data as opposed to human-generated feedback and relying more heaving on AI for feedback can also justify the use of even more compute.
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2024/12/120-evolution-of-llama-2-chatGIMP.png?resize=1815%2C945&ssl=1)
+![](images/120-evolution-of-llama-2-chatGIMP_1b0b01652684.png)
 
 Source: [Meta](https://ar5iv.labs.arxiv.org/html/2307.09288)
 
@@ -268,7 +268,7 @@ DPO entirely forgoes training a reward model and instead uses optimization to di
 
 The simpler approach used in DPO can achieve comparable or better results than RLHF using a full reward model, while being less prone to crashes and easier to implement. A prominent example of this approach’s merits is that Llama 3 did not undergo RLHF and went through DPO. Meta found that in the case of Llama 3, DPO was more effective and stable than PPO and used less compute. However – using DPO means that the quality of the preference data set is paramount, meriting extra care and attention on how this data is gathered and processed.
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2024/12/140-Meta-Model-WorkflowGIMP.png?resize=2127%2C958&ssl=1)
+![](images/140-Meta-Model-WorkflowGIMP_a2db4cceec3b.png)
 
 Source: [Meta](https://arxiv.org/pdf/2407.21783)
 
@@ -279,7 +279,7 @@ RLAIF
 
 Instead of relying on human feedback to train a reward model, Reinforcement Learning with AI Feedback (RLAIF) replaces human feedback with another model. The reward model is trained based on AI-generated feedback – usually some form of scoring model or algorithm that will evaluate given completions and determine the reward accordingly.
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2024/12/150-RLAIF-vs-RLHFGIMP.png?resize=1696%2C745&ssl=1)
+![](images/150-RLAIF-vs-RLHFGIMP_4f123877c4e2.png)
 
 Source: [RLAIF vs RLHF: Scaling Reinforcement Learning from Human Feedback with AI Feedback](https://arxiv.org/pdf/2309.00267)
 
@@ -293,7 +293,7 @@ The second stage of the process for Constitutional AI is similar to RLHF, but wi
 
 The most notable observation of this approach is that it’s scalable across many different domains – if there is a model that is good at ranking responses based on which one is more scientifically accurate in addition to being able to identify harmlessness, the model can be used to optimize for scientifically accurate responses as well.
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2024/12/180-Constitutional-AI-ImageGIMP.png?resize=1255%2C711&ssl=1)
+![](images/180-Constitutional-AI-ImageGIMP_e85e61ca480a.png)
 
 Source: [Anthropic Constitutional AI: Harmlessness from AI Feedback](https://arxiv.org/abs/2212.08073)
 
@@ -318,7 +318,7 @@ Secondly is the **Verifier Model**, which is responsible for evaluating whether 
 
 **Verifier Models** can be trained using either human annotation, through automatic process annotation or using automatic verifiers. Alternatively – verification In OpenAI’s paper, [Let’s Verify Step by Step](https://arxiv.org/pdf/2305.20050), researchers introduced the [PRM800K process supervision dataset](https://github.com/openai/prm800k), in which human data-labelers annotate 800,000 process steps that form part of 75,000 solutions to 12,000 questions from the [MATH Dataset](https://arxiv.org/pdf/2103.03874) that are output from a Generator as discussed in the paper.
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2024/12/190-PRM800k-human-annotationsGIMP.png?resize=1045%2C536&ssl=1)
+![](images/190-PRM800k-human-annotationsGIMP_f20677d5d291.png)
 
 Source: [Let’s Verify Step by Step](https://arxiv.org/pdf/2305.20050)
 
@@ -330,7 +330,7 @@ Automatic verifiers are a system or model that can ideally quickly and easily ve
 
 Automatic process annotation can generate this step-by-step process annotation. Instead of having a human evaluate an intermediate step, the **Completer** is used to create multiple different paths of reasoning steps. The [Math-Shepherd paper](https://arxiv.org/pdf/2312.08935) uses automatic process annotation – generating a number of paths, then evaluating these paths by either marking it as a good reasoning step if it leads to a correct final answer (i.e. Hard Estimation) or by assigning a score based on the frequency with which the step leads to the correct solution (i.e. Soft Estimation).
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2024/12/200-Math-Shepherd-Automatic-Outcome-AnnotationGIMP.png?resize=1040%2C477&ssl=1)
+![](images/200-Math-Shepherd-Automatic-Outcome-AnnotationGIMP_a250b3db91df.png)
 
 Source: [Math-Shepherd: Verify and Reinforce LLMs Step-by-step without Human Annotations](https://arxiv.org/pdf/2312.08935)
 
@@ -338,7 +338,7 @@ The fourth model is the **Reward Model**, which is trained from the process anno
 
 To recap our earlier explanation, there are two types of reward models: ones which provide a reward based on the outcome, an Outcome Reward Model (ORM), and ones which provide a reward based on the process, Process Reward Models (PRM). ORMs typically work by ranking a variety of different answers that a model provides and then selecting the highest ranked one. In contrast, PRMs evaluate and assign a score to each step of the reasoning chain of thought and provide a reward based on this score and for this reason are generally preferred when training Chain of Thought models. The [Let’s Verify Step by Step paper](https://arxiv.org/pdf/2305.20050) showcased stronger results for PRMs over ORMs. With that said, OpenAI relies more heavily on ORMs still.
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2024/12/210-orm-vs-prmGIMP.png?resize=1258%2C908&ssl=1)
+![](images/210-orm-vs-prmGIMP_2e80a0ae9d67.png)
 
 Source: [Let’s Verify Step by Step](https://arxiv.org/pdf/2305.20050)
 
@@ -355,7 +355,7 @@ In contrast, as explained above, Reasoning Models break the response into a disc
 
 There are two profound implications from the release of reasoning models – first, a meaningful improvement in model performance for challenging evaluations such as those oriented around coding, math, and science, and second, the realization that this improvement in model performance scales with test-time compute extends robustly to LLMs.
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2024/12/230-o1-evalsGIMP.png?resize=833%2C432&ssl=1)
+![](images/230-o1-evalsGIMP_61671c98e097.png)
 
 Source: [OpenAI](https://openai.com/index/learning-to-reason-with-llms/)
 
@@ -365,19 +365,19 @@ With greater compute, reasoning models can think through more steps and increase
 
 This means operators of inference systems for reasoning models are limiting the length of reasoning chains of thought to keep context lengths reasonable and prices down so as to serve an economical number of users at a reasonable token to token latency.  It follows that today’s reasoning models are performing with one arm tied behind their back and could scale very significantly in performance as more capable inference systems such as the GB200 NVL72 come to market. Once economical, allowing o1 to adjust the length of its reasoning chain and compute employed will be a technique to harness test-time compute scaling.
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2024/12/250-o1-performance-scaling-with-test-time-computeGIMP.png?resize=1162%2C737&ssl=1)
+![](images/250-o1-performance-scaling-with-test-time-computeG_2587aaf0ad13.png)
 
 Source: [OpenAI](https://openai.com/index/learning-to-reason-with-llms/)
 
 As we see from evals and from the graph further down below, with one attempt, GPT-4o beats other models. The most naïve way to scale test-time compute is to simply increase the number of samples concurrently being run, effectively channeling the infinite monkey theorem. The paper [Large Language Monkeys](https://arxiv.org/pdf/2407.21787) demonstrates that simply repeated sampling can scale inference time compute and can yield much better results. 
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2024/12/260-swe-bench-liteGIMP.png?resize=826%2C678&ssl=1)
+![](images/260-swe-bench-liteGIMP_3a828fa5922a.png)
 
 Source: [Large Language Monkeys: Scaling Inference Compute with Repeated Sampling](https://arxiv.org/pdf/2407.21787)
 
 This is arguably one of the most basic ways of doing search. Generating more samples allows for greater coverage, which is defined as any of the samples getting the correct answer (i.e. pass@k). One could argue that simply enabling these smaller models to think over a problem many times may be more accurate and cheaper, though we will need to have an effective verifier to identify when we have successfully generated the metaphorical complete works of Shakespeare.
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2024/12/270-monkeys_simpsons_meme-JOKE.jpg?resize=672%2C401&ssl=1)
+![](images/270-monkeys_simpsons_meme-JOKE_ddc4bcdc28d1.jpg)
 
 “It was the best of times, it was the blurst of times”  
 Source: The Simpsons
@@ -389,13 +389,13 @@ Search is another dimension of scaling that goes unharnessed with OpenAI o1 but 
 
 Self-Consistency / Majority Vote is one such search methodology in which we simply run the prompt through the model multiple times, thereby generating multiple responses, and then we pick the correct answer by choosing the response that appears most often among a given number of samples.
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2024/12/image-24GIMP.png?resize=975%2C491&ssl=1)
+![](images/image-24GIMP_781daa7406fb.png)
 
 Source: Sasha Rush
 
 Best-of-N Sampling is another idea in which we generate N solutions for a specific prompt and then use a verifier model to identify chains-of-thoughts that led to the correct answer. This method is generally restricted to areas that are amenable to verification (e.g., sudoku and not essays) and is limited by the effectiveness of the verifier model.
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2024/12/image-25GIMP.png?resize=975%2C505&ssl=1)
+![](images/image-25GIMP_a92e2ddfb66b.png)
 
 Source: Sasha Rush
 

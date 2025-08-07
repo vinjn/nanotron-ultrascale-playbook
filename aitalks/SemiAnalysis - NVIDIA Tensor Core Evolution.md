@@ -6,7 +6,7 @@ In our [AI Scaling Laws article from late last year](https://semianalysis.com/20
 
 One this front, in the AI Scaling Laws article, we revisited the decades-long debate around compute scaling, recounting the end of Dennard Scaling in the late 2000s as well as the end of classic Moore’s Law pace cost per transistor declines by the late 2010s. Despite this, compute capabilities have continued to improve at a rapid pace, with the baton being passed to other technologies such as [advanced packaging](https://semianalysis.com/2021/12/15/advanced-packaging-part-1-pad-limited/), [3D stacking](https://semianalysis.com/2025/02/05/iedm2024/), [new transistor types](https://semianalysis.com/2023/02/21/the-future-of-the-transistor/) and specialized architectures such as the GPU.
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2025/06/image-151.png?resize=768%2C480&ssl=1)
+![](images/image-151_59cbd1300e8e.png)
 
 Source: Nvidia
 
@@ -14,7 +14,7 @@ When it comes to AI and deep learning, GPU compute capabilities have improved at
 
 Though the Tensor Core is unquestionably the bedrock upon which the foundations of modern AI and machine learning are built, it is not well understood, even by many experienced practitioners in the field. The rapid evolution of GPU architecture and programming models that run on this architecture means that it is increasingly challenging for Machine Learning researchers and scientists to keep up with the latest changes to Tensor Cores and grasp the implications of these changes.
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2025/06/1-Nvidia-Dense-Throughput-1.png?resize=1642%2C972&ssl=1)
+![](images/1-Nvidia-Dense-Throughput-1_afc93bb093d9.png)
 
 Source: SemiAnalysis, [HC2023-K2: Hardware for Deep Learning](https://www.youtube.com/watch?v=rsxCZAE8QNA)
 
@@ -46,7 +46,7 @@ Performance First Principles
 
 For a fixed problem size, Amdahl’s Law specifies the maximum speedup you can obtain by parallelizing with more compute resources. Concretely, scaling compute resources only drives down the execution time of the parallel portion, so the performance improvement is bounded by the serial portion. To quantify it, the maximum performance improvement is:
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2025/06/image-149.png?resize=1919%2C522&ssl=1)
+![](images/image-149_f18d5fe81258.png)
 
 where S is the parallel work execution time and p is the speedup of the parallelizable work. In an ideal world where the parallel portion is perfectly parallelized, the speedup p can be the number of processing units.
 
@@ -54,13 +54,13 @@ where S is the parallel work execution time and p is the speedup of the parallel
 
 Strong and weak scaling describe the performance improvement of scaling compute resources for different problem setups. Strong scaling refers to scaling compute resources to solve a fixed-size problem, and Amdahl’s Law quantifies the speedup of strong scaling. On the other hand, weak scaling refers to scaling compute resources to solve larger problems at a constant time. For example, processing a 4x larger image in the same time using 4x more compute resources. We recommend [this blog post](https://acenet-arc.github.io/ACENET_Summer_School_General/05-performance/index.html) for more detailed explanations.
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2025/06/image-155-scaled.png?resize=2560%2C1807&ssl=1)
+![](images/image-155-scaled_fa9eb0520bf4.png)
 
 Source: SemiAnalysis, [Performance and Scalability – SCENET Summer School](https://acenet-arc.github.io/ACENET_Summer_School_General/05-performance/index.html)
 
 Strong and weak scaling imply different performance improvements across problem sizes. Strong scaling offers speedup for all problem sizes, while weak scaling only guarantees performance improvement when we use more compute to solve a larger problem.
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2025/06/3n-strong_and_weak_scaling.png?resize=2115%2C1743&ssl=1)
+![](images/3n-strong_and_weak_scaling_68e4816eda1f.png)
 
 Source: SemiAnalysis
 
@@ -81,7 +81,7 @@ In this section, we introduce the main Nvidia GPU architectures that use Tensor 
 
 Parallel Thread Execution (PTX) is a virtual instruction set that abstracts over GPU generations. A PTX program describes a **kernel function** that is executed with a large number of GPU threads, which are executed on the GPU’s hardware execution units, i.e. CUDA cores. **Threads** are organized as a grid, and a **grid** consists of cooperative thread arrays (**CTA**s). PTX threads can access data from multiple state spaces, which are memory storage areas with different characteristics. Specifically, threads have per-thread **registers**, threads within a CTA have **shared memory**, and all threads can access **global memory**. For more information, please read [this section of the CUDA documentation](https://docs.nvidia.com/cuda/parallel-thread-execution/index.html?highlight=tcgen05%2520cp#programming-model).
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2025/06/2-PTX-Programming-Model-1.png?resize=573%2C164&ssl=1)
+![](images/2-PTX-Programming-Model-1_827fe676f5da.png)
 
 Source: SemiAnalysis
 
@@ -91,7 +91,7 @@ The GPU architecture is built around an array of streaming multiprocessors (**SM
 
 At instruction issue time, the instruction unit selects a warp and issues an instruction to the threads of the warp. This execution method is called single-instruction, multiple threads (**SIMT**). Similar to single-instruction, multiple data (**SIMD**), SIMT controls multiple processing elements with a single instruction, but unlike SIMD, SIMT specifies a single thread behavior instead of vector width. For more information, please read [this section of the CUDA documentation](https://docs.nvidia.com/cuda/parallel-thread-execution/index.html?highlight=tcgen05%2520cp#ptx-machine-model).
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2025/06/machine_model.png?resize=1606%2C1630&ssl=1)
+![](images/machine_model_c49f515e7028.png)
 
 PTX Machine model. Source: SemiAnalysis, [PTX ISA Documentation – Figure 4](https://docs.nvidia.com/cuda/parallel-thread-execution/index.html#set-of-simt-multiprocessors-hardware-model)
 
@@ -105,7 +105,7 @@ Streaming Assembler (SASS) is the architecture-specific instruction set that PTX
 
 As deep learning became more prominent, the industry noticed that ML workloads were in need of hardware acceleration. Early in 2015, Google deployed TPUv1 for accelerating their internal ML workloads, and in 2017, Nvidia introduced dedicated hardware for matrix math. Although GPUs consume a small amount of energy when issuing instructions (~30pJ) because of their simple hardware pipeline, simple floating point operations like `HFMA` consume even less energy at only 1.5pJ. This creates a 20x overhead of power needed for instructions vs for the floating point operation itself. As a result, performing a lot of floating point operations for matrix multiplication is power inefficient. To amortize the instruction overhead, we need to use complex instructions that can perform more computation per instruction. To this end, Nvidia designed the **half-precision matrix multiply and accumulate (`HMMA`) instruction**, a specialized instruction that performs half-precision matrix multiplication. The corresponding dedicated hardware to execute this instruction is the Tensor Core, introduced in the Tesla V100 GPU of Volta architecture in 2017. The Volta tensor core was added very late into development of the Volta architecture, only a handful of months before tape out, a testament to how fast Nvidia can pivot their architecture.
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2025/06/3-SASS-Operations.png?resize=797%2C226&ssl=1)
+![](images/3-SASS-Operations_e06c4674dcb2.png)
 
 Source: [Trends in Deep Learning Hardware: Specialized Instructions Amortize Overhead](https://www.youtube.com/watch?v=kLiwvnr4L80&t=869)
 
@@ -121,7 +121,7 @@ We denote the matrix shapes as `mMnNkK` or MxNxK.
 
 To perform the full computation, we first load matrices A, B, and C from shared memory to thread registers, so that each thread holds fragments of the matrices. Second, we execute the MMA instruction, which reads the matrices from thread registers, performs computation on Tensor Cores, and stores the result to thread registers. Finally, we store the results from thread registers back to shared memory. The full computation is collectively performed by multiple threads, meaning that every step requires a synchronization between the collaborating threads.
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2025/06/3b-mma_flow.png?resize=2359%2C2221&ssl=1)
+![](images/3b-mma_flow_7d437c4303fa.png)
 
 Source: SemiAnalysis
 
@@ -129,13 +129,13 @@ Source: SemiAnalysis
 
 An SM of a Tesla V100 GPU contains 8 Tensor Cores, grouped in partitions of two. Each Tensor Core is capable of computing an equivalent of 4x4x4 matrix multiplication per cycle, which amounts to 1024 FLOPs per cycle per SM.  
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2025/06/3c-Volta-MMA-SYNC.png?resize=1398%2C784&ssl=1)
+![](images/3c-Volta-MMA-SYNC_7da0634c4d11.png)
 
 [Source: Volta Tensor Core Training](https://www.olcf.ornl.gov/wp-content/uploads/2019/11/ORNL_Tensor_Core_Training_Aug2019.pdf)
 
 NVIDIA designed PTX instruction mma to target the lower level `HMMA` instructions. On Volta architecture, an MMA instruction performs an 8x8x4 matrix multiplication, and a quadpair of 8 threads participate in the operation by collectively holding the input and output matrices. Here T0 refers to thread 0, \[T0, T1, T2, T3\] and \[T16, T17, T18, T19\] are threadgroups, and the 2 threadgroups form a quadpair.
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2025/06/3d-CUTLASS-visualizer-1.png?resize=983%2C975&ssl=1)
+![](images/3d-CUTLASS-visualizer-1_5f88df7c241f.png)
 
 Source: SemiAnalysis. Generated with CUTLASS visualizer
 
@@ -157,7 +157,7 @@ Async data copy mitigates this issue by fetching data from global memory (DRAM) 
 
 This feature is implemented as PTX instruction thread-level async copy cp.async ([documentation](https://docs.nvidia.com/cuda/parallel-thread-execution/index.html?highlight=tcgen05%2520cp#data-movement-and-conversion-instructions-non-bulk-copy)). The corresponding SASS is LDGSTS, asynchronous global to shared memory copy. The exact synchronization methods are async-group and mbarrier-based completion mechanisms, detailed [here](https://docs.nvidia.com/cuda/parallel-thread-execution/index.html?highlight=tcgen05%2520cp#data-movement-and-conversion-instructions-asynchronous-copy-completion-mechanisms).
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2025/06/3e-Without-Async-Copy-pg62.png?resize=1603%2C339&ssl=1)
+![](images/3e-Without-Async-Copy-pg62_1c5a657c1f91.png)
 
 Source: [NVIDIA A100 Tensor Core GPU Architecture Whitepaper](https://images.nvidia.com/aem-dam/en-zz/Solutions/data-center/nvidia-ampere-architecture-whitepaper.pdf)
 
@@ -167,7 +167,7 @@ Ampere has 4 Tensor Cores per SM, and each Tensor Core is capable of performing 
 
 While Volta requires a quadpair of 8 threads to participate in an MMA operation, Ampere requires a full warp of 32 threads. Having MMA instructions warp-wide simplifies the thread layout & reducing RF pressure for Ampere. For instance, here is the thread and data layout for mixed-precision floating point of shape 16x8x16:
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2025/06/3f-CUTLASS-2.png?resize=806%2C1026&ssl=1)
+![](images/3f-CUTLASS-2_a1a1c71b1d38.png)
 
 Source: SemiAnalysis. Generated with CUTLASS visualizer
 
@@ -185,7 +185,7 @@ As the number of SMs grew, the size disparity between an SM and the whole GPU in
 
 CTAs in a thread block cluster are guaranteed to be co-scheduled on SMs in the same GPC and distributed one CTA per SM by default. The shared memory partitions of those SMs form a **distributed shared memory (DSMEM)**. A thread can access the shared memory from another SM with low latency through the dedicated SM-to-SM network (without going through L2 cache). By exposing the GPC hardware execution unit to the programming model, programmers can reduce data movement and improve the data locality.
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2025/06/3ff-GTC-talk-inside-the-NVIDIA-Hopper-Arch-1.png?resize=2028%2C1004&ssl=1)
+![](images/3ff-GTC-talk-inside-the-NVIDIA-Hopper-Arch-1_822afc7893a1.png)
 
 Source: GTC Talk [Inside the NVIDIA Hopper Architecture](https://www.nvidia.com/en-us/on-demand/session/gtcspring22-s42663/)
 
@@ -199,7 +199,7 @@ However, for small requests, TMA loads have higher latency than regular async da
 
 TMA also supports a mode of loading data called multicast, where TMA loads data from global memory to shared memory of multiple SMs in a thread block cluster, specified by a multicast mask. Instead of issuing multiple global memory loads loading the same piece of data into multiple SMs, multicast completes it in one load. Specifically, multiple CTAs in a thread block cluster load a portion of the data into their corresponding SMEMs and share the data through DSMEM. This reduces L2 cache traffic and subsequently reduces HBM traffic. We recommend reading [Jay Shah’s TMA tutorial](https://research.colfax-intl.com/tutorial-hopper-tma/) for more details.
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2025/06/3g-TMA-Multicast.png?resize=1955%2C1940&ssl=1)
+![](images/3g-TMA-Multicast_3e28d0a8ca1c.png)
 
 Source: SemiAnalysis, GTC Talk [Developing Optimal CUDA Kernels on Hopper Tensor Cores](https://www.nvidia.com/en-us/on-demand/session/gtcspring23-s51413/)
 
@@ -209,7 +209,7 @@ NVIDIA introduced a new type of MMA with Hopper, warpgroup-level MMA (`wgmma`). 
 
 While all threads in a warpgroup collectively hold the output matrix in their registers, Hopper Tensor Cores can directly load operands from shared memory instead of registers, saving register space and bandwidth. Specifically, operand matrix A can reside in either registers or shared memory, while operand matrix B can only be accessed through shared memory. See the [CUDA documentation wgmma section](https://docs.nvidia.com/cuda/parallel-thread-execution/index.html?highlight=tcgen05%2520cp#asynchronous-warpgroup-level-matrix-instructions) for the details of `wgmma`’s completion mechanism, SMEM layout, and more.
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2025/06/3h-wgmma_flow.png?resize=2425%2C1903&ssl=1)
+![](images/3h-wgmma_flow_6f2c79a3c4c4.png)
 
 Source: SemiAnalysis
 
@@ -237,7 +237,7 @@ The extreme register pressure did not let up on Hopper, which motivated **Tensor
 
 TMEM has a restricted memory access pattern. Specifically, it takes a warpgroup to access the whole TMEM, and each warp in a warpgroup can only access a specific set of lanes. By limiting the memory access pattern, hardware designers can reduce the number of access ports, saving chip space. On the other hand, this design also means that epilogue operations need a warpgroup to operate. Unlike shared memory, programmers have to explicitly manage TMEM, including allocation, deallocation, and copying data in and out of TMEM.
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2025/06/3i-TMEM-accessible-by-warp-0.png?resize=1080%2C1005&ssl=1)
+![](images/3i-TMEM-accessible-by-warp-0_bf9bb2f434af.png)
 
 Source: GTC Talk [Programming Blackwell Tensor Cores with CUTLASS](https://www.nvidia.com/en-us/on-demand/session/gtc25-s72720/)
 
@@ -251,13 +251,13 @@ Tensor Core 5th Generation MMA instruction (`tcgen05.mma` in PTX) fully moved aw
 
 Specifically, suppose the MMA computes D = A \* B + D: Not using thread registers removes the complex data layouts and frees up thread register space for other work such as epilogue operations. Unlike `wgmma` using a warpgroup to initiate an MMA operation, `tcgen05.mma` has single thread semantics, meaning that a single thread initiates an MMA operation. This removes the role of warps from issuing MMA.
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2025/06/3j-tcgen05_mma_flow.png?resize=1954%2C2178&ssl=1)
+![](images/3j-tcgen05_mma_flow_a4cb7178d035.png)
 
 Source: SemiAnalysis
 
 One notable MMA variant is MMA.2SM, which uses 2 SMs to collectively perform an MMA operation. MMA.2SM executes at the CTA-pair level granularity, and since `tcgen05.mma` has single thread semantics, a single thread in the leader CTA of the CTA pair launches MMA.2SM. Here we illustrate data path organization [layout A](https://docs.nvidia.com/cuda/parallel-thread-execution/index.html?highlight=tcgen05%2520cp#tcgen05-data-path-layout-a). Layout A shows MMA.2SM doubles the M dimension compared to the 1SM version ([layout D](https://docs.nvidia.com/cuda/parallel-thread-execution/index.html?highlight=tcgen05%2520cp#tcgen05-data-path-layout-d)), so the two SMs load different matrix A and D tiles. In addition, MMA.2SM splits matrix B, halving the amount of data loaded.
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2025/06/3k-mma_2sm_layout_a-scaled.png?resize=2002%2C2560&ssl=1)
+![](images/3k-mma_2sm_layout_a-scaled_3e7e4849d68a.png)
 
 Source: SemiAnalysis, GTC talk [Programming Blackwell Tensor Cores with CUTLASS](https://www.nvidia.com/en-us/on-demand/session/gtc25-s72720/)
 
@@ -279,31 +279,31 @@ Unfortunately, 2:4 structured sparsity GEMMs kernels are unable to reach anywher
 
 Furthermore, there is a lack of closed or open models that have shown performance improvements with 2:4 FP8 structured sparsity or 4:8 FP4 structured sparsity while maintaining zero accuracy loss & a [general lack of resources dedicated](https://github.com/NVIDIA/TensorRT-Model-Optimizer/blame/main/modelopt/torch/sparsity/sparsegpt.py) to structured pruning. We recommend that NVIDIA should stop with [Jensen math](https://semianalysis.com/2025/03/19/nvidia-gtc-2025-built-for-reasoning-vera-rubin-kyber-cpo-dynamo-inference-jensen-math-feynman/#jensen-math-changes-every-year) structured sparsity flops in keynotes & marketing material unless they start consistently showing SOTA open models being able to take advantage of structured pruning for inferencing. A good first step would be to do structured sparsity on DeepSeek and also show that performance can stack on top of other techniques like distillation & quantization like NVFP4.
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2025/06/3L-sparsity.png?resize=660%2C511&ssl=1)
+![](images/3L-sparsity_ff93a3e0e473.png)
 
 [Source: NVIDIA](https://developer.nvidia.com/blog/exploiting-ampere-structured-sparsity-with-cusparselt/)
 
 In its fifth‑generation Tensor Cores, NVIDIA introduced pair‑wise 4 : 8 structured sparsity for the NVFP4 data type. In this scheme, every eight elements are grouped into four consecutive pairs, and exactly two of those pairs must contain non‑zero values while the remaining two are pruned to zero. Because NVFP4 is a sub‑byte data type, we believe this constraint motivated NVIDIA to adopt the pair‑wise 4 : 8 pattern. Although 4 : 8 sparsity may appear more permissive than the earlier 2 : 4 pattern, the added pair‑wise requirement means it is not, in practice, a more relaxed constraint for ML engineers seeking to preserve model accuracy while pruning.
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2025/06/3m-weight-wide-chunk.png?resize=809%2C355&ssl=1)
+![](images/3m-weight-wide-chunk_7d23c3e1d37a.png)
 
 Source: [NVIDIA](https://docs.nvidia.com/cuda/parallel-thread-execution/_images/fp4-metadata-example.png)
 
 ### Tensor Core Size Increases
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2025/06/4a-Tensor-Core-Arch-Evolution.png?resize=1566%2C632&ssl=1)
+![](images/4a-Tensor-Core-Arch-Evolution_c14ffe29e11d.png)
 
 Source: SemiAnalysis, NVIDIA
 
 Over generations, NVIDIA scaled the Tensor Core size more aggressively than the number of Tensor Cores. NVIDIA chose scaling the tensor core size rather than number of cores because it suits the performance characteristics of matrix multiplication better. Specifically, when scaling the problem size, matrix multiplication computation grows cubically, but data movement grows quadratically, meaning the arithmetic intensity grows linearly. O(n) arithmetic intensity, combined with the fact that data movement is more expensive than computation, incentivized the tensor core size increase.
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2025/06/5-Tensor-Core-Size-Increases.png?resize=882%2C350&ssl=1)
+![](images/5-Tensor-Core-Size-Increases_2ac5d08ca378.png)
 
 Source: SemiAnalysis, NVIDIA
 
 However, both scaling core size and number of cores come at the cost of the quantization effects. Specifically, having a large number of cores suffer from the [tile quantization effect](https://docs.nvidia.com/deeplearning/performance/dl-performance-matrix-multiplication/index.html#tile-quant), and having a large core size leads to [wave quantization effect](https://docs.nvidia.com/deeplearning/performance/dl-performance-matrix-multiplication/index.html#wave-quant). The wave quantization effect occurs when the number of work units isn’t fully divisible by the number of workers, causing utilization to drop when processing the final, smaller batch of work. Increasing tensor core size is essentially increasing the work unit size, resulting in low utilization for small matrices (See this [ThunderKittens blog post](https://hazyresearch.stanford.edu/blog/2025-03-15-tk-blackwell)).
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2025/06/5b-wave_quantization-scaled.png?resize=2560%2C988&ssl=1)
+![](images/5b-wave_quantization-scaled_2ee612c9547c.png)
 
 Source: SemiAnalysis
 
@@ -311,7 +311,7 @@ The linear growth in arithmetic intensity also motivates the increase in MMA sha
 
 ### Memory Size Increase
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2025/06/6-Memory-Size-Increase.png?resize=1464%2C432&ssl=1)
+![](images/6-Memory-Size-Increase_749c265bc1ab.png)
 
 Source: SemiAnalysis, NVIDIA
 
@@ -325,13 +325,13 @@ NVIDIA’s staging memory choice also explains why operand locations gradually m
 
 Among all operands, matrix D always stays in TMEM. We can take advantage of TMEM’s power efficiency with this design because matrix D is more frequently accessed than matrix A and B. For example, to compute a tile in a naive tiled matrix multiplication, matrix D tile is accessed 2Kt times (Kt reads and Kt writes. Kt: The number of tiles along the K dimension), whereas matrix A tiles and matrix B tiles are accessed only once.
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2025/06/6a-MMR-across-Nvidia-GPUs.png?resize=1476%2C474&ssl=1)
+![](images/6a-MMR-across-Nvidia-GPUs_eccd06c4077f.png)
 
 Source: SemiAnalysis, NVIDIA
 
 ### Asynchrony of MMA Instruction
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2025/06/7-Asynchrony-of-MMA-Instructions.png?resize=882%2C270&ssl=1)
+![](images/7-Asynchrony-of-MMA-Instructions_af83ab73f517.png)
 
 Source: SemiAnalysis, NVIDIA
 
@@ -343,13 +343,13 @@ At SASS level, an MMA operation involves executing one `LDSM` instruction to loa
 
 Hopper supports asynchronous completion mechanism commit and fence for `wgmma`. When `HGMMA` instructions are issued, there are no hardware interlocks to guard register usage. Instead, the compiler schedules `LDSM` for the next MMA and uses `FENCE` instruction to keep the next `HGMMA` waiting. With Blackwell, the MMA operation is fully asynchronous. Instructions for loading into Tensor Memory ([tcgen05.ld /](https://docs.nvidia.com/cuda/parallel-thread-execution/index.html?highlight=tcgen05%2520cp#tcgen05-memory-consistency-model-async-operations) [tcgen05.st](http://tcgen05.st/) [/ tcgen05.cp](https://docs.nvidia.com/cuda/parallel-thread-execution/index.html?highlight=tcgen05%2520cp#tcgen05-memory-consistency-model-async-operations)) are all explicitly asynchronous.
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2025/06/7b-mma_async.png?resize=1868%2C1235&ssl=1)
+![](images/7b-mma_async_4a4643979bdf.png)
 
 Source: SemiAnalysis
 
 ### Data Type Precision Reduction
 
-![](https://i0.wp.com/semianalysis.com/wp-content/uploads/2025/06/8-Data-Type-Precision-Reduction.png?resize=1956%2C960&ssl=1)
+![](images/8-Data-Type-Precision-Reduction_ded8be03f561.png)
 
 Source: SemiAnalysis, NVIDIA
 

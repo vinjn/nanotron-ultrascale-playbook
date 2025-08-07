@@ -71,7 +71,7 @@ The NVLink multi-node architecture extends the Multi-GPU NVLink Peer-to-Peer (P2
 
 Figure 1‑1. L1 NVSwitch Domain only NVLink Network
 
-![Figure 1-1](https://docs.nvidia.com/multi-node-nvlink-systems/imex-guide/_images/overview-fig1.png)
+![Figure 1-1](images/overview-fig1_85ebd05ba317.png)
 
 ### Compute Trays
 
@@ -172,7 +172,7 @@ Figure 1‑2 shows the configuration of a single rack 36-GPU configuration and a
 
 Figure 1‑2. GB200 NVLink Rack Configuration
 
-![GB200 NVLink Rack Configuration](https://docs.nvidia.com/multi-node-nvlink-systems/imex-guide/_images/overview-gb200.png)
+![GB200 NVLink Rack Configuration](images/overview-gb200_cdd19bdb5867.png)
 
 A 72-GPU rack contains the following:
 
@@ -189,7 +189,7 @@ Figure 1‑4 shows the configuration of a single-rack, 72-GPU configuration.
 
 Figure 1‑4. A Single-Rack, 72-GPU Configuration
 
-![Single rack, 72 GPU Configuration](https://docs.nvidia.com/multi-node-nvlink-systems/imex-guide/_images/overview-singlerack.png)
+![Single rack, 72 GPU Configuration](images/overview-singlerack_654943713c16.png)
 
 The NVIDIA Import/Export Service for Internode Memory Sharing
 -------------------------------------------------------------
@@ -202,7 +202,7 @@ This section provides information about the multi-node memory sharing model.
 
 Figure ‑. Multi-Node Memory Sharing Model
 
-![Multi-Node Memory Sharing Model](https://docs.nvidia.com/multi-node-nvlink-systems/imex-guide/_images/overview-mnmemshare.png)
+![Multi-Node Memory Sharing Model](images/overview-mnmemshare_52b6f6b897c6.png)
 
 At a high level, the job entails coordinating CUDA processes that are running on each compute node in its own OS domain. On one node, the CUDA process allocates GPU memory and obtains the corresponding sharable memory handle. This allocation and handle creation trigger the establishment of a Virtual Address (VA) to Physical Address (PA) to Fabric Address (FA) mapping on the exporting node. Here is an overview of the process:
 
