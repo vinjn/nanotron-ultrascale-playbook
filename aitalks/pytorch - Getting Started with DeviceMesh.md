@@ -23,7 +23,7 @@ Setting up distributed communicators, i.e. NVIDIA Collective Communication Libra
 What is DeviceMesh
 ------------------
 
-`DeviceMesh` is a higher level abstraction that manages `ProcessGroup`. It allows users to effortlessly create inter-node and intra-node process groups without worrying about how to set up ranks correctly for different sub process groups. Users can also easily manage the underlying process\_groups/devices for multi-dimensional parallelism via `DeviceMesh`.
+`DeviceMesh` is a higher level abstraction that manages `ProcessGroup`. It allows users to effortlessly create inter-node and intra-node process groups without worrying about how to set up ranks correctly for different sub process groups. Users can also easily manage the underlying process_groups/devices for multi-dimensional parallelism via `DeviceMesh`.
 
 [![PyTorch DeviceMesh](images/device_mesh_0d24568255c4.png)](https://docs.pytorch.org/tutorials/_images/device_mesh.png)
 
@@ -34,62 +34,63 @@ DeviceMesh is useful when working with multi-dimensional parallelism (i.e. 3-D p
 
 Without DeviceMesh, users would need to manually set up NCCL communicators, cuda devices on each process before applying any parallelism, which could be quite complicated. The following code snippet illustrates a hybrid sharding 2-D Parallel pattern setup without `DeviceMesh`. First, we need to manually calculate the shard group and replicate group. Then, we need to assign the correct shard and replicate group to each rank.
 
+```python
 import os
 
 import torch
 import torch.distributed as dist
 
-\# Understand world topology
-rank \= int(os.environ\["RANK"\])
-world\_size \= int(os.environ\["WORLD\_SIZE"\])
-print(f"Running example on {rank\=} in a world with {world\_size\=}")
+# Understand world topology
+rank = int(os.environ["RANK"])
+world_size = int(os.environ["WORLD_SIZE"])
+print(f"Running example on {rank=} in a world with {world_size=}")
 
-\# Create process groups to manage 2-D like parallel pattern
-dist.init\_process\_group("nccl")
-torch.cuda.set\_device(rank)
+# Create process groups to manage 2-D like parallel pattern
+dist.init_process_group("nccl")
+torch.cuda.set_device(rank)
 
-\# Create shard groups (e.g. (0, 1, 2, 3), (4, 5, 6, 7))
-\# and assign the correct shard group to each rank
-num\_node\_devices \= torch.cuda.device\_count()
-shard\_rank\_lists \= list(range(0, num\_node\_devices // 2)), list(range(num\_node\_devices // 2, num\_node\_devices))
-shard\_groups \= (
-    dist.new\_group(shard\_rank\_lists\[0\]),
-    dist.new\_group(shard\_rank\_lists\[1\]),
+# Create shard groups (e.g. (0, 1, 2, 3), (4, 5, 6, 7))
+# and assign the correct shard group to each rank
+num_node_devices = torch.cuda.device_count()
+shard_rank_lists = list(range(0, num_node_devices // 2)), list(range(num_node_devices // 2, num_node_devices))
+shard_groups = (
+    dist.new_group(shard_rank_lists[0]),
+    dist.new_group(shard_rank_lists[1]),
 )
-current\_shard\_group \= (
-    shard\_groups\[0\] if rank in shard\_rank\_lists\[0\] else shard\_groups\[1\]
+current_shard_group = (
+    shard_groups[0] if rank in shard_rank_lists[0] else shard_groups[1]
 )
 
-\# Create replicate groups (for example, (0, 4), (1, 5), (2, 6), (3, 7))
-\# and assign the correct replicate group to each rank
-current\_replicate\_group \= None
-shard\_factor \= len(shard\_rank\_lists\[0\])
-for i in range(num\_node\_devices // 2):
-    replicate\_group\_ranks \= list(range(i, num\_node\_devices, shard\_factor))
-    replicate\_group \= dist.new\_group(replicate\_group\_ranks)
-    if rank in replicate\_group\_ranks:
-        current\_replicate\_group \= replicate\_group
+# Create replicate groups (for example, (0, 4), (1, 5), (2, 6), (3, 7))
+# and assign the correct replicate group to each rank
+current_replicate_group = None
+shard_factor = len(shard_rank_lists[0])
+for i in range(num_node_devices // 2):
+    replicate_group_ranks = list(range(i, num_node_devices, shard_factor))
+    replicate_group = dist.new_group(replicate_group_ranks)
+    if rank in replicate_group_ranks:
+        current_replicate_group = replicate_group
 
 To run the above code snippet, we can leverage PyTorch Elastic. Let’s create a file named `2d_setup.py`. Then, run the following [torch elastic/torchrun](https://pytorch.org/docs/stable/elastic/quickstart.html) command.
 
-torchrun \--nproc\_per\_node\=8 \--rdzv\_id\=100 \--rdzv\_endpoint\=localhost:29400 2d\_setup.py
-
+torchrun --nproc_per_node=8 --rdzv_id=100 --rdzv_endpoint=localhost:29400 2d_setup.py
+```
 Note
 
 For simplicity of demonstration, we are simulating 2D parallel using only one node. Note that this code snippet can also be used when running on multi hosts setup.
 
 With the help of `init_device_mesh()`, we can accomplish the above 2D setup in just two lines, and we can still access the underlying `ProcessGroup` if needed.
 
-from torch.distributed.device\_mesh import init\_device\_mesh
-mesh\_2d \= init\_device\_mesh("cuda", (2, 4), mesh\_dim\_names\=("replicate", "shard"))
+from torch.distributed.device_mesh import init_device_mesh
+mesh_2d = init_device_mesh("cuda", (2, 4), mesh_dim_names=("replicate", "shard"))
 
-\# Users can access the underlying process group thru \`get\_group\` API.
-replicate\_group \= mesh\_2d.get\_group(mesh\_dim\="replicate")
-shard\_group \= mesh\_2d.get\_group(mesh\_dim\="shard")
+# Users can access the underlying process group thru `get_group` API.
+replicate_group = mesh_2d.get_group(mesh_dim="replicate")
+shard_group = mesh_2d.get_group(mesh_dim="shard")
 
 Let’s create a file named `2d_setup_with_device_mesh.py`. Then, run the following [torch elastic/torchrun](https://pytorch.org/docs/stable/elastic/quickstart.html) command.
 
-torchrun \--nproc\_per\_node\=8 2d\_setup\_with\_device\_mesh.py
+torchrun --nproc_per_node=8 2d_setup_with_device_mesh.py
 
 How to use DeviceMesh with HSDP
 -------------------------------
@@ -98,48 +99,52 @@ Hybrid Sharding Data Parallel(HSDP) is 2D strategy to perform FSDP within a host
 
 Let’s see an example of how DeviceMesh can assist with applying HSDP to your model with a simple setup. With DeviceMesh, users would not need to manually create and manage shard group and replicate group.
 
+```python
 import torch
 import torch.nn as nn
 
-from torch.distributed.device\_mesh import init\_device\_mesh
-from torch.distributed.fsdp import fully\_shard as FSDP
+from torch.distributed.device_mesh import init_device_mesh
+from torch.distributed.fsdp import fully_shard as FSDP
 
 class ToyModel(nn.Module):
-    def \_\_init\_\_(self):
-        super(ToyModel, self).\_\_init\_\_()
-        self.net1 \= nn.Linear(10, 10)
-        self.relu \= nn.ReLU()
-        self.net2 \= nn.Linear(10, 5)
+    def __init__(self):
+        super(ToyModel, self).__init__()
+        self.net1 = nn.Linear(10, 10)
+        self.relu = nn.ReLU()
+        self.net2 = nn.Linear(10, 5)
 
     def forward(self, x):
         return self.net2(self.relu(self.net1(x)))
 
-\# HSDP: MeshShape(2, 4)
-mesh\_2d \= init\_device\_mesh("cuda", (2, 4), mesh\_dim\_names\=("dp\_replicate", "dp\_shard"))
-model \= FSDP(
-    ToyModel(), device\_mesh\=mesh\_2d
+# HSDP: MeshShape(2, 4)
+mesh_2d = init_device_mesh("cuda", (2, 4), mesh_dim_names=("dp_replicate", "dp_shard"))
+model = FSDP(
+    ToyModel(), device_mesh=mesh_2d
 )
 
 Let’s create a file named `hsdp.py`. Then, run the following [torch elastic/torchrun](https://pytorch.org/docs/stable/elastic/quickstart.html) command.
 
-torchrun \--nproc\_per\_node\=8 hsdp.py
+torchrun --nproc_per_node=8 hsdp.py
+```
 
 How to use DeviceMesh for your custom parallel solutions
 --------------------------------------------------------
 
 When working with large scale training, you might have more complex custom parallel training composition. For example, you may need to slice out sub-meshes for different parallelism solutions. DeviceMesh allows users to slice child mesh from the parent mesh and re-use the NCCL communicators already created when the parent mesh is initialized.
 
-from torch.distributed.device\_mesh import init\_device\_mesh
-mesh\_3d \= init\_device\_mesh("cuda", (2, 2, 2), mesh\_dim\_names\=("replicate", "shard", "tp"))
+```python
+from torch.distributed.device_mesh import init_device_mesh
+mesh_3d = init_device_mesh("cuda", (2, 2, 2), mesh_dim_names=("replicate", "shard", "tp"))
 
-\# Users can slice child meshes from the parent mesh.
-hsdp\_mesh \= mesh\_3d\["replicate", "shard"\]
-tp\_mesh \= mesh\_3d\["tp"\]
+# Users can slice child meshes from the parent mesh.
+hsdp_mesh = mesh_3d["replicate", "shard"]
+tp_mesh = mesh_3d["tp"]
 
-\# Users can access the underlying process group thru \`get\_group\` API.
-replicate\_group \= hsdp\_mesh\["replicate"\].get\_group()
-shard\_group \= hsdp\_mesh\["shard"\].get\_group()
-tp\_group \= tp\_mesh.get\_group()
+# Users can access the underlying process group thru `get_group` API.
+replicate_group = hsdp_mesh["replicate"].get_group()
+shard_group = hsdp_mesh["shard"].get_group()
+tp_group = tp_mesh.get_group()
+```
 
 Conclusion
 ----------
