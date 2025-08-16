@@ -22,37 +22,40 @@ As the efficiency of collective communication is highly coupled with the hardwar
 
 Following the convention in MPI, `pytorch.distributed` requires initializing a group of processes/nodes, where each is assigned a unique rank and can explicitly communicate with one another using this rank. That is, each process/node needs to invoke the following function before any collective or P2P communication:
 
-    torch.distributed.init_process_group(  
-        backend=None,  
-        init_method=None,  
-        timeout=datetime.timedelta(seconds=1800),  
-        world_size=-1,  
-        rank=-1,  
-        store=None,  
-        group_name='',  
-        pg_options=None)
-
+```python
+torch.distributed.init_process_group(  
+    backend=None,  
+    init_method=None,  
+    timeout=datetime.timedelta(seconds=1800),  
+    world_size=-1,  
+    rank=-1,  
+    store=None,  
+    group_name='',  
+    pg_options=None)
+```
 where `backend` is used to specify a backend from nccl/gloo/mpi; `init_method` (a URL string) indicates where and how to discover peers, e.g., tcp or shared file-system; `world_size` is the total # of nodes/processes; and `rank` indicates the 0-based index for the node invoking this API.
 
 Once the group is initialized, we could have P2P or collective communication between nodes. The following is an example where rank 0 sends a tensor to rank 1.  
 On rank 0, we run codes
 
-    import  torch  
-    import  torch.distributed  as  dist  
-      
-    dist.init_process_group(backend="gloo", init_method="tcp://localhost:29500", rank=0, world_size=2)  
-    t = torch.tensor([1.0]*10)  
-    dist.send(tensor=t, dst=1)
+```python
+import torch  
+import torch.distributed as dist  
 
-    On rank 1, we run codes
+dist.init_process_group(backend="gloo", init_method="tcp://localhost:29500", rank=0, world_size=2)  
+t = torch.tensor([1.0]*10)  
+dist.send(tensor=t, dst=1)
+```
+On rank 1, we run codes
+```python
+import torch  
+import torch.distributed as dist  
 
-    import  torch  
-    import  torch.distributed  as  dist  
-      
-    dist.init_process_group(backend="gloo", init_method="tcp://localhost:29500", rank=1, world_size=2)  
-    tensor = torch.tensor([0.0]*10)  
-    dist.recv(tensor=tensor, src=0)  
-    print(f'rank 1 received tensor {tensor} from rank 0')
+dist.init_process_group(backend="gloo", init_method="tcp://localhost:29500", rank=1, world_size=2)  
+tensor = torch.tensor([0.0]*10)  
+dist.recv(tensor=tensor, src=0)  
+print(f'rank 1 received tensor {tensor} from rank 0')
+```
 
 Note that `torch.distributed.recv` needs to accept a tenor of the same size as the one to be received from `src` node.
 
@@ -60,9 +63,11 @@ Note that `torch.distributed.recv` needs to accept a tenor of the same size as t
 
 P2P communication codes are asymmetric as the sender and the receiver need to trigger `.send` and `.recv` respectively. The codes of collective communication like "all reduce" or "all gather" are often simpler as all nodes are almost symmetric. For example, once `pytorch.distributed` is initialized with `.init_process_group`, all nodes can use codes like the below for `all_reduce`
 
-    t = torch.tensor([XXXXXX]) # define the tensor at this rank  
-    torch.distributed.all_reduce(t, op= torch.distributed.ReduceOp.SUM)  
-    print(f"after all reduce, t={t}")
+```python
+t = torch.tensor([XXXXXX]) # define the tensor at this rank  
+torch.distributed.all_reduce(t, op= torch.distributed.ReduceOp.SUM)  
+print(f"after all reduce, t={t}")
+```
 
 After `torch.distributed.all_reduce`, tensor `t` will be updated as the sum of individual tensors in place. Note that we don't need to specify what other nodes are involved in `all_reduce` because we have initialized the group and involved all nodes for this operation. It is also possible to conduct `all_reduce` in a subgroup by defining such a subgroup and passing it to `all_reduce` API.
 
@@ -75,21 +80,23 @@ In DDP, multiple GPUs in parallel sample their mini-batches, compute gradients, 
 
 In fact, with the `pytorch.distributed.all_reduce` API, one can directly implement DDP with only a few lines of code. The codes are roughly sketched as follows:
 
-    import  torch  
-    import  torch.distributed  as  dist  
-    # initialize the communication group  
-    # define dataloader, loss_fun, and optimizer before starting the training for loop (of an epoch)  
-    for inp, label in dataloader:  
-        optimizer.zero_grad()  
-        out = model(inp)  
-        loss = loss_fun(out, lable)  
-        loss.backward()  
-        # --start--  
-        for param in model.parameters():  
-            dist.all_reduce(param.grad.data, op=dist.reduce_op.SUM)   
-            param.grad.data /= dist.get_world_size()  
-        # --end--  
-        optimizer.step()
+```python
+import torch  
+import torch.distributed as dist  
+# initialize the communication group  
+# define dataloader, loss_fun, and optimizer before starting the training for loop (of an epoch)  
+for inp, label in dataloader:  
+    optimizer.zero_grad()  
+    out = model(inp)  
+    loss = loss_fun(out, lable)  
+    loss.backward()  
+    # --start--  
+    for param in model.parameters():  
+        dist.all_reduce(param.grad.data, op=dist.reduce_op.SUM)   
+        param.grad.data /= dist.get_world_size()  
+    # --end--  
+    optimizer.step()
+```
 
 Compared with standard single node training, only 3 lines of codes between `# --start--` and `# --end--` are needed to enable DDP and these 3 lines of codes just simply trigger `all_reduce` for each gradient. (Note that `module.parameters()` in PyTorch returns of (flattened) list of model weight tensors.)
 
@@ -99,16 +106,17 @@ However, PyTorch still provides us with dedicated APIs for DDP and does not want
 
 Consider a deep neural network with n layers. A complete SGD iteration in DDP is composed of the following:
 
-(1) Each node compute: layer 1 forward -> layer 2 forward -> … -> layer n forward -> layer n backward -> layer n-1 backward -> … -> layer 1 backward (2) all-reduce gradients of all layers  
+(1) Each node compute: layer 1 forward -> layer 2 forward -> … -> layer n forward -> layer n backward -> layer n-1 backward -> … -> layer 1 backward
+(2) all-reduce gradients of all layers  
 (3) update the weight of each layer
 
 Note that the forward and backward in step (1) must be conducted sequentially. However, we shall note that we don’t necessarily need to wait until all operations in step (1) are completed to start step (2). In fact, once layer n backward is completed, we can immediately start to all-reduce layer n gradient and then even update the weight using this all-reduced gradient (as layer n weight is not needed in the backward for layer n-1 to layer 1.) Furthermore, we should step (2) are communication operations and backward in step (1) are computation operations. So overlapping them should not slow down either.
 
 What DDP in `pytorch.distributed` does is an efficient low-level implementation of the above overlapping/pipelining idea. (Instead of overlapping by layer, it actually divides n layers into buckets of multiple layers to optimize the tradeoff between frequent all-reduce of small tensors and poor communication/computation overlapping.) To invoke DDP in `pytorch.distributed` is simple, after initializing the process group and defining the model, we only need the following one-line code:
-
+```python
 from torch.nn.parallel import DistributedDataParallel as DDP  
 ddp_model = DDP(model, device_ids=[rank])
-
+```
 where `model` is the PyTorch model defined in the traditional way; `device_ids=[rank]` consumes the `rank` of the process/node executing the current code. In the remaining codes, we just use `ddp_model` to replace `model` in our single-node training.
 
 Remote Procedure Call (RPC)
@@ -127,11 +135,13 @@ Initialization
 
 To use RPC, each node should be initialized from an API different from `torch.distributed.init_process_group` used in the previous sections. (Note that a node can be in a RPC group and a collection communication/DDP group simultaneously.)
 
-    torch.distributed.rpc.init_rpc(name,   
-        backend=None,  
-        rank=-1,  
-        world_size=None,  
-        rpc_backend_options=None)
+```python
+torch.distributed.rpc.init_rpc(name,   
+    backend=None,  
+    rank=-1,  
+    world_size=None,  
+    rpc_backend_options=None)
+```
 
 where `name` is the global unique name of this node, which is later used to specify where an RPC is executed; `backend` is to specify the backend of RPC; (Though RPC is very close to P2P communication and gloo as a collective communication backend supports P2P. `pytorch.distributed` created a new backend `TensorPipe` that is specifically optimized for tensor computation. ) `rank` and `world_size` are used in the same way as in `torch.distributed.init_process_group`; `rpc_backend_options` expects a `torch.distributed.rpc.RpcBackendOptions` object which has properties like `rpc_timeout` and `init_method` with the same purpose as `init_method` in `torch.distributed.init_process_group`. (If `rpc_backend_options=None`, then we use `os.environ['MASTER_ADDR']` as the address and `os.environ['MASTER_PORT']` as the port to establish a TPC-based transport for RPC communication.
 
@@ -140,7 +150,9 @@ RPC calls
 
 Once the RPC group is initialized, one can use APIs `rpc.rpc_sync` (for a synchronous/blocking PRC call), `rpc.rpc_async` (for an asynchronous/non-blocking PRC call), `rpc.remote` (for an asynchronous call that remotes an `RRef`). These APIs take the same arguments as in the following `rpc_sync` signature:
 
+```python
 torch.distributed.rpc.rpc_sync(to, func, args=None, kwargs=None, timeout=-1.0)
+```
 
 where `to` takes the str name or int rank to specify where the func is executed, `func` is the function to be executed, and `args`/`kwargs` specify the tuple/dictionary of the arguments for `func`.
 
@@ -154,11 +166,13 @@ Distributed Autograd and Optimizer
 
 Auto differentiation is the major functionality advantage that PyTorch/Tensorflow can provide when compared with Numpy. In PyTorch, one only implements the forward logic for a `nn.module` using PyTorch computation APIs such that backward auto differentiation process is implemented automatically by PyTorch. You may worry if things will fail when one use `pytorch.distributed` RPC to implement cross-nodes forward. PyTorch eases your concerns by providing **distributed autograd** which tracks the PRC cross-nodes computation graph for you and conducts the autograd computation for you when needed. The codes achieving distributed autograd are as follows:
 
-    import torch.distributed.autograd as dist_autograd  
-    with dist_autograd.context() as context_id:  
-        pred = model.forward()  
-        loss = loss_func(pred, loss)  
-        dist_autograd.backward(context_id, loss)
+```python
+import torch.distributed.autograd as dist_autograd  
+with dist_autograd.context() as context_id:  
+    pred = model.forward()  
+    loss = loss_func(pred, loss)  
+    dist_autograd.backward(context_id, loss)
+```
 
 The codes are very similar to single node backward and have two key steps:
 
@@ -167,7 +181,9 @@ The codes are very similar to single node backward and have two key steps:
 
 After providing distributed autograd, `Pytorch.distributed` further provides a distributed optimizer that can allow an existing optimizer to work with distributed nodes. Its usage is very straightforward as described below:
 
+```python
 torch.distributed.optim.DistributedOptimizer(optimizer_class, params_rref, args, kwargs)
+```
 
 where `optimizer_class` is to take a standard optimizer class, e.g., `torch.optim.SGD`; `params_rref` is a list of `RRef` that points to local or remote model parameters involved in the optimizer (recall that standard optimizer also takes in such a parameter and the only difference is that distributed optimizer takes in `RRef`s rather than model parameters directly); `args/kwars` are just arguments to specify the optimizer (as in the standard optimizer)
 
@@ -176,75 +192,75 @@ An Example using RPC
 
 In the following, we consider a simple example where node A remotes create a model on node B, trigger SGD training with its own local data, and then pull the trained node B model weight to itself. This example covers everything mentioned in this PRC section.
 
-    import os  
-    import argparse  
-    import torch  
-    from torch import nn, optim  
-    from torch.distributed import rpc, autograd  
-    from torch.distributed.optim import DistributedOptimizer  
-    import torch.multiprocessing as mp  
-      
-    # define the model to be created on node B  
-    class Net(nn.Module):  
-        def __init__(self, input_dim=2, output_dim=1):  
-            super(Net, self).__init__()  
-            self.fc = nn.Linear(input_dim, output_dim, bias=False)  
-        def forward(self, x):  
-            out = self.fc(x)  
-            out = out.to("cpu")  
-            return out  
-        def get_param_rrefs(self):  
-            return [rpc.RRef(param) for param in  self.fc.parameters()]  
-        def get_model(self):  
-            return  self.fc  
-      
-    def run_nodeB(rank, world_size):  
-        rpc.init_rpc(name="node_B", rank=rank, world_size=world_size)  
-        rpc.shutdown()  
-      
-    def run_nodeA(rank, world_size)  
-        rpc.init_rpc(name="node_A", rank=rank, world_size=world_size)  
-        # this will create the Net remotely on node B and obtain the RRef  
-        rref = rpc.remote("node_B", Net)  
-        # obtain the rref params  
-        param_rrefs = rref.rpc_sync().get_params_rrefs()  
-        # define the distributed optimizer  
-        opt = DistributedOptimizer(optim.SGD, params_rrefs, lr=0.1)  
-        # define a synthetic dataset and dataloader  
-        # prepare dataset and dataloader for the server node  
-        x = np.array([[1, 2] for i in range(8)], dtype=np.float32)  
-        y = np.array([1]*4+[0]*4, dtype=np.float32).reshape(-1,1)  
-        ds = torch.utils.data.TensorDataset(torch.from_numpy(x), torch.from_numpy(y))  
-        dataloader = torch.utils.data.DataLoader(ds, batch_size=2, shuffle=False)  
-        # train the model on remote node A by consuming node B's data  
-        for (x, y_true) in dataloader:  
-            with autograd.context() as cid:  
-                y_pred = rref.rpc_sync().forward(x)  
-                loss = torch.nn.functional.mse_loss(y_pred, y_true)  
-                autograd.backward(cid, [loss])  
-                opt.step(cid)  
-        # pull the model from node A and print it out  
-        node_A_nn = rref.rpc_sync().get_model()  
-        print(f"Node A NET weight: {node_A_nn.fc.weight.detach().numpy()}")  
-        rpc.shutdown()  
-      
-    if __name__ == '__main__':  
-        parser = argparse.ArgumentParser()  
-        parser.add_argument("--world_size", type=int, default=2)  
-        parser.add_argument("--rank", type=int, default=None)  
-        args = parser.parse_args()  
-        os.environ['MASTER_ADDR'] = "localhost"  
-        os.environ["MASTER_PORT"] = 29500  
-        processes = []  
-        if args.rank == 0:  
-            p = mp.Process(target=run_server, args=(0, args.world_size))  
-            p.start()  
-        else:  
-            p = mp.Process(target=run_client, args=(args.rank, args.world_size))  
-            p.start()  
-        p.join()
+```python
+import os  
+import argparse  
+import torch  
+from torch import nn, optim  
+from torch.distributed import rpc, autograd  
+from torch.distributed.optim import DistributedOptimizer  
+import torch.multiprocessing as mp  
+
+# define the model to be created on node B  
+class Net(nn.Module):  
+    def __init__(self, input_dim=2, output_dim=1):  
+        super(Net, self).__init__()  
+        self.fc = nn.Linear(input_dim, output_dim, bias=False)  
+    def forward(self, x):  
+        out = self.fc(x)  
+        out = out.to("cpu")  
+        return out  
+    def get_param_rrefs(self):  
+        return [rpc.RRef(param) for param in  self.fc.parameters()]  
+    def get_model(self):  
+        return  self.fc  
+
+def run_nodeB(rank, world_size):  
+    rpc.init_rpc(name="node_B", rank=rank, world_size=world_size)  
+    rpc.shutdown()  
+
+def run_nodeA(rank, world_size)  
+    rpc.init_rpc(name="node_A", rank=rank, world_size=world_size)  
+    # this will create the Net remotely on node B and obtain the RRef  
+    rref = rpc.remote("node_B", Net)  
+    # obtain the rref params  
+    param_rrefs = rref.rpc_sync().get_params_rrefs()  
+    # define the distributed optimizer  
+    opt = DistributedOptimizer(optim.SGD, params_rrefs, lr=0.1)  
+    # define a synthetic dataset and dataloader  
+    # prepare dataset and dataloader for the server node  
+    x = np.array([[1, 2] for i in range(8)], dtype=np.float32)  
+    y = np.array([1]*4+[0]*4, dtype=np.float32).reshape(-1,1)  
+    ds = torch.utils.data.TensorDataset(torch.from_numpy(x), torch.from_numpy(y))  
+    dataloader = torch.utils.data.DataLoader(ds, batch_size=2, shuffle=False)  
+    # train the model on remote node A by consuming node B's data  
+    for (x, y_true) in dataloader:  
+        with autograd.context() as cid:  
+            y_pred = rref.rpc_sync().forward(x)  
+            loss = torch.nn.functional.mse_loss(y_pred, y_true)  
+            autograd.backward(cid, [loss])  
+            opt.step(cid)  
+    # pull the model from node A and print it out  
+    node_A_nn = rref.rpc_sync().get_model()  
+    print(f"Node A NET weight: {node_A_nn.fc.weight.detach().numpy()}")  
+    rpc.shutdown()  
+
+if __name__ == '__main__':  
+    parser = argparse.ArgumentParser()  
+    parser.add_argument("--world_size", type=int, default=2)  
+    parser.add_argument("--rank", type=int, default=None)  
+    args = parser.parse_args()  
+    os.environ['MASTER_ADDR'] = "localhost"  
+    os.environ["MASTER_PORT"] = 29500  
+    processes = []  
+    if args.rank == 0:  
+        p = mp.Process(target=run_server, args=(0, args.world_size))  
+        p.start()  
+    else:  
+        p = mp.Process(target=run_client, args=(args.rank, args.world_size))  
+        p.start()  
+    p.join()
+```
 
 The above codes to emulate model training across 2 nodes can be run locally as the `os.environ['MASTER_ADDR']` is hardcoded to "localhost". We need two terminals and run `python XX.py --rank=0 --world_size=2` and `python XX.py --rank=1 --world_size=2`, respectively.
 
-[  
-](https://medium.com/tag/pytorch?source=post_page-----e3159ee2c2e7---------------------------------------)
