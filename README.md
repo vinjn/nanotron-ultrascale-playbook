@@ -46,3 +46,13 @@ There are two way to load HTML fragments:
 
 ## How to know which fragments are available
 - Run `npm run dev` and look at the console for available fragments
+
+
+## Extensions
+
+1. [html-to-markdown](https://chromewebstore.google.com/detail/html-to-markdown/kgfecdionnddbhjfeanngjbpnnglnpho)
+2. https://www.tampermonkey.net/
+	- weixin to markdown
+	- Zhihu2Markdown
+
+
