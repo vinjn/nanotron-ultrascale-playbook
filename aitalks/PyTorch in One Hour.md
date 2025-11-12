@@ -24,28 +24,28 @@ I’ve spent nearly a decade using, building with, and teaching PyTorch. And in 
 
 **Table of contents**
 
-*   [1\. What is PyTorch](https://sebastianraschka.com/teaching/pytorch-1h/#1-what-is-pytorch)
-    *   [1.1 The three core components of PyTorch](https://sebastianraschka.com/teaching/pytorch-1h/#11-the-three-core-components-of-pytorch)
-    *   [1.2 Defining deep learning](https://sebastianraschka.com/teaching/pytorch-1h/#12-defining-deep-learning)
-    *   [1.3 Installing PyTorch](https://sebastianraschka.com/teaching/pytorch-1h/#13-installing-pytorch)
-*   [2 Understanding tensors](https://sebastianraschka.com/teaching/pytorch-1h/#2-understanding-tensors)
-    *   [2.1 Scalars, vectors, matrices, and tensors](https://sebastianraschka.com/teaching/pytorch-1h/#21-scalars-vectors-matrices-and-tensors)
-    *   [2.2 Tensor data types](https://sebastianraschka.com/teaching/pytorch-1h/#22-tensor-data-types)
-    *   [2.3 Common PyTorch tensor operations](https://sebastianraschka.com/teaching/pytorch-1h/#23-common-pytorch-tensor-operations)
-*   [3 Seeing models as computation graphs](https://sebastianraschka.com/teaching/pytorch-1h/#3-seeing-models-as-computation-graphs)
-*   [4 Automatic differentiation made easy](https://sebastianraschka.com/teaching/pytorch-1h/#4-automatic-differentiation-made-easy)
-*   [5 Implementing multilayer neural networks](https://sebastianraschka.com/teaching/pytorch-1h/#5-implementing-multilayer-neural-networks)
-*   [6 Setting up efficient data loaders](https://sebastianraschka.com/teaching/pytorch-1h/#6-setting-up-efficient-data-loaders)
-*   [7 A typical training loop](https://sebastianraschka.com/teaching/pytorch-1h/#7-a-typical-training-loop)
-*   [8 Saving and loading models](https://sebastianraschka.com/teaching/pytorch-1h/#8-saving-and-loading-models)
-*   [9 Optimizing training performance with GPUs](https://sebastianraschka.com/teaching/pytorch-1h/#9-optimizing-training-performance-with-gpus)
-    *   [9.1 PyTorch computations on GPU devices](https://sebastianraschka.com/teaching/pytorch-1h/#91-pytorch-computations-on-gpu-devices)
-    *   [9.2 Single-GPU training](https://sebastianraschka.com/teaching/pytorch-1h/#92-single-gpu-training)
-    *   [9.3 Training with multiple GPUs](https://sebastianraschka.com/teaching/pytorch-1h/#93-training-with-multiple-gpus)
-*   [Summary](https://sebastianraschka.com/teaching/pytorch-1h/#summary)
-*   [Further reading](https://sebastianraschka.com/teaching/pytorch-1h/#further-reading)
+*   [1. What is PyTorch](#1-what-is-pytorch)
+    *   [1.1 The three core components of PyTorch](#11-the-three-core-components-of-pytorch)
+    *   [1.2 Defining deep learning](#12-defining-deep-learning)
+    *   [1.3 Installing PyTorch](#13-installing-pytorch)
+*   [2 Understanding tensors](#2-understanding-tensors)
+    *   [2.1 Scalars, vectors, matrices, and tensors](#21-scalars-vectors-matrices-and-tensors)
+    *   [2.2 Tensor data types](#22-tensor-data-types)
+    *   [2.3 Common PyTorch tensor operations](#23-common-pytorch-tensor-operations)
+*   [3 Seeing models as computation graphs](#3-seeing-models-as-computation-graphs)
+*   [4 Automatic differentiation made easy](#4-automatic-differentiation-made-easy)
+*   [5 Implementing multilayer neural networks](#5-implementing-multilayer-neural-networks)
+*   [6 Setting up efficient data loaders](#6-setting-up-efficient-data-loaders)
+*   [7 A typical training loop](#7-a-typical-training-loop)
+*   [8 Saving and loading models](#8-saving-and-loading-models)
+*   [9 Optimizing training performance with GPUs](#9-optimizing-training-performance-with-gpus)
+    *   [9.1 PyTorch computations on GPU devices](#91-pytorch-computations-on-gpu-devices)
+    *   [9.2 Single-GPU training](#92-single-gpu-training)
+    *   [9.3 Training with multiple GPUs](#93-training-with-multiple-gpus)
+*   [Summary](#summary)
+*   [Further reading](#further-reading)
 
-1\. What is PyTorch [](https://sebastianraschka.com/teaching/pytorch-1h/#1-what-is-pytorch)[](https://sebastianraschka.com/teaching/pytorch-1h/#1-what-is-pytorch)
+# 1. What is PyTorch [](#1-what-is-pytorch)[](#1-what-is-pytorch)
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 _PyTorch_ ([https://pytorch.org/](https://pytorch.org/)) is an open-source Python-based deep learning library. According to _Papers With Code_ ([https://paperswithcode.com/trends](https://paperswithcode.com/trends)), a platform that tracks and analyzes research papers, PyTorch has been the most widely used deep learning library for research since 2019 by a wide margin. And according to the _Kaggle Data Science and Machine Learning Survey 2022_ ([https://www.kaggle.com/c/kaggle-survey-2022](https://www.kaggle.com/c/kaggle-survey-2022)), the number of respondents using PyTorch is approximately 40% and constantly grows every year.
@@ -54,7 +54,7 @@ One of the reasons why PyTorch is so popular is its user-friendly interface and 
 
 In the following subsections, we will define the main features PyTorch has to offer.
 
-### 1.1 The three core components of PyTorch [](https://sebastianraschka.com/teaching/pytorch-1h/#11-the-three-core-components-of-pytorch)[](https://sebastianraschka.com/teaching/pytorch-1h/#11-the-three-core-components-of-pytorch)
+### 1.1 The three core components of PyTorch [](#11-the-three-core-components-of-pytorch)[](#11-the-three-core-components-of-pytorch)
 
 PyTorch is a relatively comprehensive library, and one way to approach it is to focus on its three broad components, which are summarized in Figure 1.
 
@@ -70,7 +70,7 @@ Finally, PyTorch is a _deep learning library_, meaning that it offers modular, f
 
 After defining the term deep learning and installing PyTorch in the two following subsections, the remainder of this tutorial will go over these three core components of PyTorch in more detail, along with hands-on code examples.
 
-### 1.2 Defining deep learning [](https://sebastianraschka.com/teaching/pytorch-1h/#12-defining-deep-learning)[](https://sebastianraschka.com/teaching/pytorch-1h/#12-defining-deep-learning)
+### 1.2 Defining deep learning [](#12-defining-deep-learning)[](#12-defining-deep-learning)
 
 LLMs are often referred to as _AI_ models in the news. However, LLMs are also a type of deep neural network, and PyTorch is a deep learning library. Sounds confusing? Let’s take a brief moment and summarize the relationship between these terms before we proceed.
 
@@ -100,7 +100,7 @@ Of course, we also want to add a model evaluation between the training and infer
 
 Note that the workflow for training and using LLMs, for example, is similar to the workflow depicted in Figure 3 if we train them to classify texts. And if we are interested in training LLMs for generating texts, for example as covered in my [Build A Large Language Model (From Scratch) book](https://amzn.to/4fqvn0D), Figure 3 still applies. In this case, the labels during pretraining can be derived from the text itself. And the LLM will generate entirely new text (instead of predicting labels) given an input prompt during inference.
 
-### 1.3 Installing PyTorch [](https://sebastianraschka.com/teaching/pytorch-1h/#13-installing-pytorch)[](https://sebastianraschka.com/teaching/pytorch-1h/#13-installing-pytorch)
+### 1.3 Installing PyTorch [](#13-installing-pytorch)[](#13-installing-pytorch)
 
 PyTorch can be installed just like any other Python library or package. However, since PyTorch is a comprehensive library featuring CPU- and GPU-compatible codes, the installation may require additional explanation.
 
@@ -157,7 +157,7 @@ Figure 5. Select a GPU device for Google Colab under the \*Runtime/Change runtim
 
 > **PyTorch on Apple Silicon.** If you have an Apple Mac with an Apple Silicon chip (like the M1, M2, M3, M4 or newer models), you have the option to leverage its capabilities to accelerate PyTorch code execution. To use your Apple Silicon chip for PyTorch, you first need to install PyTorch as you normally would. Then, to check if your Mac supports PyTorch acceleration with its Apple Silicon chip, you can run a simple code snippet in Python: `print(torch.backends.mps.is_available())`. If it returns `True`, it means that your Mac has an Apple Silicon chip that can be used to accelerate PyTorch code.
 
-2 Understanding tensors [](https://sebastianraschka.com/teaching/pytorch-1h/#2-understanding-tensors)[](https://sebastianraschka.com/teaching/pytorch-1h/#2-understanding-tensors)
+2 Understanding tensors [](#2-understanding-tensors)[](#2-understanding-tensors)
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Tensors represent a mathematical concept that generalizes vectors and matrices to potentially higher dimensions. In other words, tensors are mathematical objects that can be characterized by their order (or rank), which provides the number of dimensions. For example, a scalar (just a number) is a tensor of rank 0, a vector is a tensor of rank 1, and a matrix is a tensor of rank 2, as illustrated in Figure 6.
@@ -174,7 +174,7 @@ PyTorch tensors are similar to NumPy arrays but have several additional features
 
 The following subsections will look at the basic operations of the PyTorch tensor library, showing how to create simple tensors and going over some of the essential operations.
 
-### 2.1 Scalars, vectors, matrices, and tensors [](https://sebastianraschka.com/teaching/pytorch-1h/#21-scalars-vectors-matrices-and-tensors)[](https://sebastianraschka.com/teaching/pytorch-1h/#21-scalars-vectors-matrices-and-tensors)
+### 2.1 Scalars, vectors, matrices, and tensors [](#21-scalars-vectors-matrices-and-tensors)[](#21-scalars-vectors-matrices-and-tensors)
 
 As mentioned earlier, PyTorch tensors are data containers for array-like structures. A scalar is a 0-dimensional tensor (for instance, just a number), a vector is a 1-dimensional tensor, and a matrix is a 2-dimensional tensor. There is no specific term for higher-dimensional tensors, so we typically refer to a 3-dimensional tensor as just a 3D tensor, and so forth.
 
@@ -195,7 +195,7 @@ We can create objects of PyTorch’s Tensor class using the torch.tensor functio
     tensor3d = torch.tensor([[[1, 2], [3, 4]], [[5, 6], [7, 8]]])
     
 
-### 2.2 Tensor data types [](https://sebastianraschka.com/teaching/pytorch-1h/#22-tensor-data-types)[](https://sebastianraschka.com/teaching/pytorch-1h/#22-tensor-data-types)
+### 2.2 Tensor data types [](#22-tensor-data-types)[](#22-tensor-data-types)
 
 In the previous section, we created tensors from Python integers. In this case, PyTorch adopts the default 64-bit integer data type from Python. We can access the data type of a tensor via the `.dtype` attribute of a tensor:
 
@@ -234,7 +234,7 @@ This returns:
 
 For more information about different tensor data types available in PyTorch, I recommend checking the official documentation at [https://pytorch.org/docs/stable/tensors.html](https://pytorch.org/docs/stable/tensors.html).
 
-### 2.3 Common PyTorch tensor operations [](https://sebastianraschka.com/teaching/pytorch-1h/#23-common-pytorch-tensor-operations)[](https://sebastianraschka.com/teaching/pytorch-1h/#23-common-pytorch-tensor-operations)
+### 2.3 Common PyTorch tensor operations [](#23-common-pytorch-tensor-operations)[](#23-common-pytorch-tensor-operations)
 
 Comprehensive coverage of all the different PyTorch tensor operations and commands is outside the scope of this tutorial. However, we will briefly describe the essentials that you may require or stumble upon in almost any project.
 
@@ -325,7 +325,7 @@ This prints:
 
 For readers who’d like to browse through all the different tensor operations available in PyTorch (hint: we won’t need most of these), I recommend checking out the official documentation at [https://pytorch.org/docs/stable/tensors.html](https://pytorch.org/docs/stable/tensors.html).
 
-3 Seeing models as computation graphs [](https://sebastianraschka.com/teaching/pytorch-1h/#3-seeing-models-as-computation-graphs)[](https://sebastianraschka.com/teaching/pytorch-1h/#3-seeing-models-as-computation-graphs)
+3 Seeing models as computation graphs [](#3-seeing-models-as-computation-graphs)[](#3-seeing-models-as-computation-graphs)
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 In the previous section, we covered one of the major three components of PyTorch, namely, its tensor library. Next in line is PyTorch’s automatic differentiation engine, also known as autograd. PyTorch’s autograd system provides functions to compute gradients in dynamic computational graphs automatically. But before we dive deeper into computing gradients in the next section, let’s define the concept of a computational graph.
@@ -361,7 +361,7 @@ Figure 7. A logistic regression forward pass as a computation graph. The input f
 
 In fact, PyTorch builds such a computation graph in the background, and we can use this to calculate gradients of a loss function with respect to the model parameters (here `w1` and `b`) to train the model, which is the topic of the upcoming sections.
 
-4 Automatic differentiation made easy [](https://sebastianraschka.com/teaching/pytorch-1h/#4-automatic-differentiation-made-easy)[](https://sebastianraschka.com/teaching/pytorch-1h/#4-automatic-differentiation-made-easy)
+4 Automatic differentiation made easy [](#4-automatic-differentiation-made-easy)[](#4-automatic-differentiation-made-easy)
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 In the previous section, we introduced the concept of computation graphs. If we carry out computations in PyTorch, it will build such a graph internally by default if one of its terminal nodes has the `requires_grad` attribute set to `True`. This is useful if we want to compute gradients. Gradients are required when training neural networks via the popular backpropagation algorithm, which can be thought of as an implementation of the _chain rule_ from calculus for neural networks, which is illustrated in Figure 8.
@@ -421,7 +421,7 @@ The outputs are:
 
 If this section is packed with a lot of information and you may be overwhelmed by the calculus concepts, don’t worry. While this calculus jargon was a means to explain PyTorch’s autograd component, all you need to take away from this section is that PyTorch takes care of the calculus for us via the `.backward` method – we usually don’t need to compute any derivatives or gradients by hand when using PyTorch.
 
-5 Implementing multilayer neural networks [](https://sebastianraschka.com/teaching/pytorch-1h/#5-implementing-multilayer-neural-networks)[](https://sebastianraschka.com/teaching/pytorch-1h/#5-implementing-multilayer-neural-networks)
+5 Implementing multilayer neural networks [](#5-implementing-multilayer-neural-networks)[](#5-implementing-multilayer-neural-networks)
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 In the previous sections, we covered PyTorch’s tensor and autograd components. This section focuses on PyTorch as a library for implementing deep neural networks.
@@ -606,7 +606,7 @@ The values can now be interpreted as class-membership probabilities that sum up 
 
 In the following two sections, we will learn how to set up an efficient data loader and train the model.
 
-6 Setting up efficient data loaders [](https://sebastianraschka.com/teaching/pytorch-1h/#6-setting-up-efficient-data-loaders)[](https://sebastianraschka.com/teaching/pytorch-1h/#6-setting-up-efficient-data-loaders)
+6 Setting up efficient data loaders [](#6-setting-up-efficient-data-loaders)[](#6-setting-up-efficient-data-loaders)
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 In the previous section, we defined a custom neural network model. Before we can train this model, we have to briefly talk about creating efficient data loaders in PyTorch, which we will iterate over when training the model. The overall idea behind data loading in PyTorch is illustrated in Figure 10.
@@ -755,7 +755,7 @@ Furthermore, for Jupyter notebooks, setting `num_workers` to greater than 0 can 
 
 In my experience, setting `num_workers=4` usually leads to optimal performance on many real-world datasets, but optimal settings depend on your hardware and the code used for loading a training example defined in the `Dataset` class.
 
-7 A typical training loop [](https://sebastianraschka.com/teaching/pytorch-1h/#7-a-typical-training-loop)[](https://sebastianraschka.com/teaching/pytorch-1h/#7-a-typical-training-loop)
+7 A typical training loop [](#7-a-typical-training-loop)[](#7-a-typical-training-loop)
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 So far, we’ve discussed all the requirements for training neural networks: PyTorch’s tensor library, autograd, the `Module` API, and efficient data loaders. Let’s now combine all these things and train a neural network on the toy dataset from the previous section. The training code is shown in code below.
@@ -930,7 +930,7 @@ This prints `1.0`.
 
 In this section, we learned how we can train a neural network using PyTorch. Next, let’s see how we can save and restore models after training.
 
-8 Saving and loading models [](https://sebastianraschka.com/teaching/pytorch-1h/#8-saving-and-loading-models)[](https://sebastianraschka.com/teaching/pytorch-1h/#8-saving-and-loading-models)
+8 Saving and loading models [](#8-saving-and-loading-models)[](#8-saving-and-loading-models)
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 In the previous section, we successfully trained a model. Let’s now see how we can save a trained model to reuse it later.
@@ -957,12 +957,12 @@ Note that the line `model = NeuralNetwork(2, 2)` above is not strictly necessary
 
 The last section will show you how to train PyTorch models faster using one or more GPUs (if available).
 
-9 Optimizing training performance with GPUs [](https://sebastianraschka.com/teaching/pytorch-1h/#9-optimizing-training-performance-with-gpus)[](https://sebastianraschka.com/teaching/pytorch-1h/#9-optimizing-training-performance-with-gpus)
+9 Optimizing training performance with GPUs [](#9-optimizing-training-performance-with-gpus)[](#9-optimizing-training-performance-with-gpus)
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 In this last section of this tutorial, we will see how we can utilize GPUs, which will accelerate deep neural network training compared to regular CPUs. First, we will introduce the main concepts behind GPU computing in PyTorch. Then, we will train a model on a single GPU. Finally, we’ll then look at distributed training using multiple GPUs.
 
-### 9.1 PyTorch computations on GPU devices [](https://sebastianraschka.com/teaching/pytorch-1h/#91-pytorch-computations-on-gpu-devices)[](https://sebastianraschka.com/teaching/pytorch-1h/#91-pytorch-computations-on-gpu-devices)
+### 9.1 PyTorch computations on GPU devices [](#91-pytorch-computations-on-gpu-devices)[](#91-pytorch-computations-on-gpu-devices)
 
 As you will see, modifying the training loop from section 2.7 to optionally run on a GPU is relatively simple and only requires changing three lines of code.
 
@@ -1028,7 +1028,7 @@ This results in the following:
 
 In this section, we learned that GPU computations on PyTorch are relatively straightforward. All we have to do is transfer the tensors onto the same GPU device, and PyTorch will handle the rest. Equipped with this information, we can now train the neural network from the previous section on a GPU.
 
-### 9.2 Single-GPU training [](https://sebastianraschka.com/teaching/pytorch-1h/#92-single-gpu-training)[](https://sebastianraschka.com/teaching/pytorch-1h/#92-single-gpu-training)
+### 9.2 Single-GPU training [](#92-single-gpu-training)[](#92-single-gpu-training)
 
 Now that we are familiar with transferring tensors to the GPU, we can modify the training loop from _section 2.7, A typical training loop_, to run on a GPU. This requires only changing three lines of code, as shown in the code below.
 
@@ -1088,7 +1088,7 @@ As we saw in this section, training a model on a single GPU in PyTorch is relati
 
 > **PyTorch on macOS.** On an Apple Mac with an Apple Silicon chip (like the M1, M2, M3, M4, or newer models) instead of a computer with an Nvidia GPU, you can change `device = torch.device("cuda" if torch.cuda.is_available() else "cpu")` to `device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")` to take advantage of this chip.
 
-### 9.3 Training with multiple GPUs [](https://sebastianraschka.com/teaching/pytorch-1h/#93-training-with-multiple-gpus)[](https://sebastianraschka.com/teaching/pytorch-1h/#93-training-with-multiple-gpus)
+### 9.3 Training with multiple GPUs [](#93-training-with-multiple-gpus)[](#93-training-with-multiple-gpus)
 
 In this section, we will briefly go over the concept of distributed training. Distributed training is the concept of dividing the model training across multiple GPUs and machines.
 
@@ -1421,7 +1421,7 @@ As expected, we can see that some batches are processed on the first GPU (GPU0) 
 
 This is, in a nutshell, how distributed training via DDP works. If you are interested in additional details, I recommend checking the official [`DistributedDataParallel` API documentation](https://pytorch.org/docs/stable/generated/torch.nn.parallel.DistributedDataParallel.html#torch.nn.parallel.DistributedDataParallel). documentation.
 
-Summary [](https://sebastianraschka.com/teaching/pytorch-1h/#summary)[](https://sebastianraschka.com/teaching/pytorch-1h/#summary)
+Summary [](#summary)[](#summary)
 ----------------------------------------------------------------------------------------------------------------------------------
 
 *   PyTorch is an open-source library that consists of three core components: a tensor library, automatic differentiation functions, and deep learning utilities.
@@ -1434,7 +1434,7 @@ Summary [](https://sebastianraschka.com/teaching/pytorch-1h/#summary)[](https://
 *   It’s easiest to train models on a CPU or single GPU.
 *   Using DistributedDataParallel is the simplest way in PyTorch to accelerate the training if multiple GPUs are available.
 
-Further reading [](https://sebastianraschka.com/teaching/pytorch-1h/#further-reading)[](https://sebastianraschka.com/teaching/pytorch-1h/#further-reading)
+Further reading [](#further-reading)[](#further-reading)
 ----------------------------------------------------------------------------------------------------------------------------------------------------------
 
 While this tutorial should be sufficient to get you up to speed with the PyTorch essentials, in addition, if you are looking for more comprehensive introductions to deep learning, I recommend the following books:
