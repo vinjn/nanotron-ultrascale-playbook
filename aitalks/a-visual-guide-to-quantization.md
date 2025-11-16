@@ -27,24 +27,6 @@ In this post, I will introduce the field of quantization in the context of langu
 
 In this visual guide, there are more than **50 custom visuals** to help you develop an intuition about quantization!
 
-Thanks for reading _Exploring Language Models_! Subscribe to receive new posts on _Gen AI_ and the book: **[Hands-On Large Language Models](https://github.com/HandsOnLLM/Hands-On-Large-Language-Models)**
-
-Subscribe
-
-To see more visualizations related to LLMs and to support this newsletter, check out the book I wrote on Large Language Models!
-
-[
-
-![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_3381ba48cb1c.jpeg)
-
-
-
-](https://substackcdn.com/image/fetch/$s_!MdLW!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fa0b260f5-da52-4186-bc06-fd22077b2737_590x768.jpeg)
-
-[Official website](https://www.llm-book.com/) of the book. You can order the book on [Amazon](https://www.amazon.com/Hands-Large-Language-Models-Understanding/dp/1098150961). All code is uploaded to [GitHub](https://github.com/handsOnLLM/Hands-On-Large-Language-Models).
-
-_P.S. If you read the book, a **[quick review](https://www.amazon.com/Hands-Large-Language-Models-Understanding/dp/1098150961)** would mean the world—it really helps us authors!_
-
 Part 1: **The “Problem“ with LLMs**
 
 
@@ -519,7 +501,7 @@ Broadly, there are two methods for calibrating the quantization method of the we
 *   Post-Training Quantization (PTQ)
     
     *   Quantization _**after**_ training
-        
+    
 *   Quantization Aware Training (QAT)
     
     *   Quantization _**during**_ training/fine-tuning

@@ -27,22 +27,6 @@ With over 40 custom visuals in this post, you will explore the field of reasonin
 
 _👈 click on the stack of lines on the left to see a **Table of Contents** (ToC),_
 
-Check out the book we wrote on large language models for more visualizations related to LLMs and to support this newsletter!
-
-[
-
-![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_3381ba48cb1c.jpeg)
-
-
-
-](https://substackcdn.com/image/fetch/$s_!MdLW!,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fa0b260f5-da52-4186-bc06-fd22077b2737_590x768.jpeg)
-
-[Official website](https://www.llm-book.com/) of the book. You can order the book on [Amazon](https://www.amazon.com/Hands-Large-Language-Models-Understanding/dp/1098150961). All code is uploaded to [GitHub](https://github.com/handsOnLLM/Hands-On-Large-Language-Models).
-
-_P.S. If you read the book, a **[quick review](https://www.amazon.com/Hands-Large-Language-Models-Understanding/dp/1098150961)** would mean the world—it really helps us authors!_
-
-Subscribe
-
 What are reasoning LLMs?
 
 
