@@ -17,7 +17,7 @@ The Transformer architecture has been a major component in the success of Large 
 
 To further improve LLMs, new architectures are developed that might even outperform the Transformer architecture. One of these methods is _Mamba_, a _State Space Model_.
 
-![](https://substackcdn.com/image/fetch/$s_!cam8!,w_1456,c_limit,f_auto,q_auto:good,fl_lossy/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5547a54a-5f47-41c0-a2ee-2ba5bcceefb8_1920x1080.gif)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_e3a5d4ca8422.gif)
 
 
 Mamba was proposed in the paper [Mamba: Linear-Time Sequence Modeling with Selective State Spaces](https://arxiv.org/abs/2312.00752).[1](https://newsletter.maartengrootendorst.com/p/a-visual-guide-to-mamba-and-state?utm_source=profile&utm_medium=reader2#footnote-1-141228095) You can find its official implementation and model checkpoints in its [repository](https://github.com/state-spaces/mamba).
@@ -42,7 +42,7 @@ A Transformer sees any textual input as a _sequence_ that consists of _tokens_.
 
 A major benefit of Transformers is that whatever input it receives, it can look back at any of the earlier tokens in the sequence to derive its representation.
 
-![](https://substackcdn.com/image/fetch/$s_!CBPZ!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fd2c01c75-1105-4aeb-a608-f00c85bbe5f7_1776x532.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_96529c81a77f.png)
 
 
 
@@ -51,11 +51,11 @@ The Core Components of Transformers
 
 Remember that a Transformer consists of two structures, a set of encoder blocks for representing text and a set of decoder blocks for generating text. Together, these structures can be used for several tasks, including translation.
 
-![](https://substackcdn.com/image/fetch/$s_!ZjET!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F62a21d60-2e84-4c19-a6fb-d2eff501af1c_1776x952.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_e54179245fbf.png)
 
 We can adopt this structure to create generative models by using only decoders. This Transformer-based model, _Generative Pre-trained Transformers_ (GPT), uses decoder blocks to complete some input text.
 
-![](https://substackcdn.com/image/fetch/$s_!NpX9!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F58e51959-d4ef-4fa9-a1c7-dab0e5ca4dc0_1776x1012.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_85b438f0fbd5.png)
 
 
 Let’s take a look at how that works!
@@ -65,7 +65,7 @@ A Blessing with Training…
 
 A single decoder block consists of two main components, masked self-attention followed by a feed-forward neural network.
 
-![](https://substackcdn.com/image/fetch/$s_!9-0q!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F4b5af9c5-5266-4c2b-b583-b20a19f19fcc_1776x464.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_ddbb6dc119cb.png)
 
 
 Self-attention is a major reason why these models work so well. It enables an uncompressed view of the entire sequence with fast training.
@@ -74,7 +74,7 @@ So how does it work?
 
 It creates a matrix comparing each token with every token that came before. The weights in the matrix are determined by how relevant the token pairs are to one another.
 
-![](https://substackcdn.com/image/fetch/$s_!tr9q!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F167cfe80-2863-47c8-a969-cb2eeedbd353_1776x860.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_d9a4b0677ee9.png)
 
 
 During training, this matrix is created in one go. The attention between “_My_” and “_name_” does not need to be calculated first before we calculate the attention between “_name_” and “_is_”.
@@ -86,12 +86,12 @@ And the Curse with Inference!
 
 There is a flaw, however. When generating the next token, we need to re-calculate the attention for the _entire sequence_, even if we already generated some tokens.
 
-![](https://substackcdn.com/image/fetch/$s_!-uKS!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fb66f1965-fc44-4a61-b9c6-912c8120ecad_2420x580.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_821d320c5e39.png)
 
 
 Generating tokens for a sequence of length _L_ needs roughly _L²_ computations which can be costly if the sequence length increases.
 
-![](https://substackcdn.com/image/fetch/$s_!zx4V!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F405074ed-aa8c-44b4-88a5-bae1dad0412e_2072x392.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_e71f5776a333.png)
 
 
 This need to recalculate the entire sequence is a major bottleneck of the Transformer architecture.
@@ -105,7 +105,7 @@ Recurrent Neural Networks (RNN) is a sequence-based network. It takes two inputs
 
 RNNs have a looping mechanism that allows them to pass information from a previous step to the next. We can “unfold” this visualization to make it more explicit.
 
-![](https://substackcdn.com/image/fetch/$s_!VDgL!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fddc71706-8da8-4c28-921b-675e9164c7ab_2404x872.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_b669e2b546eb.png)
 
 
 When generating the output, the RNN only needs to consider the previous hidden state and current input. It prevents recalculating all previous hidden states which is what a Transformer would do.
@@ -114,7 +114,7 @@ In other words, RNNs can do inference fast as it scales linearly with the sequen
 
 To illustrate, let’s apply the RNN to the input text we have used before.
 
-![](https://substackcdn.com/image/fetch/$s_!1eET!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fb2484541-f7b1-4950-b04f-5a3177596fbb_2228x808.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_b07234063bfa.png)
 
 
 Each hidden state is the aggregation of all previous hidden states and is typically a compressed view.
@@ -145,11 +145,11 @@ Although State Space Models use equations and matrices to track this behavior, i
 
 The variables that describe a state, in our example the X and Y coordinates, as well as the distance to the exit, can be represented as “_state vectors_”.
 
-![](https://substackcdn.com/image/fetch/$s_!4TzR!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F42c79eba-2559-4d9d-8999-bee33666f2e3_2364x736.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_d367ff84a690.png)
 
 Sounds familiar? That is because embeddings or vectors in language models are also frequently used to describe the “state” of an input sequence. For instance, a vector of your current position (state vector) could look a bit like this:
 
-![](https://substackcdn.com/image/fetch/$s_!m9J4!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F9ff8812a-64d2-4fc6-8e54-eb86222333b0_1496x444.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_f38f7a907222.png)
 
 In terms of neural networks, the “state” of a system is typically its hidden state and in the context of Large Language Models, one of the most important aspects of generating a new token.
 
@@ -169,17 +169,17 @@ Traditionally, at time _**t**_, SSMs:
 
 However, instead of using _discrete_ _sequences_ (like moving left once) it takes as input a _continuous_ _sequence_ and predicts the output sequence.
 
-![](https://substackcdn.com/image/fetch/$s_!V1I6!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5788c3e4-8794-4492-af87-3a45f7a6aa70_1992x624.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_e19692abfe82.png)
 
 SSMs assume that dynamic systems, such as an object moving in 3D space, can be predicted from its state at time _**t**_ through two equations.
 
-![](https://substackcdn.com/image/fetch/$s_!nrEV!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F32401c6d-39b6-4619-a75e-6b33d3268bca_2520x388.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_239dbdfa4a3e.png)
 
 By solving these equations, we assume that we can uncover the statistical principles to predict the state of a system based on observed data (input sequence and previous state).
 
 Its goal is to find this state representation _**h(t)**_ such that we can go from an input to an output sequence.
 
-![](https://substackcdn.com/image/fetch/$s_!pAQE!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F0ca5c7ae-3dbe-44d8-8b13-7f4dcc14a29b_2008x624.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_c4dcb1475544.png)
 
 
 These two equations are the core of the State Space Model.
@@ -188,13 +188,13 @@ The two equations will be referenced throughout this guide. To make them a bit m
 
 The **state equation** describes how the state changes (through _matrix A_) based on how the input influences the state (through _matrix B_).
 
-![](https://substackcdn.com/image/fetch/$s_!SFe0!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F0876819d-8a46-4187-9826-14391bfd47b9_1796x624.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_605860dd9936.png)
 
 As we saw before, _**h(t)**_ refers to our latent state representation at any given time _**t**_, and _**x(t)**_ refers to some input.
 
 The **output equation** describes how the state is translated to the output (through _matrix C_) and how the input influences the output (through _matrix D_).
 
-![](https://substackcdn.com/image/fetch/$s_!alZ1!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fb2e87708-9676-4a1c-b32c-d703026f64d9_1796x624.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_8eb06d2ecd27.png)
 
 
 > **NOTE**: Matrices _A_, _B_, _C_, and _D_ are also commonly refered to as _parameters_ since they are learnable.
@@ -202,7 +202,7 @@ The **output equation** describes how the state is translated to the output (thr
 Visualizing these two equations gives us the following architecture:
 
 
-![](https://substackcdn.com/image/fetch/$s_!kKud!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc358439e-c507-49f1-ac2e-5dedaccc2a8b_1728x364.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_b4d4f3823c51.png)
 
 
 Let’s go through the general technique step-by-step to understand how these matrices influence the learning process.
@@ -210,12 +210,12 @@ Let’s go through the general technique step-by-step to understand how these ma
 Assume we have some input signal _**x(t)**_, this signal first gets multiplied by _matrix B_ which describes how the inputs influence the system.
 
 
-![](https://substackcdn.com/image/fetch/$s_!d8Ts!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fcd6f8dae-2281-47af-8ba3-06bbdc594d1c_1956x360.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_f6ed471918c3.png)
 
 The updated state (akin to the hidden state of a neural network) is a latent space that contains the core “knowledge” of the environment. We multiply the state with _matrix A_ which describes how all the internal states are connected as they represent the underlying dynamics of the system.
 
 
-![](https://substackcdn.com/image/fetch/$s_!Ckm-!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F1cedc98a-d200-4fe4-b311-6d68dcaa50af_1956x572.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_01655b04257e.png)
 
 
 As you might have noticed, _matrix A_ is applied before creating the state representations and is updated after the state representation has been updated.
@@ -223,20 +223,20 @@ As you might have noticed, _matrix A_ is applied before creating the state repre
 Then, we use _matrix C_ to describe how the state can be translated to an output.
 
 
-![](https://substackcdn.com/image/fetch/$s_!sgay!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F8599487f-1023-4069-be7a-8056e63b0574_1956x572.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_7a7bd8c3fb5d.png)
 
 
 
 Finally, we can make use of _matrix D_ to provide a direct signal from the input to the output. This is also often referred to as a _skip-connection_.
 
 
-![](https://substackcdn.com/image/fetch/$s_!Pjsq!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fcf79721f-5cef-44da-98c5-f63a7839ebc3_1956x756.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_ecd93fa920a9.png)
 
 
 Since _matrix D_ is similar to a skip-connection, the SSM is often regarded as the following without the skip-connection.
 
 
-![](https://substackcdn.com/image/fetch/$s_!Y8IQ!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F0ca1d511-7d31-42a0-9220-2fb85b256efd_1956x864.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_fa3a75f430e2.png)
 
 
 We can also go through each step in more detail:
@@ -246,13 +246,13 @@ Going back to our simplified perspective, we can now focus on matrices _A_, _B_,
 Which can be shown as:
 
 
-![](https://substackcdn.com/image/fetch/$s_!r4iU!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F4e52f4f0-d7ad-453d-a741-6dfa4a998964_1728x352.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_64f734ae47d3.png)
 
 
 We can update the original equations (and add some pretty colors) to signify the purpose of each matrix as we did before.
 
 
-![](https://substackcdn.com/image/fetch/$s_!HTOq!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F55df8ede-3a16-4473-8ea9-872fe199d3a1_1904x676.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_4cae5c4b8daf.png)
 
 
 Together, these two equations aim to predict the state of a system from observed data. Since the input is expected to be continuous, the main representation of the SSM is a **continuous-time representation**.
@@ -266,7 +266,7 @@ Finding the state representation _**h(t)**_ is analytically challenging if you h
 
 To do so, we make use of the _Zero-order hold technique._ It works as follows. First, every time we receive a discrete signal, we hold its value until we receive a new discrete signal. This process creates a continuous signal the SSM can use:
 
-![](https://substackcdn.com/image/fetch/$s_!jd_L!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F7d9d77e2-1456-4eef-96b1-b943014bed1e_1920x638.gif)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_d15b6404e2f0.gif)
 
 
 
@@ -274,7 +274,7 @@ How long we hold the value is represented by a new learnable parameter, called t
 
 Now that we have a continuous signal for our input, we can generate a continuous output and only sample the values according to the time steps of the input.
 
-![](https://substackcdn.com/image/fetch/$s_!v9P_!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fe692b224-bc6b-4c8a-a4a7-ddd92173b25e_1918x630.gif)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_708fcc66fc8d.gif)
 
 
 
@@ -282,13 +282,13 @@ These sampled values are our discretized output!
 
 Mathematically, we can apply the Zero-order hold as follows:
 
-![](https://substackcdn.com/image/fetch/$s_!_TjK!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff6df4b59-6f76-4f13-a201-7b69e59df164_6200x1176.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_0770e3255426.png)
 
 
 
 Together, they allow us to go from a continuous SSM to a discrete SSM represented by a formulation that instead of a _function-to-function_, _**x(t)**_ → _**y(t)**_, is now a _sequence-to-sequence, **x**_**ₖ** → _**y**_**ₖ**:
 
-![](https://substackcdn.com/image/fetch/$s_!QVa5!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc29cfbbb-ae41-4dc2-b899-9e0a81cba34d_1980x1012.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_c35e7ef0befc.png)
 
 
 Here, matrices _A_ and _B_ now represent discretized parameters of the model.
@@ -309,28 +309,28 @@ Our discretized SSM allows us to formulate the problem in specific timesteps ins
 If we consider discrete timesteps instead of a continuous signal, we can reformulate the problem with timesteps:
 
 
-![](https://substackcdn.com/image/fetch/$s_!XAz6!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F83b70ba4-b068-44d1-8641-9b224d103c51_1980x548.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_e9ac92ad0f6a.png)
 
 
 
 At each timestep, we calculate how the current input (_**Bx**_**ₖ**) influences the previous state (**Ahₖ₋₁**) and then calculate the predicted output (_**Ch**_**ₖ**).
 
 
-![](https://substackcdn.com/image/fetch/$s_!yujB!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fbb4d0412-87fb-4507-bedb-4793588bd465_2116x788.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_895580813ae0.png)
 
 
 
 This representation might already seem a bit familiar! We can approach it the same way we did with the RNN as we saw before.
 
 
-![](https://substackcdn.com/image/fetch/$s_!l2el!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F91ca51f7-9b9b-4f17-bccb-32a5a96f3339_2184x868.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_6a90150b9a0e.png)
 
 
 
 Which we can unfold (or unroll) as such:
 
 
-![](https://substackcdn.com/image/fetch/$s_!v2ZT!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fd1084e8a-a70d-450b-beb0-f18117ade5ed_2184x876.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_e133f7411611.png)
 
 
 
@@ -344,14 +344,14 @@ The Convolution Representation
 Another representation that we can use for SSMs is that of convolutions. Remember from classic image recognition tasks where we applied filters (_kernels_) to derive aggregate features:
 
 
-![](https://substackcdn.com/image/fetch/$s_!twIZ!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F47f05950-bfad-4013-b854-679c9a47ada9_3216x2144.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_68e9df21ff76.png)
 
 
 
 Since we are dealing with text and not images, we need a 1-dimensional perspective instead:
 
 
-![](https://substackcdn.com/image/fetch/$s_!GCKD!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fb943872f-de72-43e8-b2f1-cb8213f120a3_3216x1296.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_eb728cf54888.png)
 
 
 
@@ -360,14 +360,14 @@ Using techniques from a different field makes for an interesting pipeline:
 The kernel that we use to represent this “filter” is derived from the SSM formulation:
 
 
-![](https://substackcdn.com/image/fetch/$s_!_5jO!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F05049821-2352-4c04-8fb2-07fe15c20a9c_2620x824.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_2e0a6509eeec.png)
 
 
 
 Let’s explore how this kernel works in practice. Like convolution, we can use our SSM kernel to go over each set of tokens and calculate the output:
 
 
-![](https://substackcdn.com/image/fetch/$s_!-75V!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F9007d03b-c1c9-4b37-8c83-f27bfe8318f4_2620x1080.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_7420b5f75534.png)
 
 
 
@@ -376,14 +376,14 @@ This also illustrates the effect padding might have on the output. I changed the
 In the next step, the kernel is moved once over to perform the next step in the calculation:
 
 
-![](https://substackcdn.com/image/fetch/$s_!wdkl!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F82ed71fb-f237-4173-bb23-bd1bf02ff123_2620x1080.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_0a4b525b6a8d.png)
 
 
 
 In the final step, we can see the full effect of the kernel:
 
 
-![](https://substackcdn.com/image/fetch/$s_!soIJ!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F7b984ef9-5f56-4bb3-bc21-f66d7ca3cf98_2560x1440.gif)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_d2532d6eb2fa.gif)
 
 
 
@@ -397,7 +397,7 @@ The Three Representations
 These three representations, _continuous_, _recurrent_, and _convolutional_ all have different sets of advantages and disadvantages:
 
 
-![](https://substackcdn.com/image/fetch/$s_!FWd6!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F682187d6-f402-44aa-8097-8a2e5b6179a7_2072x744.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_e614246d55e6.png)
 
 
 
@@ -406,7 +406,7 @@ Interestingly, we now have efficient inference with the recurrent SSM and parall
 With these representations, there is a neat trick that we can use, namely choose a representation depending on the task. During training, we use the convolutional representation which can be parallelized and during inference, we use the efficient recurrent representation:
 
 
-![](https://substackcdn.com/image/fetch/$s_!77LQ!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F9c43c82d-9735-4d55-97bb-8ad6f504909e_1960x1008.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_ea865d0e0a81.png)
 
 
 
@@ -426,13 +426,13 @@ The Importance of Matrix _A_
 Arguably one of the most important aspects of the SSM formulation is _matrix A_. As we saw before with the recurrent representation, it captures information about the _previous_ state to build the _new_ state.
 
 
-![](https://substackcdn.com/image/fetch/$s_!PbYt!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F2b2a1eb3-72f3-4baf-ac89-4b16b6b8ef41_1840x778.gif)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_e8bf0d3cb6a5.gif)
 
 
 
 In essence, _matrix_ _A_ produces the hidden state:
 
-![](https://substackcdn.com/image/fetch/$s_!M-uM!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F47635355-6b9a-4981-af3a-7ee6a12b87b3_1412x468.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_71eaf8a5fe1f.png)
 
 
 
@@ -443,7 +443,7 @@ So how can we create _matrix A_ in a way that retains a large memory (context si
 We use Hungry Hungry Hippo! Or [HiPPO](https://proceedings.neurips.cc/paper/2020/hash/102f0bb6efb3a6128a3c750dd16729be-Abstract.html)[3](https://newsletter.maartengrootendorst.com/p/a-visual-guide-to-mamba-and-state?utm_source=profile&utm_medium=reader2#footnote-3-141228095) for **Hi**gh-order **P**olynomial **P**rojection **O**perators.
 
 
-![](https://substackcdn.com/image/fetch/$s_!OpoS!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F07985a64-fc26-4ee8-9ec2-c488e4cb709a_1492x488.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_02b4f9ce077c.png)
 
 
 
@@ -452,14 +452,14 @@ HiPPO attempts to compress all input signals it has seen thus far into a vector 
 It uses _matrix A_ to build a state representation that captures recent tokens well and decays older tokens. Its formula can be represented as follows:
 
 
-![](https://substackcdn.com/image/fetch/$s_!cuQ1!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F4bc7c768-7f0c-4983-a21e-70a4f587e6aa_2520x628.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_dcf8b8bf1666.png)
 
 
 
 Assuming we have a square _matrix A_, this gives us:
 
 
-![](https://substackcdn.com/image/fetch/$s_!uc-k!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fef8f5de9-6448-43d5-9878-c8cd1d938b7c_1436x708.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_68be5713664c.png)
 
 
 Building _matrix A_ using HiPPO was shown to be much better than initializing it as a random matrix. As a result, it more accurately reconstructs _newer_ signals (recent tokens) compared to _older_ signals (initial tokens).
@@ -479,7 +479,7 @@ It consists of three parts:
 *   Discretization for creating **recurrent** and **convolution** representations
     
 
-![](https://substackcdn.com/image/fetch/$s_!mnMc!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Feb055ec5-f8c7-4862-ab88-f4fb38abf042_1892x844.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_0a8ba4ba9f37.png)
 
 
 This class of SSMs has several benefits depending on the representation you choose (recurrent vs. convolution). It can also handle long sequences of text and store memory efficiently by building upon the HiPPO matrix.
@@ -516,7 +516,7 @@ We can illustrate this with two synthetic tasks, namely **selective copying** an
 In the **selective copying** task, the goal of the SSM is to copy parts of the input and output them in order:
 
 
-![](https://substackcdn.com/image/fetch/$s_!Z-Di!,w_1456,c_limit,f_auto,q_auto:good,fl_lossy/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F1e086c20-18c0-4d5f-9efd-348ffd4f9858_1554x358.gif)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_c4975b60bd32.gif)
 
 
 However, a (recurrent/convolutional) SSM performs poorly in this task since it is _**Linear Time Invariant**_**.** As we saw before, the matrices _A_, _B_, and _C_ are the same for every token the SSM generates.
@@ -526,7 +526,7 @@ As a result, an SSM cannot perform _content-aware reasoning_ since it treats eac
 The second task an SSM performs poorly on is **induction heads** where the goal is to reproduce patterns found in the input:
 
 
-![](https://substackcdn.com/image/fetch/$s_!U5YG!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fef90ea52-25e3-4949-b026-b6ae562fb52f_1496x578.gif)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_0e03a9590782.gif)
 
 
 
@@ -535,13 +535,13 @@ In the above example, we are essentially performing one-shot prompting where we 
 Let’s illustrate this by focusing on _matrix B_. Regardless of what the input _**x**_ is, _matrix B_ remains exactly the same and is therefore independent of _**x**_:
 
 
-![](https://substackcdn.com/image/fetch/$s_!4xmC!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F1ee2bd7a-b99b-4871-8396-69cb7dd13cf5_1480x808.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_845176309a44.png)
 
 
 Likewise, _A_ and _C_ also remain fixed regardless of the input. This demonstrates the _static_ nature of the SSMs we have seen thus far.
 
 
-![](https://substackcdn.com/image/fetch/$s_!9uCD!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F0fea51ca-8458-4216-bf1c-c880a23504b4_1412x484.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_9902214fa59c.png)
 
 
 
@@ -559,7 +559,7 @@ The recurrent representation of an SSM creates a small state that is quite effic
 Mamba aims to have the best of both worlds. A small state that is as powerful as the state of a Transformer:
 
 
-![](https://substackcdn.com/image/fetch/$s_!e1s4!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F84b8a71a-6310-416b-8622-e9166593171e_1540x464.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_454c85b55b6a.png)
 
 
 
@@ -569,20 +569,20 @@ As teased above, it does so by compressing data selectively into the state. When
 To selectively compress information, we need the parameters to be dependent on the input. To do so, let’s first explore the dimensions of the input and output in an SSM during training:
 
 
-![](https://substackcdn.com/image/fetch/$s_!S5cc!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F9376222e-b232-4458-a72c-bd741d8a031c_1436x500.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_187cb2ffe38c.png)
 
 
 
 In a Structured State Space Model (S4), the matrices _A_, _B_, and _C_ are independent of the input since their dimensions _**N**_ and _**D**_ are static and do not change.
 
-![](https://substackcdn.com/image/fetch/$s_!2pRJ!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F3e93b701-df74-4954-be5c-c0d83779d3df_1412x532.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_ec306b436921.png)
 
 
 
 Instead, Mamba makes matrices _B_ and _C,_ and even the _step size_ **∆**_,_ dependent on the input by incorporating the sequence length and batch size of the input:
 
 
-![](https://substackcdn.com/image/fetch/$s_!6R-P!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fdccefffd-5712-45ab-9821-c794bce65d7d_1412x596.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_dc6699791447.png)
 
 
 
@@ -594,7 +594,7 @@ Together, they _selectively_ choose what to keep in the hidden state and what to
 
 A smaller _step size_ **∆** results in ignoring specific words and instead using the previous context more whilst a larger _step size_ **∆** focuses on the input words more than the context:
 
-![](https://substackcdn.com/image/fetch/$s_!D8RX!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F06b21aab-aa32-450a-ae02-b976a2c9f9d8_2520x616.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_74305c702702.png)
 
 
 The Scan Operation
@@ -606,7 +606,7 @@ Since these matrices are now _dynamic_, they cannot be calculated using the conv
 
 To enable parallelization, let’s explore how we compute the output with recurrence:
 
-![](https://substackcdn.com/image/fetch/$s_!59tH!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F902ab53f-c4f4-4cfe-86c6-e528cf0c2d73_1444x490.gif)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_744257803a25.gif)
 
 
 Each state is the sum of the previous state (multiplied by _A_) plus the current input (multiplied by _B_). This is called a _scan operation_ and can easily be calculated with a for loop.
@@ -615,7 +615,7 @@ Parallelization, in contrast, seems impossible since each state can only be calc
 
 It assumes the order in which we do operations does not matter through the associate property. As a result, we can calculate the sequences in parts and iteratively combine them:
 
-![](https://substackcdn.com/image/fetch/$s_!5pAi!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F191fdabe-6b38-4e6b-a9f0-8240feef0a9d_1640x1100.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_a6e43c58ac42.png)
 
 
 Together, dynamic matrices _B_ and _C_, and the parallel scan algorithm create the _**selective scan algorithm**_ to represent the dynamic and fast nature of using the recurrent representation.
@@ -628,21 +628,21 @@ Hardware-aware Algorithm
 A disadvantage of recent GPUs is their limited transfer (IO) speed between their small but highly efficient SRAM and their large but slightly less efficient DRAM. Frequently copying information between SRAM and DRAM becomes a bottleneck.
 
 
-![](https://substackcdn.com/image/fetch/$s_!wxqd!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F9a1d4fa3-526d-488e-8768-c7208f018eb4_1728x300.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_3e2946587044.png)
 
 
 
 Mamba, like Flash Attention, attempts to limit the number of times we need to go from DRAM to SRAM and vice versa. It does so through _kernel fusion_ which allows the model to prevent writing intermediate results and continuously performing computations until it is done.
 
 
-![](https://substackcdn.com/image/fetch/$s_!CeHw!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc46b75de-9896-4be1-baac-29c07c68dfd4_1920x448.gif)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_5f6abba43c2a.gif)
 
 
 
 We can view the specific instances of DRAM and SRAM allocation by visualizing Mamba’s base architecture:
 
 
-![](https://substackcdn.com/image/fetch/$s_!2LcC!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F724eceb1-4356-4ac5-b44e-f7fabce3b472_1728x580.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_da3798156e8d.png)
 
 
 
@@ -664,7 +664,7 @@ Although this might seem inefficient, it is much less costly than reading all th
 We have now covered all components of its architecture which is depicted using the following image from its article:
 
 
-![](https://substackcdn.com/image/fetch/$s_!KiA_!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ffc840fb8-2e24-4103-95c8-afa306ce0cfc_2409x743.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_d1da21eedfd5.png)
 
 
 
@@ -677,14 +677,14 @@ The Mamba Block
 
 The _selective SSM_ that we have explored thus far can be implemented as a block, the same way we can represent self-attention in a decoder block.
 
-![](https://substackcdn.com/image/fetch/$s_!yKpU!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F6d754eec-5284-4599-ad1a-e27358f12419_972x948.gif)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_6b881842d713.gif)
 
 
 
 Like the decoder, we can stack multiple Mamba blocks and use their output as the input for the next Mamba block:
 
 
-![](https://substackcdn.com/image/fetch/$s_!fR9z!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc94d349d-8620-45a9-8095-7c27de8b7865_1660x1356.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_d7adc9c384ed.png)
 
 
 
@@ -703,7 +703,7 @@ The _Selective SSM_ has the following properties:
 
 We can expand on this architecture a bit more when looking at the code implementation and explore how an end-to-end example would look like:
 
-![](https://substackcdn.com/image/fetch/$s_!PCm9!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fa67d7341-9a43-4c67-aa88-6e802c0902ae_1660x2040.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_764e011bfb17.png)
 
 
 
