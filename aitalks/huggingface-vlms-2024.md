@@ -1,163 +1,62 @@
-视觉语言模型详解
-========
-
-发表于 2024年4月11日
-
-
-
-中文翻译: [MatrixYao](https://huggingface.co/MatrixYao) 校对: [zhongdongy](https://huggingface.co/zhongdongy)
-
-本文也提供英文版本 [English](https://huggingface.co/blog/vlms)。
+# 视觉语言模型详解
 
 视觉语言模型可以同时从图像和文本中学习，因此可用于视觉问答、图像描述等多种任务。本文，我们将带大家一览视觉语言模型领域: 作个概述、了解其工作原理、搞清楚如何找到真命天“模”、如何对其进行推理以及如何使用最新版的 [trl](https://github.com/huggingface/trl) 轻松对其进行微调。
 
 ## 什么是视觉语言模型？
 
-
 视觉语言模型是可以同时从图像和文本中学习的多模态模型，其属于生成模型，输入为图像和文本，输出为文本。大视觉语言模型具有良好的零样本能力，泛化能力良好，并且可以处理包括文档、网页等在内的多种类型的图像。其拥有广泛的应用，包括基于图像的聊天、根据指令的图像识别、视觉问答、文档理解、图像描述等。一些视觉语言模型还可以捕获图像中的空间信息，当提示要求其检测或分割特定目标时，这些模型可以输出边界框或分割掩模，有些模型还可以定位不同的目标或回答其相对或绝对位置相关的问题。现有的大视觉语言模型在训练数据、图像编码方式等方面采用的方法很多样，因而其能力差异也很大。
 
-![VLM 能力 ](images/visual_dfe21c0434b7.jpg)  
+<p align="center">
+ <img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/vlm/visual.jpg" alt="VLM 能力 " style="width: 90%; height: auto;"><br>
+</p>
 
 ## 开源视觉语言模型概述
 
-
 Hugging Face Hub 上有很多开放视觉语言模型，下表列出了其中一些佼佼者。
 
-*   其中有基础模型，也有可用于对话场景的针对聊天微调的模型。
-*   其中一些模型具有“接地 (grounding)”功能，因此能够减少模型幻觉。
-*   除非另有说明，所有模型的训练语言皆为英语。
+- 其中有基础模型，也有可用于对话场景的针对聊天微调的模型。
+- 其中一些模型具有“接地 (grounding)”功能，因此能够减少模型幻觉。
+- 除非另有说明，所有模型的训练语言皆为英语。
 
-模型
-
-可否商用
-
-模型尺寸
-
-图像分辨率
-
-其它能力
-
-[LLaVA 1.6 (Hermes 34B)](https://huggingface.co/llava-hf/llava-v1.6-34b-hf)
-
-✅
-
-34B
-
-672x672
-
-[deepseek-vl-7b-base](https://huggingface.co/deepseek-ai/deepseek-vl-7b-base)
-
-✅
-
-7B
-
-384x384
-
-[DeepSeek-VL-Chat](https://huggingface.co/deepseek-ai/deepseek-vl-7b-chat)
-
-✅
-
-7B
-
-384x384
-
-聊天
-
-[moondream2](https://huggingface.co/vikhyatk/moondream2)
-
-✅
-
-~2B
-
-378x378
-
-[CogVLM-base](https://huggingface.co/THUDM/cogvlm-base-490-hf)
-
-✅
-
-17B
-
-490x490
-
-[CogVLM-Chat](https://huggingface.co/THUDM/cogvlm-chat-hf)
-
-✅
-
-17B
-
-490x490
-
-接地、聊天
-
-[Fuyu-8B](https://huggingface.co/adept/fuyu-8b)
-
-❌
-
-8B
-
-300x300
-
-图像中的文本检测
-
-[KOSMOS-2](https://huggingface.co/microsoft/kosmos-2-patch14-224)
-
-✅
-
-~2B
-
-224x224
-
-接地、零样本目标检测
-
-[Qwen-VL](https://huggingface.co/Qwen/Qwen-VL)
-
-✅
-
-4B
-
-448x448
-
-零样本目标检测
-
-[Qwen-VL-Chat](https://huggingface.co/Qwen/Qwen-VL-Chat)
-
-✅
-
-4B
-
-448x448
-
-聊天
-
-[Yi-VL-34B](https://huggingface.co/01-ai/Yi-VL-34B)
-
-✅
-
-34B
-
-448x448
-
-双语 (英文、中文)
+| 模型                  | 可否商用 | 模型尺寸 | 图像分辨率 | 其它能力               |
+|------------------------|--------------------|------------|------------------|---------------------------------------|
+| [LLaVA 1.6 (Hermes 34B)](https://huggingface.co/llava-hf/llava-v1.6-34b-hf) | ✅                  | 34B        | 672x672          |                                       |
+| [deepseek-vl-7b-base](https://huggingface.co/deepseek-ai/deepseek-vl-7b-base)    | ✅                  | 7B         | 384x384          |                                       |
+| [DeepSeek-VL-Chat](https://huggingface.co/deepseek-ai/deepseek-vl-7b-chat)       | ✅                  | 7B         | 384x384          | 聊天                                  |
+| [moondream2](https://huggingface.co/vikhyatk/moondream2)             | ✅                  | ~2B        | 378x378          |                                       |
+| [CogVLM-base](https://huggingface.co/THUDM/cogvlm-base-490-hf)            | ✅                  | 17B        | 490x490          |                                       |
+| [CogVLM-Chat](https://huggingface.co/THUDM/cogvlm-chat-hf)            | ✅                  | 17B        | 490x490          | 接地、聊天                     |
+| [Fuyu-8B](https://huggingface.co/adept/fuyu-8b)                | ❌                  | 8B         | 300x300          | 图像中的文本检测          |
+| [KOSMOS-2](https://huggingface.co/microsoft/kosmos-2-patch14-224)               | ✅                  | ~2B        | 224x224          | 接地、零样本目标检测 |
+| [Qwen-VL](https://huggingface.co/Qwen/Qwen-VL)                | ✅                  | 4B         | 448x448          | 零样本目标检测           |
+| [Qwen-VL-Chat](https://huggingface.co/Qwen/Qwen-VL-Chat)           | ✅                  | 4B         | 448x448          | 聊天                                  |
+| [Yi-VL-34B](https://huggingface.co/01-ai/Yi-VL-34B)              | ✅                  | 34B        | 448x448          |  双语 (英文、中文) |
 
 ## 寻找合适的视觉语言模型
-
 
 有多种途径可帮助你选择最适合自己的模型。
 
 [视觉竞技场 (Vision Arena)](https://huggingface.co/spaces/WildVision/vision-arena) 是一个完全基于模型输出进行匿名投票的排行榜，其排名会不断刷新。在该竞技场上，用户输入图像和提示，会有两个匿名的不同的模型为其生成输出，然后用户可以基于他们的喜好选择一个输出。这种方式生成的排名完全是基于人类的喜好的。
 
-![ 视觉竞技场 (Vision Arena) ](images/arena_d05ee9e81101.png)_视觉竞技场 (Vision Arena)_
+<p align="center">
+ <img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/vlm/arena.png" alt=" 视觉竞技场 (Vision Arena) " style="width: 90%; height: auto;"><be>
+<em>视觉竞技场 (Vision Arena)</em>
+</p>
 
 [开放 VLM 排行榜](https://huggingface.co/spaces/opencompass/open_vlm_leaderboard) 提供了另一种选择，各种视觉语言模型按照所有指标的平均分进行排名。你还可以按照模型尺寸、私有或开源许可证来筛选模型，并按照自己选定的指标进行排名。
 
-![VLM 能力 ](images/leaderboard_6e2c9c15f288.png)_开放 VLM 排行榜_
+<p align="center">
+ <img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/vlm/leaderboard.png" alt="VLM 能力 " style="width: 90%; height: auto;"><be>
+<em>开放 VLM 排行榜</em>
+</p>
 
 [VLMEvalKit](https://github.com/open-compass/VLMEvalKit) 是一个工具包，用于在视觉语言模型上运行基准测试，开放 VLM 排行榜就是基于该工具包的。
 
 还有一个评估套件是 [LMMS-Eval](https://github.com/EvolvingLMMs-Lab/lmms-eval)，其提供了一个标准命令行界面，你可以使用 Hugging Face Hub 上托管的数据集来对选定的 Hugging Face 模型进行评估，如下所示:
 
-    accelerate launch --num_processes=8 -m lmms_eval --model llava --model_args pretrained="liuhaotian/llava-v1.5-7b" --tasks mme,mmbench_en --batch_size 1 --log_samples --log_samples_suffix llava_v1.5_mme_mmbenchen --output_path ./logs/
-    
+```bash
+accelerate launch --num_processes=8 -m lmms_eval --model llava --model_args pretrained="liuhaotian/llava-v1.5-7b" --tasks mme,mmbench_en --batch_size 1 --log_samples --log_samples_suffix llava_v1.5_mme_mmbenchen --output_path ./logs/
+```
 
 视觉竞技场和开放 VLM 排行榜都仅限于提交给它们的模型，且需要更新才能添加新模型。如果你想查找其他模型，可以在 `image-text-to-text` 任务下浏览 hub 中的 [模型](https://huggingface.co/models?pipeline_tag=image-text-to-text&sort=trending)。
 
@@ -179,18 +78,21 @@ Hugging Face Hub 上有很多开放视觉语言模型，下表列出了其中一
 
 例如，LLaVA 由 CLIP 图像编码器、多模态投影子模型和 Vicuna 文本解码器组合而成。作者将包含图像和描述文本的数据集输入 GPT-4，让其描述文本和图像生成相关的问题。作者冻结了图像编码器和文本解码器，仅通过给模型馈送图像与问题并将模型输出与描述文本进行比较来训练多模态投影子模型，从而达到对齐图像和文本特征的目的。在对投影子模型预训练之后，作者把图像编码器继续保持在冻结状态，解冻文本解码器，然后继续对解码器和投影子模型进行训练。这种预训练加微调的方法是训练视觉语言模型最常见的做法。
 
-![VLM Structure](images/vlm-structure_0acf8f824de4.png)  
-_视觉语言模型典型结构_
+<p align="center">
+ <img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/vlm/vlm-structure.png" alt="VLM Structure" style="width: 90%; height: auto;"><br>
+ <em>视觉语言模型典型结构</em>
+</p>
 
-![VLM Structure](images/proj_b82381c5e7f0.jpg)  
-_将投影子模型输出与文本嵌入相串接_
+<p align="center">
+ <img src="https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/blog/vlm/proj.jpg" alt="VLM Structure" style="width: 90%; height: auto;"><br>
+ <em>将投影子模型输出与文本嵌入相串接</em>
+</p>
 
 再举一个 KOSMOS-2 的例子，作者选择了端到端地对模型进行完全训练的方法，这种方法与 LLaVA 式的预训练方法相比，计算上昂贵不少。预训练完成后，作者还要用纯语言指令对模型进行微调以对齐。还有一种做法，Fuyu-8B 甚至都没有图像编码器，直接把图像块馈送到投影子模型，然后将其输出与文本序列直接串接送给自回归解码器。
 
 大多数时候，我们不需要预训练视觉语言模型，仅需使用现有的模型进行推理，抑或是根据自己的场景对其进行微调。下面，我们介绍如何在 `transformers` 中使用这些模型，以及如何使用 `SFTTrainer` 对它们进行微调。
 
-[](https://huggingface.co/blog/zh/vlms#%E5%9C%A8-transformers-%E4%B8%AD%E4%BD%BF%E7%94%A8%E8%A7%86%E8%A7%89%E8%AF%AD%E8%A8%80%E6%A8%A1%E5%9E%8B)在 transformers ## 中使用视觉语言模型
-
+## 在 transformers 中使用视觉语言模型
 
 你可以使用 `LlavaNext` 模型对 Llava 进行推理，如下所示。
 
@@ -225,14 +127,14 @@ output = model.generate(**inputs, max_new_tokens=100)
 ```
 
 调用 `decode` 对输出词元进行解码。
+
 ```python
 print(processor.decode(output[0], skip_special_tokens=True))
-```    
+```
 
 ## 使用 TRL 微调视觉语言模型
 
-
-我们很高兴地宣布，作为一个实验性功能，[TRL](https://github.com/huggingface/trl) 的 `SFTTrainer` 现已支持视觉语言模型！这里，我们给出了一个例子，以展示如何在 [llava-instruct](https://huggingface.co/datasets/HuggingFaceH4/llava-instruct-mix-vsft) 数据集上进行 SFT，该数据集包含 260k 个图像对话对。
+我们很高兴地宣布，作为一个实验性功能，[TRL](https://github.com/huggingface/trl) 的 `SFTTrainer` 现已支持视觉语言模型！这里，我们给出了一个例子，以展示如何在 [llava-instruct](https://Huggingface.co/datasets/HuggingFaceH4/llava-instruct-mix-vsft) 数据集上进行 SFT，该数据集包含 260k 个图像对话对。
 
 `llava-instruct` 数据集将用户与助理之间的交互组织成消息序列的格式，且每个消息序列皆与用户问题所指的图像配对。
 
@@ -243,13 +145,13 @@ from trl.commands.cli_utils import SftScriptArguments, TrlParser
 
 parser = TrlParser((SftScriptArguments, TrainingArguments))
 args, training_args = parser.parse_args_and_config()
-```    
+```
 
 初始化聊天模板以进行指令微调。
 
-```python
+```bash
 LLAVA_CHAT_TEMPLATE = """A chat between a curious user and an artificial intelligence assistant. The assistant gives helpful, detailed, and polite answers to the user's questions. {% for message in messages %}{% if message['role'] == 'user' %}USER: {% else %}ASSISTANT: {% endif %}{% for item in message['content'] %}{% if item['type'] == 'text' %}{{ item['text'] }}{% elif item['type'] == 'image' %}<image>{% endif %}{% endfor %}{% if message['role'] == 'user' %} {% else %}{{eos_token}}{% endif %}{% endfor %}"""
-```    
+```
 
 现在，初始化模型和分词器。
 
@@ -297,6 +199,7 @@ data_collator = LLavaDataCollator(processor)
 ```
 
 加载数据集。
+
 ```python
 from datasets import load_dataset
 
@@ -306,6 +209,7 @@ eval_dataset = raw_datasets["test"]
 ```
 
 初始化 `SFTTrainer` ，传入模型、数据子集、PEFT 配置以及数据整理器，然后调用 `train()` 。要将最终 checkpoint 推送到 Hub，需调用 `push_to_hub()` 。
+
 ```python
 from trl import SFTTrainer
 
@@ -324,6 +228,7 @@ trainer.train()
 ```
 
 保存模型并推送到 Hugging Face Hub。
+
 ```python
 trainer.save_model(training_args.output_dir)
 trainer.push_to_hub()
@@ -331,12 +236,12 @@ trainer.push_to_hub()
 
 你可在 [此处](https://huggingface.co/HuggingFaceH4/vsft-llava-1.5-7b-hf-trl) 找到训得的模型。你也可以通过下面的页面试玩一下我们训得的模型⬇️。
 
-Error
+<script
+    type="module"
+    src="https://gradio.s3-us-west-2.amazonaws.com/3.23.0/gradio.js"></script>
 
-**This space is experiencing an issue.**
+<gradio-app theme_mode="light" src="https://HuggingFaceH4-vlm-playground.hf.space"></gradio-app>
 
-Please [contact the author of the space](https://huggingface.co/spaces/null/discussions/new?title=Space%20isn%27t%20working%20because%20there%20is%20a%20runtime%20error&description=Hello%2C%0A%0AFirstly%2C%20thanks%20for%20creating%20this%20space!%0A%0AI%20noticed%20that%20the%20space%20isn%27t%20working%20correctly%20because%20there%20is%20a%20runtime%20error.%0A%0AIt%20would%20be%20great%20if%20you%20could%20take%20a%20look%20at%20this%20because%20this%20space%20is%20being%20embedded%20on%20https%3A%2F%2Fhuggingface.co.%0A%0AThanks!) to let them know.
-
-## 致谢
+**致谢**
 
 我们感谢 Pedro Cuenca、Lewis Tunstall、Kashif Rasul 和 Omar Sanseviero 对本文的评论和建议。

@@ -1,12 +1,6 @@
-视觉语言模型 (更好、更快、更强)
-=================
-
-发表于 2025年5月12日
-
-
+# 视觉语言模型 (更好、更快、更强)
 
 ## 动机
-
 
 视觉语言模型 (VLMs) 正成为热门话题。在 [一篇之前的博客文章](https://huggingface.co/blog/vlms) ( _2024 年 4 月_ ) 中，我们详细讨论了 VLMs。其中很大一部分内容是关于 [LLaVA](https://huggingface.co/papers/2304.08485)，它是第一个 **成功** 且 **易于复现** 的开源视觉语言模型，同时还提供了如何发现、评估和微调开源模型的技巧。
 
@@ -14,8 +8,32 @@
 
 在这篇文章中，我们将回顾并解析过去一年视觉语言模型领域发生的一切。您将了解关键变化、新兴趋势和重要发展。
 
+> [!TIP]
 > 如果您想了解视觉语言模型的工作原理，我们强烈建议您阅读第一篇博客文章。
 
+## 目录
+
+- [新的模型趋势](#新的模型趋势)
+  - [任意模态互转模型](#任意模态互转模型)
+  - [推理模型](#推理模型)
+  - [轻量级强力模型](#轻量级强力模型)
+  - [混合专家解码器](#混合专家解码器)
+  - [视觉语言动作模型](#视觉语言动作模型)
+
+- [专业能力](#专业能力)
+  - [使用视觉语言模型进行目标检测、分割和计数](#使用视觉语言模型进行目标检测分割和计数)
+  - [多模态安全模型](#多模态安全模型)
+  - [多模态 RAG: 检索器和重排器](#多模态-RAG-检索器和重排器)
+
+- [多模态智能体](#多模态智能体)
+- [视频语言模型](#视频语言模型)
+- [视觉语言模型的新型对齐技术](#视觉语言模型的新型对齐技术)
+- [新基准](#新基准)
+  - [MMT-Bench](#mmt-bench)
+  - [MMMU-Pro](#mmmu-pro)
+
+- [附加: 我们的模型精选](#附加我们的模型精选)
+- [实用资源](#实用资源)
 
 ## 新的模型趋势
 
@@ -29,25 +47,26 @@
 
 目前最新和最强大的任意模态互转模型 [Qwen 2.5 Omni](https://huggingface.co/collections/Qwen/qwen25-omni-67de1e5f0f9464dc6314b36e) (下图) 是理解任意模态互转模型架构的一个很好例子。
 
-[![Qwen-Omni](images/qwen-omni_2336fc1bde4f.png)](https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/vlm2/qwen-omni.png)
+![Qwen-Omni](images/qwen-omni_2336fc1bde4f.png)
 
 Qwen2.5-Omni 采用了新颖的 “思考者 - 表达者” (Thinker-Talker) 架构，其中 “思考者” 负责文本生成，而 “表达者” 以流式方式生成自然语音响应。[MiniCPM-o 2.6](https://huggingface.co/openbmb/MiniCPM-o-2_6) 是一个 80 亿参数的多模态模型，能够理解和生成视觉、语音和语言模态的内容。由 DeepSeek AI 推出的 [Janus-Pro-7B](https://huggingface.co/deepseek-ai/Janus-Pro-7B) 是一个统一的多模态模型，在理解和生成各种模态内容方面表现出色。它具有解耦的视觉编码架构，将理解和生成过程分开处理。
 
 我们预计未来几年此类模型的数量将会增加。众所周知，多模态学习是深度表示 (deep representations) 学习的最佳途径。我们在 [这个集合](https://huggingface.co/collections/merve/any-to-any-models-6822042ee8eb7fb5e38f9b62) 中展示了一些任意模态互转模型和演示 demo。
 
-## 推理模型
+### 推理模型
 
 **推理模型** ( **Reasoning Models** ) 是能够解决复杂问题的模型。我们第一次看到它们是在大型语言模型中，现在视觉语言模型也出现了这种能力。直到 2025 年，只有一个开源多模态推理模型，由阿里巴巴 Qwen 团队开发的 [QVQ-72B-preview](https://huggingface.co/Qwen/QVQ-72B-Preview)。它是一个实验性模型，发布时附带了许多免责声明。
 
 今年有了另一个玩家，来自 Moonshot AI 团队的 [Kimi-VL-A3B-Thinking](https://huggingface.co/moonshotai/Kimi-VL-A3B-Thinking)。它使用 MoonViT(SigLIP-so-400M) 作为图像编码器，使用一个总共有 160 亿参数但只有 28 亿激活参数的混合专家 (MoE) 解码器。该模型是 Kimi-VL 基础视觉语言模型的长链思维 (chain-of-thought) 微调版本，并通过强化学习进一步对齐。您可以在 [这里](https://huggingface.co/spaces/moonshotai/Kimi-VL-A3B-Thinking) 试用该模型。
 
+> [!TIP]
 > 开发者还发布了一个指令微调版本，称为 [Kimi-VL-A3B-Instruct](https://huggingface.co/moonshotai/Kimi-VL-A3B-Instruct)。
 
-[![kimi-vl](images/kimi-vl_c3fe249935b1.png)](https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/vlm2/kimi-vl.png)
+![kimi-vl](images/kimi-vl_c3fe249935b1.png)
 
 > 该模型可以处理长视频、PDF、屏幕截图等。它还具有智能体能力。
 
-## 轻量级强力模型
+### 轻量级强力模型
 
 研究人员过去通过增加参数数量，然后是利用高质量的合成数据来提升模型智能。在某个节点后，基准测试开始饱和，扩展模型的收益递减。研究界开始转向通过各种方法 (如蒸馏) 缩小大型模型的尺寸。这种转变很合理，因为它降低了计算成本，简化了部署，并实现了本地执行等应用场景，同时增强了数据隐私保护。
 
@@ -62,23 +81,22 @@ Qwen2.5-Omni 采用了新颖的 “思考者 - 表达者” (Thinker-Talker) 架
 ```bash
 python3 -m mlx_vlm.generate --model HuggingfaceTB/SmolVLM-500M-Instruct --max-tokens 400 --temp 0.0 --image https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/vlm_example.jpg --prompt "What is in this image?"
 ```
-    
 
 您可以通过 llama.cpp 的 CLI 使用这一行代码开始使用 GGUF 格式的 [gemma-3-4b-it](https://huggingface.co/collections/google/gemma-3-release-67c6c6f89c4f76621268bb6d) 模型:
 
 ```bash
 llama-mtmd-cli -hf ggml-org/gemma-3-4b-it-GGUF
-```    
+```
 
 您也可以按如下方式提供相同的模型服务:
 
 ```bash
 llama-server -hf ggml-org/gemma-3-4b-it-GGUF
-```    
+```
 
 我们想要特别提及 [moondream2](https://huggingface.co/vikhyatk/moondream2) 和 [Florence-2](https://huggingface.co/collections/microsoft/florence-6669f44df0d87d9c3bfb76de)，因为它们是最早尝试构建最小视觉语言模型的项目。在这篇博客中，我们主要介绍较新的模型 (大部分的模型是在 2024 年 4 月之后发布的)。
 
-## 混合专家解码器
+### 混合专家解码器
 
 混合专家 (MoEs) 模型为 **密集** ( **dense** ) 架构提供了一种 _替代方案_ ，它通过动态选择和激活最相关的子模型 (称为 “专家”) 来处理给定的输入数据片段。这种选择性激活机制 (通过一个称为 “路由器” 的组件来完成选择) 已经被证明有潜力在利用更少计算资源的同时大幅提高模型性能和运行效率。
 
@@ -90,7 +108,7 @@ llama-server -hf ggml-org/gemma-3-4b-it-GGUF
 
 > 要很好地理解 MoE，推荐阅读 [这篇精彩文章](https://huggingface.co/blog/moe)。
 
-## 视觉语言动作模型
+### 视觉语言动作模型
 
 VLMs 甚至在机器人领域也有所作为！这里它们被称为视觉语言动作模型 Vision-language-action models (VLA)。但不要被误导，它们主要是戴着小胡子和帽子的 VLMs。VLAs 接收图像和文本指令，并返回文本以直接指示机器人应该采取的行动。VLAs 通过添加动作和状态标记来扩展视觉语言模型，以便与物理环境交互和控制。这些额外的标记 (tokens) 代表系统的内部状态 (它如何感知环境) 、动作 (基于命令做什么) 和与时间相关的信息 (如任务中步骤的顺序)。这些标记被附加到视觉语言输入中，以生成动作或策略。
 
@@ -100,7 +118,7 @@ VLAs 的优秀例子是 [π0](https://huggingface.co/lerobot/pi0) 和 π0-FAST�
 
 [GR00T N1](https://huggingface.co/nvidia/GR00T-N1-2B) 是 NVIDIA 为通用人形机器人 (generalist humanoid robots) 开发的开放 VLA 基础模型。它能理解图像和语言，并将它们转化为动作，如移动手臂或遵循指令，这要归功于一个结合了智能推理和实时运动控制的系统。GR00T N1 还基于 LeRobot 数据集格式，这是一个创建的开放标准，旨在简化机器人演示的共享和训练。
 
-[![pi0](images/pi0_4b81cce61809.png)](https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/vlm2/pi0.png)
+![pi0](images/pi0_4b81cce61809.png)
 
 取自 [论文](https://www.physicalintelligence.company/download/pi0.pdf)
 
@@ -108,7 +126,7 @@ VLAs 的优秀例子是 [π0](https://huggingface.co/lerobot/pi0) 和 π0-FAST�
 
 ## 专业能力
 
-## 使用视觉语言模型进行目标检测、分割和计数
+### 使用视觉语言模型进行目标检测、分割和计数
 
 正如我们在前面的章节中看到的，VLM 可以对传统计算机视觉任务进行 _泛化_ ( _generalization_ )。模型现在可以接收图像和各种提示 (prompts)，如开放式文本，并输出带有定位标记 (localization tokens) (用于检测、分割等) 的结构化文本。
 
@@ -116,17 +134,17 @@ VLAs 的优秀例子是 [π0](https://huggingface.co/lerobot/pi0) 和 π0-FAST�
 
 对于检测任务，模型输出边界框坐标作为 _token_ 。而对于分割任务，模型输出检测 token 和分割 token。这些分割 token 并不是所有分割的像素坐标，而是由变分自编码器解码的编码本索引，该自编码器经过训练，可以将这些 token 解码为有效的分割掩码 (segmentation masks) (如下图所示)。
 
-[![PaliGemma3](images/pg2-seg_6d5b57e034fd.png)](https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/vlm2/pg2-seg.png)
+![PaliGemma3](images/pg2-seg_6d5b57e034fd.png)
 
 在 PaliGemma 之后，许多模型被引入来完成定位任务。去年晚些时候，PaliGemma 的升级版本 PaliGemma 2 发布，具有相同的功能和更好的性能。后来出现的另一个模型是 Allen AI 的 Molmo，它可以用点指向实例并计数目标实例。
 
-[![molmo](images/molmo-pointing_01ac60304673.png)](https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/vlm2/molmo-pointing.png)
+![molmo](images/molmo-pointing_01ac60304673.png)
 
 Qwen2.5-VL 也可以检测、指向和计数目标，这包括将 UI 元素也作为目标！
 
-[![Qwen2.5VL](images/qwen3-gui_f33cdc78f2bc.png)](https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/vlm2/qwen3-gui.png)
+![Qwen2.5VL](images/qwen3-gui_f33cdc78f2bc.png)
 
-## 多模态安全模型
+### 多模态安全模型
 
 生产中的视觉语言模型需要 **过滤** ( **filtering** ) 输入和输出，以防止越狱和有害输出，以符合合规要求。有害内容从带有暴力的输入到色情内容不等。这就是多模态安全模型的用武之地: 它们在视觉语言模型之前和之后使用，以过滤其输入和输出。它们就像 LLM 安全模型，但增加了图像输入。
 
@@ -134,25 +152,25 @@ Qwen2.5-VL 也可以检测、指向和计数目标，这包括将 UI 元素也�
 
 Meta 的 [Llama Guard 4](https://huggingface.co/spaces/merve/llama-guard-4) 是一个密集的多模态和多语言安全模型 (dense multimodal and multilingual safety model)。它是通过安全微调，从 Llama 4 Scout (一个多模态混合专家系统) 中密集剪枝而来。
 
-[![Llama Guard 4](images/llama-guard_559fa0c6d086.png)](https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/vlm2/llama-guard.png)
+![Llama Guard 4](images/llama-guard_559fa0c6d086.png)
 
 该模型可用于纯文本和多模态推理。该模型还可以接收视觉语言模型输出和完整对话，并在发送给用户之前过滤它们。
 
-## 多模态 RAG: 检索器和重排器
+### 多模态 RAG: 检索器和重排器
 
 现在让我们看看检索增强生成 (Retrieval Augmented Generation) 如何在多模态空间中发展。复杂文档 (通常为 PDF 格式) 的 RAG 分为三个步骤进行处理:
 
-1.  将文档完全解析为文本
-2.  将纯文本和查询传递给检索器和重排器以获取最相关的文档
-3.  将相关上下文和查询传递给 LLM
+1. 将文档完全解析为文本
+2. 将纯文本和查询传递给检索器和重排器以获取最相关的文档
+3. 将相关上下文和查询传递给 LLM
 
 传统的 PDF 解析器由多个元素组成，以保留文档中的结构和视觉元素，如 _布局_ 、 _表格_ 、 _图像_ 、 _图表_ ，所有这些都被渲染为 markdown。但这种设置可能难以维护。
 
-[![传统解析](images/rag-1_d34c33860c18.png)](https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/vlm2/rag-1.png)
+![传统解析](images/rag-1_d34c33860c18.png)
 
 随着视觉语言模型的兴起，这个问题得到了解决: 现在有了多模态检索器和重排器。
 
-[![多模态 RAG](images/rag-2_901cb9d4f828.png)](https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/vlm2/rag-2.png)
+![多模态 RAG](images/rag-2_901cb9d4f828.png)
 
 多模态检索器接收一堆 PDF 文件和一个查询作为输入，并返回最相关的页码及其置信度分数。分数表示页面包含查询答案的可能性，或查询与页面的相关度。这绕过了容易出错的解析步骤。
 
@@ -160,12 +178,12 @@ Meta 的 [Llama Guard 4](https://huggingface.co/spaces/merve/llama-guard-4) 是�
 
 有两种主要的 **多模态检索器架构** ( **multimodal retriever architectures** ):
 
-1.  文档截图嵌入 (DSE，MCDSE)
-2.  ColBERT 类模型 (ColPali，ColQwen2，ColSmolVLM)
+1. 文档截图嵌入 (DSE，MCDSE)
+2. ColBERT 类模型 (ColPali，ColQwen2，ColSmolVLM)
 
 DSE 模型由文本编码器和图像编码器组成，每个查询返回一个向量。返回的分数 (scores) 是嵌入点积的 softmax。它们为每个段落返回一个向量。
 
-[![DSE](images/dse_7a70fbec50ef.png)](https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/vlm2/dse.png)
+![DSE](images/dse_7a70fbec50ef.png)
 
 取自 [论文](https://arxiv.org/pdf/2406.11251)
 
@@ -173,8 +191,8 @@ ColBERT 类的模型，例如 ColPali，也是双编码器模型 (dual encoder m
 
 下面你可以看到 ColPali 的索引延迟 (indexing latency)。由于它只是一个单一模型，所以也更容易维护。
 
-[![ColPali](images/colpali_c94764b8a7bf.png)](https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/vlm2/colpali.png)
-
+![ColPali](images/colpali_c94764b8a7bf.png)
+ 
 取自 [论文](https://arxiv.org/pdf/2407.01449)
 
 在 Hugging Face Hub，你可以在 “[视觉文档检索](https://huggingface.co/models?pipeline_tag=visual-document-retrieval&sort=trending)” 任务下找到这些模型。
@@ -187,16 +205,17 @@ ColBERT 类的模型，例如 ColPali，也是双编码器模型 (dual encoder m
 
 2025 年初，我们推出了 smolagents，一个实现 ReAct 框架的新型轻量级 Agent 库。不久之后，我们为该库实现了视觉语言支持。这种集成应用于两个用例:
 
-*   在运行开始时，一次性提供图像。这对于具有工具使用的文档 AI 很有用。
-*   动态检索图像。这对于 GUI 控制与 VLM 智能体等情况很有用，智能体可重复取屏幕截图。
+- 在运行开始时，一次性提供图像。这对于具有工具使用的文档 AI 很有用。
+- 动态检索图像。这对于 GUI 控制与 VLM 智能体等情况很有用，智能体可重复取屏幕截图。
 
 该库为用户提供构建模块，以便他们能构建自己的带有图像理解的智能体工作流程。我们提供不同的脚本和单行 CLI 命令，让用户能轻松上手。
 
 对于第一种情况，假设我们希望一个智能体来描述文档 (不是很具有代表性的智能体案例，但适合最小化的案例展示)。你可以像下面这样初始化 CodeAgent (一个编写自己代码的智能体！):
 
-    agent = CodeAgent(tools=[], model=model) # no need for tools
-    agent.run(" 描述这些文档:", images=[document_1, document_2, document_3])
-    
+```python
+agent = CodeAgent(tools=[], model=model) # no need for tools
+agent.run(" 描述这些文档:", images=[document_1, document_2, document_3])
+```
 
 对于后一种需要智能体获取屏幕截图的用例，我们可以定义一个在每个 `ActionStep` 结束时执行的回调 (callback)。对于你自己需要动态获取图像的用例，请根据需要修改回调。为了简单起见，我们不会在这里详细定义它。你可以阅读博客文章和脚本在文末。现在，让我们看看如何初始化智能体，通过使用回调和浏览器控制步骤。
 
@@ -224,23 +243,23 @@ agent = CodeAgent(
 
 你可以通过运行以下 CLI 命令尝试整个示例。它启动一个具有网络浏览器控制访问权限的智能体，由视觉语言模型提供支持，以完成 Web 自动化任务 (请替换为您想要导航到的网站)。
 
-    webagent "前往 xyz.com/men，进入销售区域，点击你看到的第一个服装项目。获取产品详情和价格，返回它们。请注意我是从法国购物。"
-    
+```bash
+webagent "前往 xyz.com/men，进入销售区域，点击你看到的第一个服装项目。获取产品详情和价格，返回它们。请注意我是从法国购物。"
+```
 
 smolagents 提供不同类型的模型，如本地 transformers 模型、第三方推理服务商提供的开源模型 , 或闭源模型开发商提供的端点。我们鼓励使用开源模型，因为许多智能体工作流程需要推理，这得益于模型的大量参数。截至 2025 年 4 月，Qwen 2.5 VL 是智能体工作流程的一个很好的候选模型，因为该模型针对智能体任务进行了进一步的训练。
 
 ## 视频语言模型
----------------------------------------------------------------------------------------------------------
 
 现在大多数视觉语言模型都可以处理视频，因为视频可以表示为一系列帧。然而，由于帧之间的时间关系和大量帧，视频理解很棘手，因此使用不同的技术来选择一组有代表性的视频帧集。
 
-[![视频 LMs](images/video_c8f2c5540d11.png)](https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/vlm2/video.png)
+![视频 LMs](images/video_c8f2c5540d11.png)
 
 自去年以来，社区权衡了不同的方法和技巧来解决这个问题。
 
-一个好例子是 Meta 的 [LongVU 模型](https://huggingface.co/collections/Vision-CAIR/longvu-67181d2debabfc1eb050c21d)。它通过将视频帧传递给 DINOv2 来对视频帧进行下采样，以挑选最相似的帧并将其删除，然后模型进一步根据文本查询挑选最相关的帧，其中文本和帧都被投影到相同的空间，并计算相似度。[Qwen2.5VL](https://huggingface.co/collections/Qwen/qwen25-vl-6795ffac22b334a837c0f9a5) 可以处理长上下文，并适应动态帧率 (FPS rates)，因为该模型是用不同帧率的视频训练的。通过扩展的多模态 RoPE，它理解帧的绝对时间位置，并可以处理不同的速率，同时仍然理解现实生活中事件的速度。另一个模型是 [Gemma 3](https://huggingface.co/collections/google/gemma-3-release-67c6c6f89c4f76621268bb6d)，它可以接受文本提示中与时间戳交错的视频帧，例如 “Frame 00.00: <image>..”，并且在视频理解任务中表现非常出色。
+一个好例子是 Meta 的 [LongVU 模型](https://huggingface.co/collections/Vision-CAIR/longvu-67181d2debabfc1eb050c21d)。它通过将视频帧传递给 DINOv2 来对视频帧进行下采样，以挑选最相似的帧并将其删除，然后模型进一步根据文本查询挑选最相关的帧，其中文本和帧都被投影到相同的空间，并计算相似度。[Qwen2.5VL](https://huggingface.co/collections/Qwen/qwen25-vl-6795ffac22b334a837c0f9a5) 可以处理长上下文，并适应动态帧率 (FPS rates)，因为该模型是用不同帧率的视频训练的。通过扩展的多模态 RoPE，它理解帧的绝对时间位置，并可以处理不同的速率，同时仍然理解现实生活中事件的速度。另一个模型是 [Gemma 3](https://huggingface.co/collections/google/gemma-3-release-67c6c6f89c4f76621268bb6d)，它可以接受文本提示中与时间戳交错的视频帧，例如 “Frame 00.00: \<image\>..”，并且在视频理解任务中表现非常出色。
 
-[![MRoPE](images/mrope_99b6276bb382.png)](https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/vlm2/mrope.png)
+![MRoPE](images/mrope_99b6276bb382.png)
 
 取自 [论文](https://arxiv.org/pdf/2502.13923)
 
@@ -250,66 +269,69 @@ smolagents 提供不同类型的模型，如本地 transformers 模型、第三�
 
 下面是一个 VLM 微调的 DPO 偏好数据集的结构示例。每个条目由一个图像 + 问题对和两个对应的答案组成: 一个选择答案，一个拒绝答案。VLM 经过微调，可生成与偏好 (选择) 答案一致的响应。
 
-[![DPO](images/dpo_2d2dd9eaa936.png)](https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/vlm2/dpo.png)
+![DPO](images/dpo_2d2dd9eaa936.png)
 
-这个过程的一个示例数据集是 [RLAIF-V](https://huggingface.co/datasets/openbmb/RLAIF-V-Dataset)，它包含超过 83000 个带注释的样本，其格式符合上述结构。每个条目包含一个图像列表 (通常为一张) 、一个提示词、一个已选答案和一个已拒绝答案，这与 DPOTrainer 的预期一致。 有一个 [RLAIF-V formatted](https://huggingface.co/datasets/HuggingFaceH4/rlaif-v_formatted) 数据集，已经按照相应格式进行了格式化。以下是单个样本的示例:
+这个过程的一个示例数据集是 [RLAIF-V](https://huggingface.co/datasets/openbmb/RLAIF-V-Dataset)，它包含超过 83000 个带注释的样本，其格式符合上述结构。每个条目包含一个图像列表 (通常为一张) 、一个提示词、一个已选答案和一个已拒绝答案，这与 DPOTrainer 的预期一致。
+有一个 [RLAIF-V formatted](https://huggingface.co/datasets/HuggingFaceH4/rlaif-v_formatted) 数据集，已经按照相应格式进行了格式化。以下是单个样本的示例:
 
-    {'images': [<PIL.JpegImagePlugin.JpegImageFile image mode=L size=980x812 at 0x154505570>],
-     'prompt': [ { "content": [ { "text": null, "type": "image" }, { "text": "这个接球手应该使用什么？", "type": "text" } ], "role": "user" } ],
-     'rejected': [ { "content": [ { "text": "由号码标识的接球手 ...", "type": "text" } ], "role": "assistant" } ],
-     'chosen': [ { "content": [ { "text": "图像中的接球手应该使用棒球手套...", "type": "text" } ], "role": "assistant" } ]}
-    
+```json
+{'images': [<PIL.JpegImagePlugin.JpegImageFile image mode=L size=980x812 at 0x154505570>],
+ 'prompt': [ { "content": [ { "text": null, "type": "image" }, { "text": "这个接球手应该使用什么？", "type": "text" } ], "role": "user" } ],
+ 'rejected': [ { "content": [ { "text": "由号码标识的接球手 ...", "type": "text" } ], "role": "assistant" } ],
+ 'chosen': [ { "content": [ { "text": "图像中的接球手应该使用棒球手套...", "type": "text" } ], "role": "assistant" } ]}
+```
 
 一旦准备好数据集，你可以使用 trl 库中的 _DPOConfig_ 和 _DPOTrainer_ 类来配置和启动微调过程。
 
 下面是使用 _DPOConfig_ 的示例配置:
 
-    from trl import DPOConfig
-    
-    training_args = DPOConfig(
-        output_dir="smolvlm-instruct-trl-dpo-rlaif-v",
-        bf16=True,
-        gradient_checkpointing=True,
-        per_device_train_batch_size=1,
-        per_device_eval_batch_size=1,
-        gradient_accumulation_steps=32,
-        num_train_epochs=5,
-        dataset_num_proc=8, # 标记化将使用 8 个进程
-        dataloader_num_workers=8, # 数据加载将使用 8 个工作线程
-        logging_steps=10,
-        report_to="tensorboard",
-        push_to_hub=True,
-        save_strategy="steps",
-        save_steps=10,
-        save_total_limit=1,
-        eval_steps=10, # 评估的步骤间隔
-        eval_strategy="steps",
-    )
-    
+```py
+from trl import DPOConfig
 
-要使用 _DPOTrainer_ 训练你的模型，你可以选择提供一个参考模型来计算奖励差异。如果你使用参数高效微调 (PEFT)，你可以通过设置 _ref\_model=None_ 来省略参考模型。
+training_args = DPOConfig(
+    output_dir="smolvlm-instruct-trl-dpo-rlaif-v",
+    bf16=True,
+    gradient_checkpointing=True,
+    per_device_train_batch_size=1,
+    per_device_eval_batch_size=1,
+    gradient_accumulation_steps=32,
+    num_train_epochs=5,
+    dataset_num_proc=8, # 标记化将使用 8 个进程
+    dataloader_num_workers=8, # 数据加载将使用 8 个工作线程
+    logging_steps=10,
+    report_to="tensorboard",
+    push_to_hub=True,
+    save_strategy="steps",
+    save_steps=10,
+    save_total_limit=1,
+    eval_steps=10, # 评估的步骤间隔
+    eval_strategy="steps",
+)
+```
 
-    from trl import DPOTrainer
-    
-    trainer = DPOTrainer(
-        model=model,
-        ref_model=None,
-        args=training_args,
-        train_dataset=train_dataset,
-        eval_dataset=test_dataset,
-        peft_config=peft_config,
-        tokenizer=processor
-    )
-    
-    trainer.train()
-    
+要使用 _DPOTrainer_ 训练你的模型，你可以选择提供一个参考模型来计算奖励差异。如果你使用参数高效微调 (PEFT)，你可以通过设置 _ref_model=None_ 来省略参考模型。
+
+```py
+from trl import DPOTrainer
+
+trainer = DPOTrainer(
+    model=model,
+    ref_model=None,
+    args=training_args,
+    train_dataset=train_dataset,
+    eval_dataset=test_dataset,
+    peft_config=peft_config,
+    tokenizer=processor
+)
+
+trainer.train()
+```
 
 ## 新基准
----------------------------------------------------------------------------
 
 基准 (Benchmarks) 测试在过去一年中也显著发展。在我们之前的博客中，我们描述了 MMMU 和 MMBench 作为评估视觉语言模型的两个新兴基准。随着该领域的快速发展，模型在这些基准上已经饱和，我们需要更好的评估工具。为了实现这一点，我们需要评估特定能力的工具，以及通用基准。
 
-[![MMT-Bench](images/mmt-bench_3fa92ce73323.png)](https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/vlm2/mmt-bench.png)
+![MMT-Bench](images/mmt-bench_3fa92ce73323.png)
 
 现在，我们重点介绍两个突出的通用基准: MMT-Bench 和 MMMU-Pro。
 
@@ -323,51 +345,18 @@ smolagents 提供不同类型的模型，如本地 transformers 模型、第三�
 
 它比 MMMU 更复杂，例如它有纯视觉输入设置，候选选项数量从 4 个增加到 10 个。该基准还融入了现实世界模拟，纯视觉问题来自在模拟显示屏中捕获的屏幕截图或照片，具有不同的背景、字体样式和大小，以模拟现实条件。
 
-## 附加: 我们的模型精选
+### 附加: 我们的模型精选
 
 以下是我们推荐的一些突出模型。我们喜欢很多模型，下面列出的是最新的。
 
-模型名称
-
-规模
-
-为什么我们喜欢它
-
-Qwen2.5-VL
-
-从 3B 到 72B
-
-出色的多功能模型，具有智能体能力、数学能力等
-
-RolmOCR
-
-7B
-
-性能非常好的 OCR 模型
-
-Kimi-VL-Thinking
-
-16B 参数的 MoE，3B 激活参数
-
-最佳推理模型
-
-SmolVLM2
-
-256M, 500M(我们的最爱!), 2.2B
-
-最小的视频语言模型
-
-Llama 4 Scout & Maverick
-
-109B/400B 参数的 MoE，17B 激活参数
-
-超长长长长上下文
-
-Molmo
-
-1B, 7B, 72B 和 1B 激活参数的 MoE
-
-完全开放的模型，以本地化能力为核心
+| 模型名称 | 规模 | 为什么我们喜欢它 |
+| --- | --- | --- |
+| Qwen2.5-VL | 从 3B 到 72B | 出色的多功能模型，具有智能体能力、数学能力等 |
+| RolmOCR | 7B | 性能非常好的 OCR 模型 |
+| Kimi-VL-Thinking | 16B 参数的 MoE，3B 激活参数 | 最佳推理模型 |
+| SmolVLM2 | 256M, 500M(我们的最爱!), 2.2B | 最小的视频语言模型 |
+| Llama 4 Scout & Maverick | 109B/400B 参数的 MoE，17B 激活参数 | 超长长长长上下文 |
+| Molmo | 1B, 7B, 72B 和 1B 激活参数的 MoE | 完全开放的模型，以本地化能力为核心 |
 
 就是这样！希望这篇博文能帮你回顾过去一年发生的所有事情。我们期待看到您使用本博客中的模型构建的所有东西。🤗 下面我们提供了一些链接，可以更深入地解释这篇博文中的各个主题。
 
@@ -377,15 +366,15 @@ Molmo
 
 以下是我们深入讨论本博客文章中各项主题的博客合集。
 
-*   [本博客中提到的模型、数据集等](https://huggingface.co/collections/sergiopaniego/vision-language-models-2025-update-682206d8ed0728be05dbf901)
-*   多模态安全: [Llama Guard 4 博客](https://huggingface.co/blog/llama-guard-4)
-*   VLM 中的 DPO: [使用 TRL 的视觉语言模型偏好优化](https://huggingface.co/blog/dpo_vlm)
-*   支持 VLM 的 Smolagents: [我们刚刚让 smolagents 看见了](https://huggingface.co/blog/smolagents-can-see)
-*   使用 smolagents 的视觉智能体的智能体课程部分: [使用 smolagents 的视觉智能体](https://huggingface.co/learn/agents-course/unit2/smolagents/vision_agents)
-*   Gemma 3 模型发布: [欢迎 Gemma 3: Google 全新的多模态、多语言、长上下文开放 LLM](https://huggingface.co/blog/gemma3)
-*   PaliGemma 2 模型发布: [欢迎 PaliGemma 2 – 谷歌的新视觉语言模型](https://huggingface.co/blog/paligemma2)
-*   [Hugging Face 的 Pi0 发布](https://huggingface.co/blog/pi0)
-*   多模态检索: [视觉多语言: 介绍 mcdse-2b](https://huggingface.co/blog/marco/announcing-mcdse-2b-v1)
-*   多模态检索: [ColPali: 使用视觉语言模型高效文档检索](https://huggingface.co/blog/manu/colpali)
-*   视频语言建模: [SmolVLM2: 将视频理解带到每个设备](https://huggingface.co/blog/smolvlm2)
-*   使用原生 PyTorch 对 VLM 进行最小训练: [GitHub - huggingface/nanoVLM: 用于训练/微调小型 VLM 的最简单、最快的存储库。](https://github.com/huggingface/nanoVLM)
+- [本博客中提到的模型、数据集等](https://huggingface.co/collections/sergiopaniego/vision-language-models-2025-update-682206d8ed0728be05dbf901)
+- 多模态安全: [Llama Guard 4 博客](https://huggingface.co/blog/llama-guard-4)
+- VLM 中的 DPO: [使用 TRL 的视觉语言模型偏好优化](https://huggingface.co/blog/dpo_vlm)
+- 支持 VLM 的 Smolagents: [我们刚刚让 smolagents 看见了](https://huggingface.co/blog/smolagents-can-see)
+- 使用 smolagents 的视觉智能体的智能体课程部分: [使用 smolagents 的视觉智能体](https://huggingface.co/learn/agents-course/unit2/smolagents/vision_agents)
+- Gemma 3 模型发布: [欢迎 Gemma 3: Google 全新的多模态、多语言、长上下文开放 LLM](https://huggingface.co/blog/gemma3)
+- PaliGemma 2 模型发布: [欢迎 PaliGemma 2 – 谷歌的新视觉语言模型](https://huggingface.co/blog/paligemma2)
+- [Hugging Face 的 Pi0 发布](https://huggingface.co/blog/pi0)
+- 多模态检索: [视觉多语言: 介绍 mcdse-2b](https://huggingface.co/blog/marco/announcing-mcdse-2b-v1)
+- 多模态检索: [ColPali: 使用视觉语言模型高效文档检索](https://huggingface.co/blog/manu/colpali)
+- 视频语言建模: [SmolVLM2: 将视频理解带到每个设备](https://huggingface.co/blog/smolvlm2)
+- 使用原生 PyTorch 对 VLM 进行最小训练: [GitHub - huggingface/nanoVLM: 用于训练/微调小型 VLM 的最简单、最快的存储库。](https://github.com/huggingface/nanoVLM)
