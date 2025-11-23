@@ -24,7 +24,7 @@ Specifically, we discuss the following:
 
 For this post, we are going to focus on NVIDIA GPUs connected through NVLink/NVSwitch fabrics, such as HGX H100 (8xH100s) or GB200 NVL72 (72xB200s). All benchmarks shown in this post are based on the HGX B200 (8xB200). These platforms power most production-scale distributed training and inference today, and we expect future hardware to continue along this architectural trend (e.g., Vera Rubin NVL144).
 
-![NVIDIA HGX B200](https://hazyresearch.stanford.edu/static/posts/2025-09-22-pgl/hgx-b200.png)
+![NVIDIA HGX B200](images/hgx-b200_4e64143326c2.png)
 
 _Figure 1: NVIDIA HGX B200_
 
@@ -50,7 +50,7 @@ Thus, while we like our multithreading approach and believe it should remain a v
 
 Calling `cudaIpcGetMemHandle` on the address in the current virtual address space returns a 64-byte stub that can be shared across processes through standard IPC mechanisms like shared memory or Unix domain sockets. Although undocumented, we think the stub likely encodes a reference to the underlying physical memory. The receiving process then calls `cudaIpcOpenMemHandle`, which maps the given stub into its own address space.
 
-![CUDA IPC Flow](https://hazyresearch.stanford.edu/static/posts/2025-09-22-pgl/cuda-ipc-flow.png)
+![CUDA IPC Flow](images/cuda-ipc-flow_de463c5f175b.png)
 
 _Figure 2: CUDA IPC Flow_
 
@@ -62,7 +62,7 @@ Unlike the previous approach, which works with any already-allocated memory, we 
 
 Now, we need to share this file descriptor with other processes. But because file descriptors are tied to a specific process in Linux, they cannot be shared directly. The standard way to transfer a file descriptor in Linux is to [send it as a control message over a Unix domain socket](https://github.com/HazyResearch/ThunderKittens/blob/a83c9869ae600e5b06e5f0e42034183bac130476/include/pyutils/broker.cuh#L187). Once we send the file descriptor over to the destination process, it can then import the physical memory reference using `cuMemImportFromShareableHandle` and map it into its own virtual address space using the VMM API. The specific names of the VMM CUDA functions called are shown in the following.
 
-![VMM Flow](https://hazyresearch.stanford.edu/static/posts/2025-09-22-pgl/vmm-flow.png)
+![VMM Flow](images/vmm-flow_8f52b6c3fce8.png)
 
 _Figure 3: VMM Flow_
 
@@ -91,7 +91,7 @@ For example, consider implementing an all-reduce. Without NVSwitch, this is typi
 
 With NVSwitch, the reduction is performed inside the switch hardware: each GPU only needs to send its tensor once and then receive the reduced result, requiring just one send, one receive, and no intermediate synchronization.
 
-![NVSwitch Acceleration](https://hazyresearch.stanford.edu/static/posts/2025-09-22-pgl/nvswitch-acceleration.png)
+![NVSwitch Acceleration](images/nvswitch-acceleration_341124474c4a.png)
 
 _Figure 4: NVSwitch Acceleration ([source](https://hc34.hotchips.org/assets/program/conference/day2/Network%20and%20Switches/NVSwitch%20HotChips%202022%20r5.pdf))_
 
@@ -99,7 +99,7 @@ In order to utilize NVSwitch acceleration, you first allocate local memory on ea
 
 A multicast object behaves just like VMM-allocated physical memory: you can share it with other processes and map a virtual address to it using the same mechanism described above. That is, you export the multicast object as a POSIX file descriptor, open them on each device, and map them into each process’s virtual address space. The exact names of the CUDA functions called are shown below.
 
-![Multicast Initialization Flow](https://hazyresearch.stanford.edu/static/posts/2025-09-22-pgl/multicast-creation.png)
+![Multicast Initialization Flow](images/multicast-creation_4cc30ef1119f.png)
 
 _Figure 5: Multicast Initialization Flow_
 
@@ -109,7 +109,7 @@ Writing to and reading from the local address is a standard global memory access
 
 Writing to the multicast address triggers a broadcast across all participating devices, multicasted in the NVSwitch fabric. Reading from the multicast address is undefined, though it seems to return data from the device with the lowest ordinal. Finally, in-fabric reduction operations can be invoked on the multicast address using the PTX instructions `multimem.red` and `multimem.ld_reduce`.
 
-![Multicast Object Hierarchy](https://hazyresearch.stanford.edu/static/posts/2025-09-22-pgl/multicast-hierarchy.png)
+![Multicast Object Hierarchy](images/multicast-hierarchy_00e7263279d5.png)
 
 _Figure 6: Multicast Object Hierarchy_
 
@@ -166,7 +166,7 @@ When using register operations for NVLink transfer, full SM utilization and coal
 
 To hide as much NVLink communication as possible, it is important to understand how memory is actually transferred from one device to another over NVLink.
 
-![The NVLink Data Path (shown in red line)](https://hazyresearch.stanford.edu/static/posts/2025-09-22-pgl/nvlink-data-path.png)
+![The NVLink Data Path (shown in red line)](images/nvlink-data-path_0ae384ebdfd7.png)
 
 _Figure 7: The NVLink Data Path (shown in red line)_
 
@@ -270,7 +270,7 @@ Finally, on the C++ side, you can call `kittens::py::parallel_tensor_to_pgl` to 
 
 With PGLs and TKParallelTensor, we have all the abstractions needed to write fast multi-GPU kernels with the convenience of ThunderKittens. We were very surprised to find that even the most basic operation, such as all-reduce, already surpasses pure NCCL performance when implemented from scratch, avoiding NCCL’s generalization overhead like intermediate buffers. The kernel code is also very short; the entire CUDA file is less than 100 lines of code. All benchmarks were run on 8 B200 GPUs interconnected with NVLink/NVSwitch.
 
-![All-Reduce Sum](https://hazyresearch.stanford.edu/static/posts/2025-09-22-pgl/all-reduce.png)
+![All-Reduce Sum](images/all-reduce_f4bef6454ae3.png)
 
 _Figure 8: All-Reduce Sum ([source code](https://github.com/HazyResearch/ThunderKittens/tree/main/kernels/parallel/all_reduce))_
 
@@ -278,23 +278,23 @@ But a bigger win comes when we need _fine-grained_ collective operations: for ex
 
 The same holds when comparing against NCCL, which supports all-gather and reduce-scatter only on contiguous partials, and therefore requires additional reshaping and copies. In contrast, ThunderKittens can perform these collectives directly on the original layout. Thus, the following results.
 
-![All-Gather on the Tensor Dimension](https://hazyresearch.stanford.edu/static/posts/2025-09-22-pgl/all-gather.png)
+![All-Gather on the Tensor Dimension](images/all-gather_b77f2ae4eb8c.png)
 
 _Figure 9: All-Gather on the Tensor Dimension ([source code](https://github.com/HazyResearch/ThunderKittens/tree/main/kernels/parallel/all_gather))_
 
-![Reduce-Scatter on the Tensor Dimension](https://hazyresearch.stanford.edu/static/posts/2025-09-22-pgl/reduce-scatter.png)
+![Reduce-Scatter on the Tensor Dimension](images/reduce-scatter_81d9d6dfe7b8.png)
 
 _Figure 10: Reduce-Scatter on the Tensor Dimension ([source code](https://github.com/HazyResearch/ThunderKittens/tree/main/kernels/parallel/reduce_scatter))_
 
 The biggest win comes with non-trivial all-to-all operations. For example, in [Deepspeed Ulysses](https://arxiv.org/abs/2309.14509), two all-to-all collectives are required before and after the self-attention step: the first scatters on the head axis and gathers on the sequence axis, while the second does the reverse. The [original implementation](https://github.com/feifeibear/long-context-attention/tree/main) relies on NCCL and thus performs extra reshaping to place the scatter/gather axes first. With ThunderKittens, this reshaping is unnecessary; we can implement arbitrary all-to-all patterns directly.
 
-![All-to-All](https://hazyresearch.stanford.edu/static/posts/2025-09-22-pgl/all2all.png)
+![All-to-All](images/all2all_5bbd94625ea6.png)
 
 _Figure 11: All-to-All ([source code](https://github.com/HazyResearch/ThunderKittens/tree/main/kernels/parallel/all_to_all))_
 
 Combined with [FlashAttention-4 forward](https://github.com/Dao-AILab/flash-attention/blob/2cc6fd6abbc5f1100e51eab63d92b678fda06c7d/flash_attn/cute/flash_fwd_sm100.py#L51), this results in significantly faster self-attention with sequence parallelism.
 
-![DeepSpeed Ulysses-Style Sequence-Parallel Attention Forward](https://hazyresearch.stanford.edu/static/posts/2025-09-22-pgl/ulysses.png)
+![DeepSpeed Ulysses-Style Sequence-Parallel Attention Forward](images/ulysses_60b43e79a0fd.png)
 
 _Figure 12: DeepSpeed Ulysses-Style Sequence-Parallel Attention Forward ([source code](https://github.com/HazyResearch/ThunderKittens/tree/main/kernels/parallel/ulysses_attn))_
 
@@ -350,7 +350,7 @@ For instance, consider tensor-parallel matrix multiplication with a reduce-scatt
 
 With this design, the reduce-scatter is hidden by every tiled tensor-core matrix multiplication at the intra-SM level.
 
-![GEMM + Reduce-Scatter](https://hazyresearch.stanford.edu/static/posts/2025-09-22-pgl/gemm-reduce-scatter.png)
+![GEMM + Reduce-Scatter](images/gemm-reduce-scatter_de22bc8c183b.png)
 
 _Figure 13: GEMM + Reduce-Scatter ([source code](https://github.com/HazyResearch/ThunderKittens/tree/main/kernels/parallel/matmul_rs))_
 

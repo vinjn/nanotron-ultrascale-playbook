@@ -5,7 +5,7 @@ Loads and Loads of Fluffy Kittens
 
 **Links: [Intro](https://hazyresearch.stanford.edu/blog/2025-11-17-pk) | [Part 1](https://hazyresearch.stanford.edu/blog/2025-09-22-pgl) | [Part 2](https://hazyresearch.stanford.edu/blog/2025-11-17-fluffy-kittens) (this post) | [Code](https://github.com/HazyResearch/ThunderKittens) | [Paper](https://hazyresearch.stanford.edu/static/posts/2025-11-17-pk/ParallelKittens.pdf)**  
 
-![The kittens gather for a family photo.](https://hazyresearch.stanford.edu/static/posts/2025-11-17-fluffy-kittens/fluffy-kittens-1.png)
+![The kittens gather for a family photo.](images/fluffy-kittens-1_5c07523dd23b.png)
 
 _Figure 1: The kittens gather for a family photo._
 
@@ -21,13 +21,13 @@ In this post, as a follow-up to our previous one, we share:
 Properly Overlapping the Kittens
 --------------------------------
 
-![The kittens overlap for cuteness density.](https://hazyresearch.stanford.edu/static/posts/2025-11-17-fluffy-kittens/fluffy-kittens-2.png)
+![The kittens overlap for cuteness density.](images/fluffy-kittens-2_14d01d66c1c8.png)
 
 _Figure 2: The kittens overlap for cuteness density._
 
 Modern AI workloads run on multi-GPU platforms like HGX H100 (8xH100s), HGX B200 (8xB200s), or GB200 NVL72 (72xB200s). These systems interconnect datacenter-grade GPUs through NVLink and NVSwitch, providing up to 900 GB/s of unidirectional bandwidth between any two remote High Bandwidth Memory (HBM). As a quick reminder, the figure below from our previous post illustrates these systems’ high-level topology.
 
-![NVIDIA HGB B200 overview.](https://hazyresearch.stanford.edu/static/posts/2025-11-17-fluffy-kittens/hgx-b200.png)
+![NVIDIA HGB B200 overview.](images/hgx-b200_cde39df8fc93.png)
 
 _Figure 3: NVIDIA HGB B200 overview. The PCIe path handles kernel execution, host-device data movement, and inter-node communication over InfiniBand or TCP, while device-to-device communication occurs entirely through NVLink and NVSwitch._
 
@@ -43,7 +43,7 @@ For this post, though, we wanted to step back and ask: what are the fundamental 
 
 There are 3 ways to perform inter-GPU data transfers: using the per-GPU copy engine, the Tensor Memory Accelerator (TMA), or register-level instructions (e.g., `ld`, `st`, `red`, or `multimem`). Each comes with its own trade-offs, and naively relying on a single method leads to failures. For example, while the copy engine can deliver the highest bandwidth without involving any SMs (as shown in the previous post), it only reaches peak throughput for large message sizes. As illustrated in the figure below, moving 1 GB of data typically requires chunks of around 256 MB to fully saturate the link. Thus, the copy engine is not well-suited for fine-grained communication.
 
-![Observed memory bandwidth utilization 1.](https://hazyresearch.stanford.edu/static/posts/2025-11-17-fluffy-kittens/nvlink-bandwidth-1.png)
+![Observed memory bandwidth utilization 1.](images/nvlink-bandwidth-1_a5f44062168d.png)
 
 _Figure 4: Observed memory bandwidth utilization for a 1 GB peer-to-peer transfer over NVLink between 2 H100s._
 
@@ -51,7 +51,7 @@ On the other hand, TMA is excellent for inter-GPU communication in many ways. It
 
 TMA does have a few limitations, though. For example, it does not support in-network reduction operations, which are only possible through register-level instructions. Register instructions can also saturate bandwidth at element-wise granularity, as long as the memory accesses are properly coalesced.
 
-![Observed memory bandwidth utilization 2.](https://hazyresearch.stanford.edu/static/posts/2025-11-17-fluffy-kittens/nvlink-bandwidth-2.png)
+![Observed memory bandwidth utilization 2.](images/nvlink-bandwidth-2_f512a165934d.png)
 
 _Figure 5: The number of SMs it takes to saturate NVLink bandwidth, using different communication mechanisms._
 
@@ -67,7 +67,7 @@ The challenge with intra-SM overlapping, however, is that the communication patt
 
 However, when the communication pattern cannot align with computation, the kernel ends up splitting resources like the register file or shared memory, resulting in poor overlap and reduced compute utilization. This makes _inter-SM overlapping_ necessary.
 
-![GEMM + reduce-scatter (RS) and GEMM + all-reduce (AR).](https://hazyresearch.stanford.edu/static/posts/2025-11-17-fluffy-kittens/gemm-rs-ar-schedules.png)
+![GEMM + reduce-scatter (RS) and GEMM + all-reduce (AR).](images/gemm-rs-ar-schedules_b0185dde89b5.png)
 
 _Figure 6: GEMM + reduce-scatter (RS) and GEMM + all-reduce (AR) performance on 8xH100s across overlapping schedules._
 
@@ -77,7 +77,7 @@ _In-network acceleration_ is enabled by modern high-bandwidth interconnects such
 
 _Remote L2 caching behavior_ is shown in the figure below from our previous post. Because remote HBM access bypasses the local L2 cache, data is cached only on the remote peer’s L2. This design simplifies inter-GPU memory consistency but makes every remote access bottlenecked by NVLink bandwidth. For operators where multiple thread blocks need to access the same remote data for computation (such as attention), a more effective strategy is to use inter-SM overlapping. For example, a few dedicated SMs can manage data transfers from peer HBMs to local HBM, allowing compute SMs to fully utilize local L2 cache bandwidth instead of repeatedly traversing NVLink.
 
-![The NVLink data path.](https://hazyresearch.stanford.edu/static/posts/2025-11-17-fluffy-kittens/nvlink-data-path.png)
+![The NVLink data path.](images/nvlink-data-path_0d2632e17b09.png)
 
 _Figure 7: The NVLink data path, shown in red line. Note that the L2 cache is far-sided: data travels through the L2 cache of the source HBM, not the local one._
 
@@ -90,7 +90,7 @@ And of course, tiles remain just as effective for writing communication kernels 
 New Kernels
 -----------
 
-![The kittens gather for a fruitful day of labor.](https://hazyresearch.stanford.edu/static/posts/2025-11-17-fluffy-kittens/fluffy-kittens-3.png)
+![The kittens gather for a fruitful day of labor.](images/fluffy-kittens-3_875cb668e0a3.png)
 
 _Figure 8: The kittens gather for a fruitful day of nap labor._
 
@@ -98,7 +98,7 @@ To demonstrate the power of the new ThunderKittens multi-GPU API and the ideas d
 
 #### Data and Tensor Parallelism
 
-![Data-parallel kittens.](https://hazyresearch.stanford.edu/static/posts/2025-11-17-fluffy-kittens/dp-kittens.png)
+![Data-parallel kittens.](images/dp-kittens_ea4b94afc20d.png)
 
 _Figure 9: Data-parallel kittens._
 
@@ -106,43 +106,43 @@ For data and tensor parallelism, we optimize for a typical setup where we start 
 
 In our comparisons, cuBLAS + NCCL serves as the non-overlapped baseline, Triton Distributed represents the compiler-based overlapping approach, and Flux and CUTLASS are the hand-optimized kernels. PK (“ParallelKittens”) is our approach. Note that Flux and CUTLASS do not provide a GEMM + AR kernel, so they are not included in the GEMM + AR results.
 
-![AG + GEMM performance on 8xH100s.](https://hazyresearch.stanford.edu/static/posts/2025-11-17-fluffy-kittens/ag-gemm.png)
+![AG + GEMM performance on 8xH100s.](images/ag-gemm_6edf8bd8353e.png)
 
 _Figure 10: AG + GEMM performance on 8xH100s. Local GEMM size is N x N/8 x N, with N given in the X-axis._
 
-![GEMM + RS performance on 8xH100s.](https://hazyresearch.stanford.edu/static/posts/2025-11-17-fluffy-kittens/gemm-rs.png)
+![GEMM + RS performance on 8xH100s.](images/gemm-rs_01852a67bcef.png)
 
 _Figure 11: GEMM + RS performance on 8xH100s. Local GEMM size is N x N x N/8, with N given in the X-axis._
 
-![GEMM + AR performance on 8xH100s. ](https://hazyresearch.stanford.edu/static/posts/2025-11-17-fluffy-kittens/gemm-ar.png)
+![GEMM + AR performance on 8xH100s. ](images/gemm-ar_5e850dd78837.png)
 
 _Figure 12: GEMM + AR performance on 8xH100s. Local GEMM size is N x N x N/8, with N given in the X-axis._
 
 #### Sequence Parallelism
 
-![Sequence-parallel kittens.](https://hazyresearch.stanford.edu/static/posts/2025-11-17-fluffy-kittens/sp-kittens.png)
+![Sequence-parallel kittens.](images/sp-kittens_3d020a232039.png)
 
 _Figure 13: Sequence-parallel kittens._
 
 For sequence parallelism, we implemented two popular strategies for distributing the sequence dimension across multiple GPUs and computing self-attention: [Ring Attention](https://arxiv.org/abs/2310.01889) and [DeepSpeed-Ulysses](https://arxiv.org/abs/2309.14509). We used xDiT and YunChang as their most efficient open-source reference implementations and compared our results against them. In the figures, the X-axis represents the total sequence length, which is evenly distributed across 8 H100 GPUs.
 
-![Ring Attention performance on 8xH100s.](https://hazyresearch.stanford.edu/static/posts/2025-11-17-fluffy-kittens/ring-attn.png)
+![Ring Attention performance on 8xH100s.](images/ring-attn_cdb0b9d32e85.png)
 
 _Figure 14: Ring Attention performance on 8xH100s across sequence lengths (B = 16, H = 16, D = 128)._
 
-![DeepSpeed-Ulysses attention layer performance on 8xH100s.](https://hazyresearch.stanford.edu/static/posts/2025-11-17-fluffy-kittens/ulysses-attn.png)
+![DeepSpeed-Ulysses attention layer performance on 8xH100s.](images/ulysses-attn_5f8ce7cafe4d.png)
 
 _Figure 15: DeepSpeed-Ulysses attention layer performance on 8xH100s across sequence lengths (B = 16, H = 128, D = 128)._
 
 #### Expert Parallelism
 
-![Expert-parallel kittens.](https://hazyresearch.stanford.edu/static/posts/2025-11-17-fluffy-kittens/ep-kittens.png)
+![Expert-parallel kittens.](images/ep-kittens_7e929931c52f.png)
 
 _Figure 16: Expert-parallel kittens._
 
 In Mixture-of-Experts (MoE) layers with experts distributed across multiple GPUs (expert parallelism), token exchange accounts for a large portion of the total runtime ([up to 50%](https://arxiv.org/abs/2502.19811)). To reduce this overhead, [many](https://github.com/deepseek-ai/DeepEP) [approaches](https://arxiv.org/abs/2502.19811) overlap token dispatch with the first expert GEMM and the last expert GEMM with token combination. In this post, we focus on the first half of the MoE computation (overlapped token dispatch and GEMM), and compare our implementation against Comet, the state-of-the-art fine-grained overlapping kernel for expert parallelism.
 
-![Expert-parallel token dispatch + GEMM performance on 8xH100s.](https://hazyresearch.stanford.edu/static/posts/2025-11-17-fluffy-kittens/moe-dispatch-gemm.png)
+![Expert-parallel token dispatch + GEMM performance on 8xH100s.](images/moe-dispatch-gemm_482246fad833.png)
 
 _Figure 17: Expert-parallel token dispatch + GEMM performance on 8xH100s (top\_k = 8, num\_experts = 256, D = 7168, D\_expert = 2048)._
 

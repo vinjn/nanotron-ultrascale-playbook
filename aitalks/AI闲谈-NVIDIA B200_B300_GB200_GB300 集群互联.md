@@ -28,7 +28,7 @@ NVIDIA 当前最强的 GPU 包括 B200、B300、GB200 和 GB300，它们之间�
 - FP4 稠密算力：1 vs 1.5
 - NVLink 域：8 GPU vs 72 GPU
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgT6Z4GZIFepGEoB9aKJ9O0BfEFqWicKAm4ADichr7ZH2VM7pqogibCDAwa0Ztb3vlN0H8IQog7TXZ6w/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=0)
+![Image](images/640_fbcc090d825f.png)
 
 ### 2.2 Blackwell B200
 
@@ -38,7 +38,7 @@ Blackwell B200 相比之前 NVIDIA GPU 的最主要区别是将两个 Die 封装
 - 8 个 24GB HBM3e Stack 对应 B200 的 192GB 显存；换成 8 个 36GB HBM3e Stack 则对应 B300 的 288GB 显存。
 - 此外 B200 对应的后端网络是 400 Gbps 网卡。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgT6Z4GZIFepGEoB9aKJ9O0B3Xmx7hPo6aaqo0B1Ho36fHP7SciaK1HO3icdcdOjIccYAqoADusCRBA/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=1)
+![Image](images/640_3a55f1401442.png)
 
 ### 2.3 Blackwell B300
 
@@ -53,7 +53,7 @@ B300 相比 B200 整体架构略类似，个别配置有所不同：
 - 功耗：1000W -> 1100W
 - Attention 加速（SFU EX2）：H100(4.5T Exponentials/s) -> B200(5) -> B300(10.7)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgT6Z4GZIFepGEoB9aKJ9O0pp49XhOiaHLcDc9ictpgoq3ibEENP60GibIa3O15rOh6v5avmnr3WQstTg/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=2)
+![Image](images/640_3f059d3a92a4.png)
 
 ### 2.4 Blackwell GB200/GB300
 
@@ -64,17 +64,17 @@ GB200/GB300 相比 B200/B300 的最大不同是包含了 2 个 GPU 和 1 个 Gra
 - B300 vs GB300 FP4 算力：13.5P -> 15P x 2=30P。
 - B200/B300 vs GB200/GB300 功耗：1000W/1100W -> 2700W/?。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgT6Z4GZIFepGEoB9aKJ9O0mvAI934aZycxybsTM5fwk20D2rGeibFDR8hpkfsOmtRawzTBHBiax0dg/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=3)
+![Image](images/640_518a3a832317.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgT6Z4GZIFepGEoB9aKJ9O0zf4nOsXWBxiaYn060XoDiaB9PrG3g8lt26Mvja4UTUmk2BQMeKiaLz3aQ/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=4)
+![Image](images/640_f3f5d0dacabc.png)
 
 ### 2.5 OpenAI Blackwell GB200
 
 根据 SemiAnalysis 报道，OpenAI 和 NVIDIA 定制了 GB200 的后端网络方案，以便能支持 800Gbps 网络（PS：目前可能也只有 OpenAI 在 GB200 中用上了 800Gbps 网络）。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgT6Z4GZIFepGEoB9aKJ9O0w2edMDBegSEEqZgNDpCNKH6jpJlv3j1L6de8vRomsvcc067Oanwv3w/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=5)
+![Image](images/640_2c7bf96d91a2.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgT6Z4GZIFepGEoB9aKJ9O0qPEDT6SKIDoHeJTFQBvHoofKibpRZA5bVvfGGxoZsMPsXKfpWtLibb5g/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=6)
+![Image](images/640_e468f588938e.png)
 
 ## 三、DGX & NVL72
 
@@ -86,11 +86,11 @@ B200 和 B300 通常以 8 个 GPU 组成单个 Node，比如 NVIDIA 的 DGX（�
 - 8 个 GPU 对应 8 个网卡（B200 对应 CX7，B300 对应 CX8）。
 - 可以使用风冷，也可以使用液冷。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgT6Z4GZIFepGEoB9aKJ9O0mfUGu8sB397L5bmhPmnI7xXZ56Oew0k7t6AF2n0gqfPGmvHM24k44A/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=7)
+![Image](images/640_a8b8b2efca00.png)
 
 DGX B200 和 DGX B30 相应的具体配置以及与之前 DGX A100 和 DGX H100 对比如下图所示：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgT6Z4GZIFepGEoB9aKJ9O0gefv6NPB3SibAgOJ3ObvvFVGzxyHYBxtrOT2UtPpFz8CW9jNs9XdstA/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=8)
+![Image](images/640_6d2627b42bab.png)
 
 ### 3.2 GB200 & GB300 NVL72
 
@@ -101,15 +101,15 @@ DGX B200 和 DGX B30 相应的具体配置以及与之前 DGX A100 和 DGX H100 
 - 9 个 NVSwitch Tray，每个 Tray 包含 2 个 NVSwitch，每个 NVSwitch 72 个 Port，连接所有 GPU。
 - GB200 NVL72 提供 72 个 400Gb/s Port（CX-7），GB300 NVL72 提供 72 个 800Gb/s Port（CX-8）。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgT6Z4GZIFepGEoB9aKJ9O0mgf7nkY4Jxz2LM350BBDSFs1yL8EkFu0tpNiavIDzxxLJj4ibnXunH7A/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=9)
+![Image](images/640_444ecef3643d.png)
 
 如下图所示，一个 NVSwitch 有 72 个 NVLink Port，因此一个 NVL72 需要 18 个 NVSwitch 把所有 GPU 全部互联起来。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgT6Z4GZIFepGEoB9aKJ9O07Lsic2rWd75vX8BIRNKicVQrAsvpdDt4NcrKpopsyh1IOWpskbwat1vQ/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=10)
+![Image](images/640_0b7acaa85e51.png)
 
 GB200 NVL72 和 GB300 NVL72 的详细配置以及与其他 SuperPod 的对比如下图所示：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgT6Z4GZIFepGEoB9aKJ9O0kTJhl9ibXvBWg1yWpibnapg6eOfEW60ulcZsvwaMFN2vjYWDcsiadrD7w/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=11)
+![Image](images/640_99b92379ff43.png)
 
 ## 四、相关网卡和交换机
 
@@ -119,19 +119,19 @@ GB200 NVL72 和 GB300 NVL72 的详细配置以及与其他 SuperPod 的对比如
 
 NVIDIA 在 CX-8 SuperNIC 中直接集成了 PCIe Switch，能提供 PCIe Gen6 Port。当前 B300 服务器都采用这种方式，还没有单独使用 PCIe Gen6 Switch 的方案，长期来看可能也是这种方式为主。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgT6Z4GZIFepGEoB9aKJ9O0FQibbsdPo54yZ5YVeuFvjOAtHeoYMMgkGWWWC2pV1iajicbJuoAN4BnRw/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=12)
+![Image](images/640_03194fef6492.png)
 
 如下图所示，CX-8 SuperNIC 的 IB 模式支持 1 个 800Gb/s Port 或 2 个 400Gb/s Port。而 Ethernet 模式不支持 800 Gb/s Port，只能用 2 个 400Gb/s Port。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgT6Z4GZIFepGEoB9aKJ9O0ibfLmaXx3pQNAmMs033Azw6PeDQc6WOicCLibAaEEtesF1mn4APNPt11g/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=13)
+![Image](images/640_88dca8d33b07.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgT6Z4GZIFepGEoB9aKJ9O0K3EJ7HCrpNhNbvGv0YzicKVWw1pzoUROO7I3tltyXQiaotoTicNNsiclUg/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=14)
+![Image](images/640_10b70bcfa4f9.png)
 
 #### 4.1.2 CX9 SuperNIC
 
 NVIDIA 的下一代 CX9 SuperNIC 会解决 CX8 不支持 800Gbps 以太网 Port 的问题，也就更容易使用第三方的 800Gbps 以太网交换机。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgT6Z4GZIFepGEoB9aKJ9O0Gs4RACJP30FLkUlytUcMzw1F8Oaq3Yj2RakB0a44HEu07fiaibYApjiaQ/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=15)
+![Image](images/640_1e7e4f9fca43.png)
 
 ### 4.2 网络交换机
 
@@ -139,7 +139,7 @@ NVIDIA 的下一代 CX9 SuperNIC 会解决 CX8 不支持 800Gbps 以太网 Port 
 
 NVIDIA 上一代 Quantum-2 QM9700/9790 IB 交换机支持 64 个 400 Gbps Port，可提供 400 * 64 * 2 = 51.2 Tbps 的双向聚合带宽。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgT6Z4GZIFepGEoB9aKJ9O0Wuy4fOTlKSgAHzg7Pd5cicovQRP15kIAFdMOdXbmO5dBMw4YguayvibQ/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=16)
+![Image](images/640_84605f9bfe1c.png)
 
 #### 4.2.2 Spectrum-X800 SN5600 交换机
 
@@ -148,7 +148,7 @@ NVIDIA 最新的以太网交换机 SN5600，支持 64 个 800Gbps Port 或者 12
 - 如果使用 800Gb/s Port，SN5600 两层无收敛网络最多 64*64/2=2048 GPU。
 - 如果使用 400Gb/s Port，SN5600 两层无收敛最多 128*128/2=8192 GPU。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgT6Z4GZIFepGEoB9aKJ9O0ClNJmibU9WoAkPZb3V4WDZiatgpu9t17rWY7AvPibqSzSjHTpCibXUGkdQ/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=17)
+![Image](images/640_eb5fc9aa7000.png)
 
 #### 4.2.3 Quantum-X800 Q3400 交换机
 
@@ -157,7 +157,7 @@ NVIDIA 也提供了最新的 IB 交换机 Quantum-X800 Q3400：
 - 提供 144 个 800Gb/s 的 Port。
 - 两层无收敛网络最多支持 144*144/2=10368 GPU。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgT6Z4GZIFepGEoB9aKJ9O04QeB1icaSXclaJbXtbUs2ghXBtvp7nKr6J3b5CEAEljgKU5cz2fuKMA/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=18)
+![Image](images/640_88570741d619.png)
 
 ## 五、NVIDIA Superpod GPU 集群
 
@@ -169,13 +169,13 @@ NVIDIA 在 DGX B300 SuperPod 的后端网络（计算网络）方案中采用了
 - 由于最后一个 SU 的 Leaf Switch 要连 UFM，因此最后一个 SU 会少一个 Node。
 - 实际上，两层无收敛网络最多连 64*64/2=2048 GPU。（PS：8 SU，实际上还要少 1 个 Node 8 个 GPU）
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgT6Z4GZIFepGEoB9aKJ9O08Y2uQEic6jCQM0IjzrGSRGgIb0L3FbHiaV3OryUkT2icvMxx2OzeWwlQQ/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=19)
+![Image](images/640_0599e8436b5b.png)
 
 如下图所示，3 层网络则可以支持更大规模的 GPU 集群，与 H100 方案类似，比如：
 
 - 64 个 SU，可以支持 2048 个 Node，16384 个 B200 GPU。当然也就需要 256 + 512 + 512=1280 个 QM9700 IB 交换机。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgT6Z4GZIFepGEoB9aKJ9O0dISuKhdtQ6q6eVkfXIibpbibx8co1D3LQQsmAAcpgBMDTn8CnEriaBia7w/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=20)
+![Image](images/640_50193b4515eb.png)
 
 当然，如果可以使用上述的 SN5600 构建 2 层网络集群，最多可以支持 128*128/2 = 8192 B200 GPU。
 
@@ -192,18 +192,18 @@ NVIDIA 在 DGX B300 SuperPod 的后端网络（计算网络）方案中采用了
 - 两个平面 64*2=128 个 Spine Switch。
 - 这里的 Leaf 和 Spine Switch 都是上述的 SN5600 Switch。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgT6Z4GZIFepGEoB9aKJ9O0jD56oLmT5kqEiaxU4sWZ4ibv8L5SE6vOQvvrZoGz962JdN4BGpo6QXNg/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=21)
+![Image](images/640_16cf759b8bb1.png)
 
 如下图所示，包括了不同 SU 对应的 Node 数量（GPU 数量）、Leaf Switch 和 Spine Switch 数量。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgT6Z4GZIFepGEoB9aKJ9O09dqbKwmSP9Kic2AodJxXJA2P8G6q4gqGKIYYaia27QUOqBj6MibVsD4QQ/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=22)
+![Image](images/640_c253fc6cef96.png)
 
 上述一个 SU 组成如下图所示：
 
 - 8 个 GPU Rack，每个 Rack 包含 4 个 DGX B300 Node，共 32 B300 GPU，功耗达到 50kw。
 - 其他几个 Rack 放置交换机，存储节点等。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgT6Z4GZIFepGEoB9aKJ9O0xiaep2jiboyUh7uI7nLUoIRspOHOeqXJANbeSgvCZwxf5eFx9EMQ6RKQ/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=23)
+![Image](images/640_ecaedf1e4e42.png)
 
 ### 5.3 GB200 SuperPod 参考架构
 
@@ -216,7 +216,7 @@ NVIDIA 的 GB200 SuperPod 参考架构中后端网络同样采用的是 QM9700 I
 - Leaf Switch 中大量 Port 会浪费，下行 18 个 Port，为了无收敛，上行也是 18 个 Port（每个 Spine 连 2 个），浪费 28 个 Port。
 - 9 个 Spine Switch 正好对应 64*9=576 个 GPU，无收敛（PS：相应的理论上只需要 18 个 Leaf Switch，实际上用了 32 个）。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgT6Z4GZIFepGEoB9aKJ9O0SOxJ3jhFAGtRQVYtN068ibKEKzTOdB6OW2NpHUOeIr7mMGgsaEic1pdA/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=24)
+![Image](images/640_b752cc672f88.png)
 
 为了支持更大规模，只能采用 3 层网络架构：
 
@@ -228,11 +228,11 @@ NVIDIA 的 GB200 SuperPod 参考架构中后端网络同样采用的是 QM9700 I
 - 每个 Core Group 包含 24 个 Core Switch。共 6*24=144 个 Core Switch，对应 144*64=9216 个 Port，也就是 9216 个 GPU。
 - 每个 Spine Switch 的 24 个上行 Port 对应一个 Core Group，这里每 Group 24 个 Core Switch，所以相当于一个 Spine Switch 的 24 个 Port 连接一个 Group 中的 24 个 Core Switch。每个 Rail 里 6 个 Spine Switch，对应 6 个 Group。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgT6Z4GZIFepGEoB9aKJ9O0dc8hjYK8TjA88PDImqicOSoRpLHDbtxzjsjs7nHkibEuojRiaib1yZnFSw/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=25)
+![Image](images/640_442e4a0065c1.png)
 
 如下图所示，9216 GPU 的集群需要 144+512+384=1040 个 QM9700 Switch（共 1040*64=66560 个 400 Gbps Port ）。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgT6Z4GZIFepGEoB9aKJ9O06Q8ZNN6yyShpFwrQwwFaMIgufbsn0OZ14zheQxOcc4YMd9O257Lt4Q/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=26)
+![Image](images/640_835be9cd87a7.png)
 
 ### 5.3 GB200 SuperPod 参考架构
 
@@ -249,14 +249,14 @@ NVIDIA 也最新发布了 GB300 SuperPod 集群的参考架构，其后端网络
 - 每个 Spine Switch 都会连接 128 个 Leaf Switch。
 - Leaf Switch 上行还剩 72 个 Port，72 个 Spine Switch 即可。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgT6Z4GZIFepGEoB9aKJ9O0YicUxd44CcuSeCHPaaeyza6CsONT4dPhiaLxticXPRpoibicGEM8juUibreg/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=27)
+![Image](images/640_39262c56060d.png)
 
 如下表所示为相应的 GPU 规模及对应的 SU 以及 Switch 个数，可以看出：
 
 - 9216 GPU 只需要 128+72=200 个 Q3400（共 200*128=25600 个 800 Gbps Port）。
 - 而 GB200 方案中，9216 GPU 需要 1040 个 QM9700（共 1040*64=66560 个 400 Gbps Port ）。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgT6Z4GZIFepGEoB9aKJ9O0ododMTB2v8Na4FfibKYRfTOxSrmov3ibLTTVnzId1H0ykagocUHibnPfg/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=28)******## 六、参考链接
+![Image](images/640_301cf1f0d272.png)******## 六、参考链接
 
 相关资料来自 NVIDIA 的官方文档，可以去 NVIDIA 官网查找。****
 

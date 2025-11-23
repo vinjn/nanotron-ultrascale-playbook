@@ -10,7 +10,7 @@ _Note: This is an introduction post for our two longer blog posts, new ThunderKi
 *   [Code](https://github.com/HazyResearch/ThunderKittens)
 *   [Paper](https://hazyresearch.stanford.edu/static/posts/2025-11-17-pk/ParallelKittens.pdf)
 
-![Sequence-parallel kittens](https://hazyresearch.stanford.edu/static/posts/2025-11-17-pk/sp-kittens.png)
+![Sequence-parallel kittens](images/sp-kittens_400f09936303.png)
 
 _Figure 1: "Sequence-parallel" kittens_
 
@@ -27,15 +27,15 @@ To lay early foundations for exploring these technologies, we did three things. 
 
 While we continue exploring new directions, we are excited to share that we can already match or surpass state-of-the-art implementations across various parallel strategies with the updated ThunderKittens.
 
-![BF16 all-reduce sum performance on 8xH100s and 8xB200s.](https://hazyresearch.stanford.edu/static/posts/2025-11-17-pk/all-reduce.png)
+![BF16 all-reduce sum performance on 8xH100s and 8xB200s.](images/all-reduce_f9ebe5f550c2.png)
 
 _Figure 2: BF16 all-reduce sum performance on 8xH100s and 8xB200s._
 
-![BF16 all-gather + GEMM performance on 8xH100s.](https://hazyresearch.stanford.edu/static/posts/2025-11-17-pk/ag-gemm.png)
+![BF16 all-gather + GEMM performance on 8xH100s.](images/ag-gemm_68c16b612a81.png)
 
 _Figure 3: BF16 all-gather + GEMM performance on 8xH100s._
 
-![Ring Attention performance on 8xH100s (B = 16, H = 16, D = 128).](https://hazyresearch.stanford.edu/static/posts/2025-11-17-pk/ring-attn.png)
+![Ring Attention performance on 8xH100s (B = 16, H = 16, D = 128).](images/ring-attn_6c3a1b14c9d7.png)
 
 _Figure 4: Ring Attention performance on 8xH100s (B = 16, H = 16, D = 128)._
 
