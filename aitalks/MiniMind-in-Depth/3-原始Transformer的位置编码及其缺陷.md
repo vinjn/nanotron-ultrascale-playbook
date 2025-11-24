@@ -148,7 +148,7 @@ plt.legend(loc='upper right')
 plt.tight_layout()
 plt.show()
 ```
-![](1.png)
+![](3-1.png)
 
 x轴是不同的pos，y轴是相应pos下最终位置编码的元素值。可以看到，当i=0（较小）时，随着pos的增大，相邻pos之间的差异变化幅度较大，而随着i变大，比如i=64时，相邻pos之间的差异非常小。
 

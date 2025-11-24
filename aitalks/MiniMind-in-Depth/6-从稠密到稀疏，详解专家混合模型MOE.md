@@ -416,7 +416,7 @@ https://www.linkedin.com/pulse/what-main-benefit-mixture-experts-moe-models-qi-h
 
 Expert Choice将原先的“token选择专家”改成“专家选择要处理的token”：
 
-![image.png](1.png)
+![image.png](6-1.png)
 
 每个专家都预先设置一个专家容量k，因此不会出现某些专家一直没有token可处理的情况。
 
