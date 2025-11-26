@@ -8,16 +8,16 @@ KV Cache（Key-Value Cache）是在Transformer自回归模型（如GPT）推理�
 
 解码器以自回归的方式工作，如下面的GPT-2文本生成示例所示:
 
-![](https://miro.medium.com/v2/resize:fit:720/format:webp/0*sexO6adGhaKr7aH0.gif)
+![](../images/0_sexO6adGhaKr7aH0_4db27e9e7566.gif)
 
 在解码器的自回归生成中，给定一个输入，模型预测下一个token，然后在下一步将组合输入进行下一次预测。
 
 这种自回归行为重复了一些操作，可以通过放大解码器中计算的掩码缩放点积注意力计算来更好地理解这一点：
 
-![](https://miro.medium.com/v2/resize:fit:720/format:webp/1*8xqD4AYTwn6mQXNw0uhDCg.gif)
+![](../images/1_8xqD4AYTwn6mQXNw0uhDCg_fd2055e60974.gif)
 
 这里对是否使用KV Cache的QK计算过程进行对比：
-![](https://miro.medium.com/v2/resize:fit:720/format:webp/1*uyuyOW1VBqmF5Gtv225XHQ.gif)
+![](../images/1_uyuyOW1VBqmF5Gtv225XHQ_7ccf0dd6d371.gif)
 
 上图中，紫色是从缓存中获取的，绿色是计算得到的，灰色是根据causal机制（当前token只能看到自己以及之前的信息）被mask掉的（因此无需计算）。通过这些动图，可以很清晰的观察到使用KV Cache可以减少许多token的K和V向量的重复计算。
 
@@ -52,7 +52,7 @@ x 经过embedding层得到的shape为 [batch_size,seq_len,hidden_size]=[1,1,512]
 
 这张图清晰的展示了MHA，MQA和GQA的区别：
 
-![](https://img-blog.csdnimg.cn/img_convert/2f6cbef83239dac5c58897d764a9dbb3.webp?x-oss-process=image/format,png)
+![](../images/2f6cbef83239dac5c58897d764a9dbb3_3d837416d400.webp)
 
 
 注意，在计算注意力时，虽然MQA/GQA头数少，但通常会通过repeat/broadcast扩展回与Q相同的头数来做注意力计算，因此：从注意力矩阵计算（即 Q @ K^T 和 attention @ V）的FLOPs来上看，三者几乎是一样的。

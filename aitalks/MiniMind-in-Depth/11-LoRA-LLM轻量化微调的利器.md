@@ -2,7 +2,7 @@
 # 一、LoRA的核心思想
 LoRA，全称 **Low-Rank Adaptation of Large Language Models**，是一种在 **大模型中进行高效微调** 的方法，目标是 **只训练极少数参数** 就能让模型适应新任务，避免重新训练整个大模型，从而可以在没有充足GPU显存的情况下快速在自己的数据集上对大模型做微调。
 
-![](https://miro.medium.com/v2/resize:fit:720/format:webp/1*XdoGFaSME49GrqfBPGJqdQ.png)
+![](../images/1_XdoGFaSME49GrqfBPGJqdQ_72670f7df2be.png)
 
 在Transformer、ViT、GPT等模型中，很多计算都包含线性层：
 $$y = W x$$

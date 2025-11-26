@@ -98,7 +98,7 @@ https://medium.com/@drahyhenc/mixture-of-experts%E5%AD%B8%E7%BF%92%E7%AD%86%E8%A
 
 第四步、返回合并后的输出
 
-![](https://miro.medium.com/v2/resize:fit:1400/format:webp/1*pAeeowS0tdDy4YZH751icA.png)
+![](../images/1_pAeeowS0tdDy4YZH751icA_94fecec4e882.png)
 
 相应的MOE主体实现代码如下：
 ```python
