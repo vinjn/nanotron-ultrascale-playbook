@@ -1,6 +1,6 @@
 
 
-![logo](images/logo_34ae90d15063.png)
+<img src="images/logo_34ae90d15063.png" alt="logo" style="zoom: 10%;" />
 
 
   <h3>"大道至简"</h3>
@@ -20,12 +20,9 @@
 
 ---
 
-
-![minimind2](images/minimind2_18a933a0f5bc.gif)
+<img src="images/minimind2_18a933a0f5bc.gif" alt="minimind2" style="zoom:50%;" />
 
 [🔗🍓推理模型](https://www.modelscope.cn/studios/gongjy/MiniMind-Reasoning) | [🔗🤖常规模型](https://www.modelscope.cn/studios/gongjy/MiniMind) | [🔗🎞️视频介绍](https://www.bilibili.com/video/BV12dHPeqE72/?share_source=copy_web&vd_source=670c2504f88726f8cf4a21ef6147c0e8)
-
-
 
 # 📌 Introduction
 
@@ -49,7 +46,7 @@
 > （截至2025-10）MiniMind系列已完成多个型号模型的预训练，最小仅需25.8M（0.02B），即可具备流畅对话能力！
 
 
-<summary>Models List</summary>
+Models List
 
 | 模型 (大小)                 | 推理占用 (约) | Release    | 
 |-------------------------|----------|------------|
@@ -59,8 +56,6 @@
 | minimind-v1-small (26M) | 0.5 GB   | 2024.08.28 |
 | minimind-v1-moe (4×26M) | 1.0 GB   | 2024.09.17 |
 | minimind-v1 (108M)      | 1.0 GB   | 2024.09.01 |
-
-
 
 **项目包含**
 
@@ -81,8 +76,7 @@
 
 ### 👉**更新日志**
 
-
-<summary> <b>2025-10-24</b> </summary>
+<b>2025-10-24</b>
 
 - 🔥 新增RLAIF训练算法：PPO、GRPO、SPO（从0原生实现）
 - 新增断点续训功能：支持训练自动恢复、跨GPU数量恢复、wandb记录连续性
@@ -96,8 +90,7 @@
 
 
 
-
-<summary> <b>2025-04-26</b> </summary>
+<b>2025-04-26</b>
 
 - 重要更新
 - 如有兼容性需要，可访问[🔗旧仓库内容🔗](https://github.com/jingyaogong/minimind/tree/7da201a944a90ed49daef8a0265c959288dff83a)。
@@ -118,7 +111,7 @@ MiniMind2系列旧模型均经过权重映射+（微调训练）QKVO线性层校
 
 
 
-<summary> <b>2025-02-09</b> </summary>
+ <b>2025-02-09</b> 
 
 - 迎来发布以来重大更新，Release MiniMind2 Series。
 - 代码几乎全部重构，使用更简洁明了的统一结构。
@@ -136,7 +129,7 @@ MiniMind2系列旧模型均经过权重映射+（微调训练）QKVO线性层校
 
 
 
-<summary> <b>More...</b> </summary>
+<b>More...</b> 
 
 **2024-10-05**
 - 为MiniMind拓展了多模态能力之---视觉
@@ -164,7 +157,7 @@ MiniMind2系列旧模型均经过权重映射+（微调训练）QKVO线性层校
 # 📌 快速开始
 
 
-<summary>分享本人的软硬件配置（仅供参考）</summary>
+分享本人的软硬件配置（仅供参考）
 
 * CPU: Intel(R) Core(TM) i9-10980XE CPU @ 3.00GHz
 * RAM: 128 GB
@@ -231,7 +224,7 @@ pip install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple
 ```
 
 
-<summary>注：提前测试Torch是否可用cuda</summary>
+注：提前测试Torch是否可用cuda
 
 ```python
 import torch
@@ -249,7 +242,7 @@ print(torch.cuda.is_available())
 下载需要的数据文件（创建`./dataset`目录）并放到`./dataset`下
 
 
-<summary>注：数据集须知</summary>
+注：数据集须知
 
 默认推荐下载`pretrain_hq.jsonl` + `sft_mini_512.jsonl`最快速度复现Zero聊天模型。
 
@@ -262,7 +255,7 @@ print(torch.cuda.is_available())
 目录位于`trainer`
 
 
-<summary>💡 检查点暂停续训</summary>
+💡 检查点暂停续训
 
 所有训练脚本均自动保存检查点，只需添加 `--from_resume 1` 参数即可自动检测加载&恢复训练：
 
@@ -300,7 +293,7 @@ python train_full_sft.py
 > 执行监督微调，得到 `full_sft_*.pth` 作为指令微调的输出权重（其中`full`即为全参数微调）
 
 
-<summary>注：训练须知</summary>
+注：训练须知
 
 所有训练过程默认每隔100步保存1次参数到文件`./out/***.pth`（每次会覆盖掉旧权重文件）。
 
@@ -321,7 +314,7 @@ python eval_llm.py --weight full_sft # 或 pretrain/dpo/ppo/grpo...
 ```
 
 
-<summary>注：测试须知</summary>
+注：测试须知
 
 `--weight` 参数指定权重名称前缀，可选：`pretrain`, `full_sft`, `dpo`, `reason`, `ppo_actor`, `grpo`, `spo` 等
 
@@ -352,7 +345,7 @@ torchrun --nproc_per_node N train_xxx.py
 ```
 
 
-<summary>注：其它须知</summary>
+注：其它须知
 
 <del>
 单机N卡启动训练 (DeepSpeed)
@@ -392,7 +385,7 @@ python train_xxx.py --use_wandb
 因为MiniMind体积需要严格控制，为了避免模型头重脚轻（词嵌入embedding层参数在LLM占比太高），所以词表长度短短益善。
 
 
-<summary>Tokenizer介绍</summary>
+Tokenizer介绍
 
 第三方强大的开源模型例如Yi、qwen、chatglm、mistral、Llama3的tokenizer词表长度如下：
 
@@ -529,7 +522,7 @@ MiniMind训练数据集下载地址： [ModelScope](https://www.modelscope.cn/da
 ```
 
 
-<summary>注：各数据集简介</summary>
+注：各数据集简介
 
 * `dpo.jsonl`✨ --RLHF阶段数据集（已精简优化，适合快速训练）
 * `lora_identity.jsonl` --自我认知数据集（例如：你是谁？我是minimind...），推荐用于lora训练（亦可用于全参SFT，勿被名字局限）
@@ -548,7 +541,7 @@ MiniMind训练数据集下载地址： [ModelScope](https://www.modelscope.cn/da
 ![dataset](images/dataset_38844229daec.jpg)
 
 
-<summary>说明 & 推荐训练方案</summary>
+说明 & 推荐训练方案
 
 * MiniMind2 Series均经过共约20GB语料训练，大约4B tokens，即对应上面的数据组合训练结果（开销：💰💰💰💰💰💰💰💰，效果：😊😊😊😊😊😊）
 
@@ -581,8 +574,9 @@ MiniMind-MoE模型，它的结构基于Llama3和[Deepseek-V2/3](https://arxiv.or
 MiniMind的整体结构一致，只是在RoPE计算、推理函数和FFN层的代码上做了一些小调整。
 其结构如下图（重绘版）：
 
-![structure](images/LLM-structure_305a4ff333ee.png)
-![structure-moe](images/LLM-structure-moe_c8a8e055d810.png)
+<img src="images/LLM-structure_305a4ff333ee.png" alt="structure" style="zoom: 35%;" />
+
+<img src="images/LLM-structure-moe_c8a8e055d810.png" alt="structure-moe" style="zoom: 50%;" />
 
 修改模型配置见[./model/model_minimind.py](./model/model_minimind.py)。
 参考模型参数版本见下表：
@@ -621,7 +615,7 @@ MobileLLM提出架构的深度比宽度更重要，「深而窄」的「瘦长�
 * 设定dim=768，n_layers=16来获取效果的更大收益，更加符合小模型Scaling-Law的变化曲线。
 
 作为参考，GPT3的参数设定见下表：
-![gpt3_config.png](images/gpt3_config_d0391479b526.png)
+<img src="images/gpt3_config_d0391479b526.png" alt="gpt3_config.png" style="zoom: 67%;" />
 
 ---
 
@@ -644,7 +638,7 @@ MobileLLM提出架构的深度比宽度更重要，「深而窄」的「瘦长�
 ---
 
 
-<summary>训练开销总结&预测</summary>
+训练开销总结&预测
 
 
 > MiniMind2-Small参数
@@ -963,7 +957,7 @@ $$\mathcal{J}_{PO} = \mathbb{E}_{q \sim P(Q), o \sim \pi(O|q)} \left[ \underbrac
 * **正则项** $h(\text{KL}_t)$: 如何约束变化幅度 $\text{KL}_t$, 既防止跑偏又防止管的太死
 
 
-<summary>（展开）符号说明</summary>
+（展开）符号说明
 
 | 符号 | 含义 | 说明 | 值域 |
 |------|------|------|------|
@@ -1059,7 +1053,7 @@ project/
 ```
 
 
-<summary><b>奖励机制选择与MiniMind限制说明（点击展开）</b></summary>
+<b>奖励机制选择与MiniMind限制说明（点击展开）</b>
 
 **1. 奖励机制的多样性**
 
@@ -1271,7 +1265,7 @@ MiniMind2模型权重 ([ModelScope](https://www.modelscope.cn/models/gongjy/Mini
 
 
 
-<summary>Torch文件命名对照</summary>
+Torch文件命名对照
 
 | Model Name      | params | pretrain_model         | sft_model              | rlhf_model (DPO)    | reason_model     | rlaif_model (PPO/GRPO/SPO)                    | lora_model         |
 |-----------------|--------|------------------------|------------------------|--------------------|------------------|----------------------------------------------|--------------------|
@@ -1445,7 +1439,7 @@ DPO和在线PPO的区别在于reject和chosen都是离线准备的，和minimind
 
 
 
-<summary>具体点评</summary>
+具体点评
 
 ### 评分标准：
 
@@ -1544,8 +1538,7 @@ python eval_llm.py --weight full_sft --inference_rope_scaling
 
 下图展示了在不同文本「西游记」白话文小说长度下，使用RoPE scaling前后的困惑度(PPL)对比。可以看出，启用RoPE scaling后，模型在长文本上的表现显著提升：
 
-
-<img src="https://raw.githubusercontent.com/jingyaogong/minimind/refs/heads/master/images/rope_ppl.png">
+<img src="https://raw.githubusercontent.com/jingyaogong/minimind/refs/heads/master/images/rope_ppl.png" style="zoom: 33%;" >
 
 
 ---
@@ -1558,7 +1551,7 @@ python eval_llm.py --weight full_sft --inference_rope_scaling
 
 
 
-<summary>测评框架</summary>
+测评框架
 
 测评框架选择[lm-evaluation](https://github.com/EleutherAI/lm-evaluation-harness)，
 安装后启动测试非常方便：
@@ -1587,7 +1580,7 @@ MiniMind模型本身预训练数据集小的可怜，也没有针对性的对测
 | [SmolLM2](https://github.com/huggingface/smollm)                              | HuggingFaceTB | 135M    | 24.37  | 25.02   | 25.37  | 25.06   |
 | [Aquila-Instruct](https://www.modelscope.cn/models/BAAI/Aquila-135M-Instruct) | BAAI          | 135M    | 25.11  | 25.1    | 24.43  | 25.05   |
 
-![compare_radar](images/compare_radar_2c787afc2bf0.png)
+<img src="images/compare_radar_2c787afc2bf0.png" alt="compare_radar" style="zoom: 33%;" />
 
 # 📌 Others
 
@@ -1735,7 +1728,7 @@ ollama run minimind-local
 ```
 
 
-<summary>📤 推送你的模型到 Ollama Hub</summary>
+📤 推送你的模型到 Ollama Hub
 
 ```bash
 # 1. 为本地模型重命名为你的ollama-account/minimind的tag
@@ -1806,7 +1799,7 @@ python llmexport.py --path /path/to/MiniMind2/  --export mnn --hqq --dst_path Mi
 
 
 
-<summary> <b>参考链接 & 感谢以下优秀的论文或项目</b> </summary>
+ <b>参考链接 & 感谢以下优秀的论文或项目</b> 
 
 - 排名不分任何先后顺序
 - [https://github.com/meta-llama/llama3](https://github.com/meta-llama/llama3)

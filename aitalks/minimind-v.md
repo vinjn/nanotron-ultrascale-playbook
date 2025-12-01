@@ -1,11 +1,8 @@
-
-![logo](images/logo_e2d7fa50dca0.png)
+<img src="images/logo_e2d7fa50dca0.png" alt="logo" style="zoom:10%;" />
 
   <h3>"大道至简"</h3>
 
 中文 | [English](./README_en.md)
-
-
 
 * 此项目旨在从0开始，仅用1.3块钱成本 + 1小时！即可训练出26M参数的超小多模态视觉语言模型**MiniMind-V**。
 * **MiniMind-V**最小版本体积仅为 GPT3 的约 $\frac{1}{7000}$，力求做到个人GPU也可快速推理甚至训练。
@@ -16,8 +13,7 @@
 
 > 为防止误解，“1小时” 基于NVIDIA 3090硬件设备（单卡）测试`1 epoch`，“1.3块钱” 指GPU服务器租用成本。
 
-
-![minimind2-v](images/minimind2-v_495ae7edc0ba.gif)
+<img src="images/minimind2-v_495ae7edc0ba.gif" alt="minimind2-v" style="zoom: 50%;" />
 
 [🔗🤖在线体验](https://www.modelscope.cn/studios/gongjy/MiniMind-V) | [🔗🎞️视频介绍](https://www.bilibili.com/video/BV1Sh1vYBEzY)
 
@@ -41,7 +37,7 @@
 ### 👉**最近更新**
 
 
-<summary> <b>2025-10-24</b> </summary>
+ <b>2025-10-24</b> 
 
 - bug修复：模型权重不对应
 - 适配[「minimind-1024更新」](https://github.com/jingyaogong/minimind)
@@ -51,7 +47,7 @@
 
 
 
-<summary> <b>2025-04-27</b> </summary>
+ <b>2025-04-27</b> 
 
 - 兼容性更新
 - 适配[「minimind仓库新特性」](https://github.com/jingyaogong/minimind/issues/370)
@@ -60,7 +56,7 @@
 
 
 
-<summary> <b>2025-02-20</b> </summary>
+ <b>2025-02-20</b> 
 
 - MiniMind2-V伴随MiniMind2同步更新
 - 大幅减少所有冗余代码，规范代码格式
@@ -71,7 +67,7 @@
 
 
 
-<summary> <b>More...</b> </summary>
+ <b>More...</b> 
 
 **2024-10-05**
 
@@ -81,7 +77,7 @@
 
 # 📌 快速开始
 
-<summary>分享本人的软硬件配置（仅供参考）</summary>
+分享本人的软硬件配置（仅供参考）
 
 * CPU: Intel(R) Core(TM) i9-10980XE CPU @ 3.00GHz
 * RAM: 128 GB
@@ -153,7 +149,7 @@ python web_demo_vlm.py
 pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 ```
 
-<summary>注：提前测试Torch是否可用cuda</summary>
+注：提前测试Torch是否可用cuda
 
 ```python
 import torch
@@ -170,7 +166,7 @@ print(torch.cuda.is_available())
 从下文提供的[数据集链接](https://huggingface.co/datasets/jingyaogong/minimind-v_dataset)
 下载所需内容并放到`./dataset`下。
 
-<summary>注：数据集须知</summary>
+注：数据集须知
 
 Pretrain数据：
 ```bash
@@ -203,7 +199,6 @@ python trainer/train_pretrain_vlm.py --epochs 4 --from_weight llm
 
 > 执行预训练，得到 `pretrain_vlm_*.pth` 作为预训练的输出权重（其中*为模型的dimension，默认为512）
 
-
 **3.2 监督微调（学看图对话方式）**
 
 ```bash
@@ -213,7 +208,7 @@ python trainer/train_sft_vlm.py --epochs 2 --from_weight pretrain_vlm
 
 > 执行监督微调，得到 `sft_vlm_*.pth` 作为指令微调的输出权重
 
-<summary>注：训练须知</summary>
+注：训练须知
 
 **训练特性：**
 - 支持断点续训：添加`--from_resume 1`参数可从上次中断处继续训练
@@ -262,7 +257,7 @@ python eval_vlm.py --weight pretrain_vlm
 torchrun --nproc_per_node N train_xxx.py
 ```
 
-<summary>注：其它须知</summary>
+注：其它须知
 
 <del>
 单机N卡启动训练 (DeepSpeed)
@@ -298,12 +293,14 @@ MiniMind-V (VLM)的基座语言模型MiniMind (LLM)来自孪生项目[minimind](
 > 这并不受到影响，仓库致力于最低成本的开箱即用！
 
 MiniMind-V的结构仅增加Visual Encoder和特征投影两个子模块，增加模态混合分支，以支持多种模态信息的输入：
-![LLM-structure](images/VLM-structure_949ebde0d574.png)
-![LLM-structure](images/VLM-structure-moe_d1f196d09546.png)
+
+<img src="images/VLM-structure_949ebde0d574.png" alt="LLM-structure" style="zoom:40%;" />
+
+<img src="images/VLM-structure-moe_d1f196d09546.png" alt="LLM-structure" style="zoom:50%;" />
 
 
 
-<summary> 【重要】一些有趣的思考 </summary>
+ 【重要】一些有趣的思考 
 
 此处不妨展开想一想两个问题：
 
@@ -356,7 +353,7 @@ GPT模型根据现有token预测输出下一个下下一个下下下一个token 
 可以称之为跨模态的特征对齐。
 [LlaVA-1](https://arxiv.org/pdf/2304.08485)使用简单的无偏线性变换完成了这一操作，效果很不错，MiniMind-V同样如此。
 
-![llava-structure](images/llava-structure_b7a1f1e5604f.png)
+<img src="images/llava-structure_b7a1f1e5604f.png" alt="llava-structure" style="zoom:33%;" />
 
 至此，MiniMind-V的内部结构变化已经呈现完毕。
 
@@ -386,12 +383,12 @@ VLM的输入依然是一段文本，其中包含特殊的`<image>`占位符。
 
 计算完embedding和projection，并对图像部分token替换后整个计算过程到输出则和LLM部分没有任何区别。
 
-![input](images/minimind-v-input_440e0a38368b.png)
+<img src="images/minimind-v-input_440e0a38368b.png" alt="input" style="zoom: 60%;" />
 
 一次性多图的实现方法就是通过注入多个`<image>`图像占位符进行实现，不需要修改任何框架。
 
 
-<summary> 视频理解的拓展思路 </summary>
+ 视频理解的拓展思路 
 
 write by [@xinyanghuang7](https://github.com/xinyanghuang7)
 
@@ -527,7 +524,7 @@ print(answer)
 ```
 
 
-<summary> 数据说明 </summary>
+ 数据说明 
 
 * 多图数据集规模相对较小且为英文对话，数据集仅包含两图对比的场景，因此微调效果有限，这里只提供一种参考思路。
 
@@ -714,38 +711,13 @@ LLM性能越强，对应的VLM必然越强，此时效果增益会很明显。
 <a href="https://github.com/xinyanghuang7/minimind-v/tree/hxy">🔗实现了完整的多图分支</a>
 
 
-<summary> <b>参考链接 & 感谢以下优秀的论文或项目</b> </summary>
+ <b>参考链接 & 感谢以下优秀的论文或项目</b> 
 
 - 排名不分任何先后顺序
 - [LlaVA](https://arxiv.org/pdf/2304.08485)
 - [LlaVA-VL](https://arxiv.org/pdf/2310.03744)
 - [Chinese-LLaVA-Vision-Instructions](https://huggingface.co/datasets/LinkSoul/Chinese-LLaVA-Vision-Instructions)
 
-
-
-## 🫶支持者
-
-<a href="https://github.com/jingyaogong/minimind-v/stargazers">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://reporoster.com/stars/dark/jingyaogong/minimind-v"/>
-      <source media="(prefers-color-scheme: light)" srcset="https://reporoster.com/stars/jingyaogong/minimind-v"/>
-      <img alt="github contribution grid snake animation" src="https://reporoster.com/stars/jingyaogong/minimind-v"/>
-    </picture>
-</a>
-
-<a href="https://github.com/jingyaogong/minimind-v/network/members">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://reporoster.com/forks/dark/jingyaogong/minimind-v"/>
-      <source media="(prefers-color-scheme: light)" srcset="https://reporoster.com/forks/jingyaogong/minimind-v"/>
-      <img alt="github contribution grid snake animation" src="https://reporoster.com/forks/jingyaogong/minimind-v"/>
-    </picture>
-</a>
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=jingyaogong/minimind-v&type=Date&theme=dark"/>
-  <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=jingyaogong/minimind-v&type=Date"/>
-  <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=jingyaogong/minimind-v&type=Date"/>
-</picture>
 
 # 🎓 Citation
 
