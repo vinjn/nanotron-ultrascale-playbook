@@ -6,36 +6,6 @@
 
 **Link:** https://zhuanlan.zhihu.com/p/1942626985814790975
 
-​
-
-目录
-
-收起
-
-Qwen-VL
-
-Qwen2-VL
-
-2.1 chat\_template处理
-
-2.2 image\_processor
-
-2.3 tokens预定义
-
-2.4 processor
-
-2.5 model input数据准备
-
-2.6 model推理过程
-
-Qwen2.5-VL
-
-3.1 整体架构：
-
-3.2 推理示例
-
-3.3 核心细节
-
 Qwen系列是阿里开源的模型，包含大语言模型Qwen series(大语言模型)和 [Qwen-VL](https://zhida.zhihu.com/search?content_id=262153761&content_type=Article&match_order=1&q=Qwen-VL&zhida_source=entity) series(多模态大模型)。本文主要对Qwen-VL series进行介绍。
 
 本文重点介绍Qwen2-VL和Qwen2.5-VL两个模型
@@ -85,7 +55,7 @@ Qwen2-VL模型主要包含以下几个MLLM常用部分组件
 
 Qwen2-VL采用[ChatML](https://zhida.zhihu.com/search?content_id=262153761&content_type=Article&match_order=1&q=ChatML&zhida_source=entity)格式template。Qwen2-VL将图片编码为<|vision\_start|><|image\_pad|><|vision\_end|>形式。最后一行为推理辅助token。
 
-```text
+```python
 '''<|im_start|>system\n
 You are a helpful assistant.<|im_end|>\n
 <|im_start|>user\n
@@ -142,7 +112,7 @@ Dynamic Resolution方法先按patch\_size=14切分，然后在通过MLP对相邻
 
 使用smart\_resize后进行reshape，代码如下：
 
-```text
+```python
 # self.temporal_patch_size = 2
 # self.merge_size = 2
 # patches.shape = (2, 3, H, W), 以h=364, w=644为例
@@ -219,7 +189,7 @@ text_inputs = self.tokenizer(text, **output_kwargs["text_kwargs"])
 
 经过前面image\_processor得到image\_inputs, text\_prompt tokenizer得到text\_inputs。最后processor将这两部分的信息合并起来得到inputs。
 
-```text
+```python
 image_inputs = {"pixel_values": pixel_values, "image_grid_thw": vision_grid_thws}
 text_inputs = {"input_ids": input_ids, "attention_mask": attention_mask}
 inputs = {"input_ids": input_ids, "attention_mask": attention_mask, "pixel_values": pixel_values, "image_grid_thw": vision_grid_thws}
@@ -231,7 +201,7 @@ inputs = {"input_ids": input_ids, "attention_mask": attention_mask, "pixel_value
 
 数据准备位于Qwen2VLForConditionalGeneration.prepare\_inputs\_for\_generation()，得到model\_inputs。
 
-```text
+```python
 model_inputs =
     {   "input_ids": input_ids, # token的index
         "position_ids": position_ids, # 3D RoPE的位置编码index
@@ -274,7 +244,7 @@ text width position_ids: [3, 4, 5, 6, 7]
 
 主要逻辑位于[这里](https://link.zhihu.com/?target=https%3A//github.com/huggingface/transformers/blob/main/src/transformers/models/qwen2_vl/modeling_qwen2_vl.py%23L1255)
 
-```text
+```python
 class Qwen2VLForConditionalGeneration(Qwen2VLPreTrainedModel, GenerationMixin):
     _checkpoint_conversion_mapping = {
         "^visual": "model.visual",
@@ -305,7 +275,7 @@ class Qwen2VLModel(Qwen2VLPreTrainedModel):
 
 Qwen2VLForConditionalGeneration的forward代码：
 
-```text
+```python
 def forward(**model_inputs):
     output_attentions = output_attentions if output_attentions is not None else self.config.output_attentions
     output_hidden_states = (
@@ -351,7 +321,7 @@ def forward(**model_inputs):
 
 Qwen2VLModel的forward代码：
 
-```text
+```python
 def forward(**model_inputs):
     output_attentions = output_attentions if output_attentions is not None else self.config.output_attentions
     output_hidden_states = (
@@ -429,7 +399,7 @@ $R_{\Theta,ids_x,ids_y}^{d} x=\left(\begin{array}{c}  x_{1}\\  x_{2}\\  \vdots\\
 
 计算2D旋转位置编码的角度信息 rotary\_pos\_emb
 
-```text
+```python
 def rot_pos_emb(self, grid_thw):
     '''
     得到每个patch位置的2D-位置编码的正余弦()内的角度信息, 然后再对xy方向进行flatten
@@ -488,7 +458,7 @@ class VisionRotaryEmbedding(nn.Module):
 
 添加到Q和K中：
 
-```text
+```python
 def apply_rotary_pos_emb_vision(tensor: torch.Tensor, freqs: torch.Tensor) -> torch.Tensor:
     # tensor:query或者key, freqs：2D旋转位置编码的角度信息
     orig_dtype = tensor.dtype
@@ -516,10 +486,10 @@ def apply_rotary_pos_emb_vision(tensor: torch.Tensor, freqs: torch.Tensor) -> to
 
 上面是 2D-RoPE 直接将每个 patch 的 xy 的角度信息 embed\_dim 拼接为 2\*embed\_dim，然后再 repeat，也就是 dim 中一半用 x\_id 的位置编码，一半用 y\_id 的位置编码。  
 而 Modal-RoPE 是 dim 中不同区域取不同信息 (temporal, height and width) 的位置编码。  
-  
+
 首先先看一下rotary\_embed如何实现M-RoPE。首先计算head\_dim//2个 $\theta_i$ 角度信息, 然后与position\_id进行相乘得到freqs，最后两个相同的freqs进行拼接得到emb, 以第ids位置token的freqs进行举例 $[ids*\theta_1,ids*\theta_2, \dots, ids*\theta_{d/2}, ids*\theta_1,ids*\theta_2, \dots, ids*\theta_{d/2}]$
 
-```text
+```python
 class Qwen2VLRotaryEmbedding(nn.Module):
  def forward(self, x, position_ids):
     if "dynamic" in self.rope_type:
@@ -552,7 +522,7 @@ class Qwen2VLRotaryEmbedding(nn.Module):
 上面通过freqs得到每个维度的cos和sin信息。那么在多维怎么做RoPE呢？是每个维度切取一部分的位置编码，然后进行拼接得到最终的旋转位置编码，这样就包含了不同维度的位置信息。以head\_dim=128举例，公式和code实现如下, 例如 $x_{1}和x_{65}$ 特征值进行了旋转。  
 $R_{\Theta,ids_t,ids_x,ids_y}^{d} x=\left(\begin{array}{c}  x_{1}\\  \vdots\\ x_{16}\\  x_{17}\\ \vdots\\ x_{40}\\  x_{41}\\  \vdots\\ x_{64}\\ x_{65}\\ \vdots\\ x_{80}\\  x_{81}\\  \vdots\\ x_{104}\\  x_{105}\\   \vdots\\ x_{128} \end{array}\right)\otimes\left(\begin{array}{c} \cos ids_t\theta_{1}\\  \vdots\\ \cos ids_t\theta_{16}\\  \cos ids_x\theta_{1}\\ \vdots\\ \cos ids_x\theta_{24}\\  \cos ids_y\theta_{1}\\  \vdots\\ \cos ids_y\theta_{24}\\ \cos ids_t\theta_{1}\\  \vdots\\ \cos ids_t\theta_{16}\\  \cos ids_x\theta_{1}\\ \vdots\\ \cos ids_x\theta_{24}\\  \cos ids_y\theta_{1}\\  \vdots\\ \cos ids_y\theta_{24}\\ \end{array}\right)+\left(\begin{array}{c} -x_{65}\\ \vdots\\ -x_{80}\\  -x_{81}\\  \vdots\\ -x_{104}\\  -x_{105}\\   \vdots\\ -x_{128}\\ x_{1}\\  \vdots\\ x_{16}\\  x_{17}\\ \vdots\\ x_{40}\\  x_{41}\\  \vdots\\ x_{64}\\ \end{array}\right)\otimes\left(\begin{array}{c} \sin ids_t\theta_{1}\\  \vdots\\ \sin ids_t\theta_{16}\\  \sin ids_x\theta_{1}\\ \vdots\\ \sin ids_x\theta_{24}\\  \sin ids_y\theta_{1}\\  \vdots\\ \sin ids_y\theta_{24}\\ \sin ids_t\theta_{1}\\  \vdots\\ \sin ids_t\theta_{16}\\  \sin ids_x\theta_{1}\\ \vdots\\ \sin ids_x\theta_{24}\\  \sin ids_y\theta_{1}\\  \vdots\\ \sin ids_y\theta_{24}\\ \end{array}\right)$
 
-```text
+```python
 # position_ids是一个[3, b, num_tokens], 每个token有3个方向temporal, height and width的位置编码id
 # cos.shape = [3,b,num_tokens, 128]
 # sin.shape = [3,b,num_tokens, 128]
@@ -609,7 +579,7 @@ Qwen2.5-VL相比于qwen2-VL的改进有以下几点：
 
 ### **3.2 推理示例**
 
-```text
+```python
 """
 处理image
 """
@@ -734,7 +704,7 @@ print(output_text)
 
 视频数据的预处理
 
-```text
+```python
 def _read_video_decord(
     ele: dict,
 ) -> (torch.Tensor, float):
@@ -787,7 +757,7 @@ def _read_video_decord(
 
 视频采样代码
 
-```text
+```python
 def smart_nframes(
     ele: dict,
     total_frames: int,
@@ -847,14 +817,14 @@ def smart_nframes(
 
 返回处理后的信息
 
-```text
+```python
 if return_video_kwargs:
     return image_inputs, video_inputs, {'fps': video_sample_fps_list}
 ```
 
 `{'fps': video_sample_fps_list}`就是我们上面计算出的、每个视频采样被采样后的fps（即代码里的sample\_fps）。之所以是一个list，是因为这里装着输入数据中全部视频的sample\_fps信息。  
-  
-  
+
+
 这个部分之所以重要，是因为后面在计算3D mrope中，它会被用在计算Temporal维度上的位置编码信息。在这部分计算中，有一个重要参数`**second_per_grid_ts**`，它的计算方法如下：
 
 ```text
