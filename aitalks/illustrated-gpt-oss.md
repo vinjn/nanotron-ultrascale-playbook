@@ -11,7 +11,7 @@ Aug 19, 2025
 
 OpenAI’s [release of GPT-OSS](https://openai.com/index/gpt-oss-model-card/) is their main open source LLM release since [GPT-2](https://jalammar.github.io/illustrated-gpt2/) six years ago. LLM capabilities have seen dramatic improvements in this time. And while the model itself is not necessarily a jump in capabilities compared to existing open models like DeepSeek, Qwen, Kimi, and others, it provides a good opportunity to revisit how LLMs have changed in this time.
 
-![](https://substackcdn.com/image/fetch/$s_!Mw5k!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fef7bcc2e-e402-4a79-ad3e-de80689b1617_1616x814.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_9310242184af.png)
 
 
 
@@ -35,7 +35,7 @@ In the following figure, we see that main architectural features, which are not 
 
 [
 
-![](https://substackcdn.com/image/fetch/$s_!SUm9!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc64aa599-20ff-4ad5-a458-d862f3acfd34_2210x1648.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_83d1cf6b07ad.png)
 
 
 
@@ -47,7 +47,7 @@ Using the the visual language we introduce in the course for attention, the GPT-
 
 [
 
-![](https://substackcdn.com/image/fetch/$s_!w789!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F113b6ba8-237c-4ede-881b-a5202e56486a_2722x844.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_7e81c166bb97.png)
 
 
 
@@ -66,7 +66,7 @@ In the following figure, we can see the shapes of the input and output to the mo
 
 [
 
-![](https://substackcdn.com/image/fetch/$s_!9UZU!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F8b85c00b-ddc5-4c2b-b015-6d53ce23294e_1980x1824.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_c921a51ed361.png)
 
 
 
@@ -109,7 +109,7 @@ Message Channels
 
 [
 
-![](https://substackcdn.com/image/fetch/$s_!OUqw!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F8918690c-bc23-431c-b060-40c6705a534e_1292x704.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_09d3dfe47ee7.png)
 
 
 
@@ -128,7 +128,7 @@ So assuming we give the model a prompt where it needs to reason and use a couple
 
 [
 
-![](https://substackcdn.com/image/fetch/$s_!VvDI!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F76d71004-9cd6-49c7-ac0a-0949cf578fb7_1348x1220.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_f44d611a9d18.png)
 
 
 
@@ -147,7 +147,7 @@ One middle ground option is to have a reasoning model that responds to a specifi
 
 [
 
-![](https://substackcdn.com/image/fetch/$s_!kYXS!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fb08d0ade-6e6c-4a1c-ab29-1168708a55ff_1668x930.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_2391b6296506.png)
 
 
 
@@ -157,7 +157,7 @@ We can contrast this with Qwen3’s reasoning modes, which are a binary _thinkin
 
 [
 
-![](https://substackcdn.com/image/fetch/$s_!vhZM!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F2d67cd4d-ee73-4b94-87ef-edcbe91fd11f_3180x1970.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_349f993a50e9.png)
 
 
 
@@ -172,7 +172,7 @@ A good way to show the difference between the reasoning modes is to ask a diffic
 
 [
 
-![](https://substackcdn.com/image/fetch/$s_!ZCth!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff8855923-20a0-42c6-8f65-31f0725f3b18_2478x1884.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_2612f151e9f7.png)
 
 
 
@@ -202,7 +202,7 @@ Code (and tabs, used in python code for indentation) looks to behave mainly the 
 
 [
 
-![](https://substackcdn.com/image/fetch/$s_!Bpio!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F27b67620-e631-4b45-9f9f-ce3629a9e483_1878x1174.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_c4fb3ab22dd7.png)
 
 
 

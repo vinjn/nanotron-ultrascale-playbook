@@ -10,7 +10,7 @@ Dec 03, 2025
 Similar to DeepSeek V3, the team released their new flagship model over a major US holiday weekend. Given DeepSeek V3.2’s really good performance (on GPT-5 and Gemini 3.0 Pro) level, and the fact that it’s also available as an open-weight model, it’s definitely worth a closer look.
 
 
-![](https://substackcdn.com/image/fetch/$s_!JN06!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff841a4f1-8524-4e3a-98f2-b9bf65072819_2113x1459.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_dce86dc35696.png)
 
 
 I covered the predecessor, DeepSeek V3, at the very beginning of my [The Big LLM Architecture Comparison](https://magazine.sebastianraschka.com/p/the-big-llm-architecture-comparison) article, which I kept extending over the months as new architectures got released. Originally, as I just got back from Thanksgiving holidays with my family, I planned to “just” extend the article with this new DeepSeek V3.2 release by adding another section, but I then realized that there’s just too much interesting information to cover, so I decided to make this a longer, standalone article.
@@ -24,7 +24,7 @@ There’s a lot of interesting ground to cover and a lot to learn from their tec
 
 While DeepSeek V3 wasn’t popular immediately upon release in December 2024, the DeepSeek R1 reasoning model (based on the identical architecture, using DeepSeek V3 as a base model) helped DeepSeek become one of the most popular open-weight models and a legit alternative to proprietary models such as the ones by OpenAI, Google, xAI, and Anthropic.
 
-![](https://substackcdn.com/image/fetch/$s_!W4Qo!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff4b97110-d705-4531-b4af-4f87187a8dea_1393x1394.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_0f39c77dec33.png)
 
 
 
@@ -39,7 +39,7 @@ I am sure the DeepSeek team has also been busy navigating the switch from NVIDIA
 
 Finally, it’s also not that they haven’t released anything. There have been a couple of smaller releases that trickled in this year, for instance, DeepSeek V3.1 and V3.2-Exp.
 
-![](https://substackcdn.com/image/fetch/$s_!4LZs!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F56649604-b822-47a2-a3fc-169ec453ae17_1414x446.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_fff4ae0db90c.png)
 
 
 Figure 3: DeepSeek releases since last year. The main models are shown in red.
@@ -55,7 +55,7 @@ V3.2-Exp and V3.2 use a non-standard sparse attention variant that requires cust
 
 Before discussing further model details, it might be worthwhile to discuss the overall model types. Originally, DeepSeek V3 was released as a base model, and DeepSeek R1 added additional post-training to develop a dedicated reasoning model. This procedure is summarized in the figure below.
 
-![](https://substackcdn.com/image/fetch/$s_!maHo!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F269735af-5f6c-4a6f-b9f4-56b6d2d4d41f_1754x1322.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_3cc44d06332c.png)
 
 
 _Figure 4: Overview of the DeepSeek R1 training pipeline. This figure is from my more detailed [Understanding Reasoning LLMs](https://magazine.sebastianraschka.com/p/understanding-reasoning-llms) article._
@@ -68,7 +68,7 @@ In parallel with DeepSeek, other teams have also released many really strong ope
 
 Since then, LLM teams have released (and in some cases gone back and forth between) both dedicated reasoning models and Instruct/Reasoning hybrid models, as shown in the timeline below.
 
-![](https://substackcdn.com/image/fetch/$s_!qqkY!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fda512f7b-5a41-49c1-8a76-ff74fa065972_1145x928.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_df76a695acc6.png)
 
 
 _Figure 5: The timeline of some of the reasoning and hybrid models released this year._
@@ -100,7 +100,7 @@ At inference time, these compressed tensors are projected back to their original
 
 (As a side note, the queries are also compressed, but only during training, not inference.)
 
-![](https://substackcdn.com/image/fetch/$s_!8R3i!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5d55cf9d-7855-4802-b7de-61971cd02f38_1623x1527.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_c823d88d5d34.png)
 
 
 Figure 6: Multi-Head Latent Attention (MLA) in DeepSeek V3/R1. (The compressed space of the query vector is not shown for simplicity.)
@@ -117,7 +117,7 @@ DeepSeek R1 uses the same architecture as DeepSeek V3 above. The difference is t
 
 The core idea in RLVR is to have the model learn from responses that can be verified symbolically or programmatically, such as math and code (but this can, of course, also be extended beyond these two domains).
 
-![](https://substackcdn.com/image/fetch/$s_!dNxH!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fe798b5b2-b489-485f-8b89-6043f3029d02_2019x1142.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_25e28447df0a.png)
 
 
 
@@ -126,7 +126,7 @@ Figure 7: An example of a verifiable task.
 The GRPO algorithm, which is short for Group Relative Policy Optimization, is essentially a simpler variant of the Proximal Policy Optimization (PPO) algorithm that is popular in Reinforcement Learning with Human Feedback (RLHF), which is used for LLM alignment.
 
 
-![](https://substackcdn.com/image/fetch/$s_!12jb!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F4848890b-e00b-468f-880d-27ee5db5fb3a_1277x619.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_23ce12896596.png)
 
 
 
@@ -173,14 +173,14 @@ This DSA consists of (1) a lightning indexer and (2) a token-selector, and the g
 
 To explain how it works, let’s start with sliding-window attention. For instance, sliding window attention is a technique (recently used by Gemma 3 and Olmo 3) that limits the attention window to a fixed size, as illustrated in the figure below.
 
-![](https://substackcdn.com/image/fetch/$s_!wXuw!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F1eec8feb-45d4-47c2-a1da-0a2bbe3137ea_2524x1323.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_052d3adcb2e6.png)
 
 
 Figure 9: In sliding window attention, the current query token doesn’t attend to all previous tokens but just a subset.
 
 DSA is based on the same idea as sliding-window attention: only a subset of past tokens can be attended to. However, instead of selecting the tokens that can be attended via a fixed-width sliding window, DSA has an indexer and token selector to decide which past tokens can be attended. In other words, the tokens that can be attended are more random, as illustrated in the figure below.
 
-![](https://substackcdn.com/image/fetch/$s_!uHCd!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fd1739318-b371-4552-ac36-592b83da670d_2456x1311.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_b6d0fdf1e3bc.png)
 
 
 Figure 10: In DSA, the current token can attend a select number of tokens in the past (instead of all tokens like in regular causal attention).
@@ -208,7 +208,7 @@ The separate token selector keeps only a small number of high-scoring tokens (fo
 
 The figure below illustrates the whole process in a flowchart.
 
-![](https://substackcdn.com/image/fetch/$s_!tSrP!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F763113a8-3405-4c48-9d24-35a35bf29e4e_1388x928.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_81f5b533f6c7.png)
 
 
 Figure 11: A visual summary of DeepSeek V3.2’s Sparse Attention mechanism.
@@ -267,7 +267,7 @@ In this paper, they successfully revisit this in the form of self-verification. 
 
 So, in order to develop a better model for writing mathematical proofs (LLM 1 in the figure below), they developed a proof verifier (LLM 2) in the figure below, which can be used as an LLM-as-a-judge to score the prover (LLM 1) outputs.
 
-![](https://substackcdn.com/image/fetch/$s_!MVTj!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fef977cde-cec9-4f7c-a805-b450d01f9e54_1907x1195.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_67fa76dbb4ab.png)
 
 
 
@@ -286,7 +286,7 @@ For the proof verifier model, they start with DeepSeek V3.2-Exp-SFT, a model the
 
 The goal of the proof verifier (LLM 2) is to check the generated proofs (LLM 1), but who checks the proof verifier? To make the proof verifier more robust and prevent it from hallucinating issues, they developed a third LLM, a meta-verifier.
 
-![](https://substackcdn.com/image/fetch/$s_!ITiX!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fe8da9860-f197-4f9f-8af9-aa055de71dc5_2404x1397.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_69e2f7908331.png)
 
 
 
@@ -306,7 +306,7 @@ In the previous section, we talked about self-verification, i.e., analyzing the 
 
 Traditionally, in self-refinement, which is an established and popular inference-scaling technique, we would use the same LLM for generating the solution and verifying it, before refining it. In other words, in the previous figures 12 and 13, LLM 1 and LLM 2 would be the same LLM. So, a traditional self-refinement process would look as follows:
 
-![](https://substackcdn.com/image/fetch/$s_!HFcU!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5899b054-e704-47a0-85e4-58dc217db84a_1907x1494.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_7f1c63b77294.png)
 
 
 Figure 14: A classic self-refinement iteration where we use the same LLM for generating the initial response (Output 1), the evaluation (Eval), and the refined answer (Output 2).
@@ -317,7 +317,7 @@ However, the DeepSeek team observed a crucial issue with using the same LLM for 
 
 As a logical consequence, one would assume they use a separate proof generator (LLM 1) and proof verifier (LLM 2). So, the self-refinement loop used here becomes similar to the one shown in the figure below. Note that we omit LLM 3, which is only used during the development of the verifier (LLM 2).
 
-![](https://substackcdn.com/image/fetch/$s_!shTj!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F5a02acb6-813c-40f0-89ed-0b1025a3c465_1907x1494.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_77f1064c4d63.png)
 
 Figure 15: Self-refinement with a separate verifier LLM (LLM 2).
 
@@ -333,7 +333,7 @@ Coming back to the general self-refinement concept shown in Figures 14 and 15, b
 
 In the paper, the DeepSeek team used up to 8 iterations, and it looks like the accuracy didn’t saturate yet.
 
-![](https://substackcdn.com/image/fetch/$s_!Cmee!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F89a882b5-ebca-442f-9bef-1a5ef1b4c570_1619x992.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_d589ff0891ff.png)
 
 
 Figure 16: Additional self-refinement iterations improve accuracy. Annotated figure from the [DeepSeekMath V2 paper](https://arxiv.org/abs/2511.22570v1). The Best@32 accuracy majority voting method is also known as “self-consistency” and covered in Chapter 4 of my [Build a Reasoning Model (From Scratch)](https://mng.bz/Nwr7) book .
@@ -347,7 +347,7 @@ The reason why we spent so much time on DeepSeekMath V2 in the previous section 
 
 But before we get to this part, let’s start with a general overview of DeepSeek V3.2. This model is a big deal because it performs really well compared to current flagship models.
 
-![](https://substackcdn.com/image/fetch/$s_!0S78!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fc47eefb6-fe3c-4e18-ba5b-62795459a366_697x464.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_e07741992214.png)
 
 _Figure 17: Benchmark comparison between DeepSeek V3.2 and proprietary flagship models. This is an annotated figure from the [DeepSeek V3.2 report](https://huggingface.co/deepseek-ai/DeepSeek-V3.2/blob/main/assets/paper.pdf)._
 
@@ -359,14 +359,14 @@ The main motivation for this model is, of course, to improve overall model perfo
 
 At the same time, the DeepSeek team writes about computational efficiency as a big, motivating factor. That’s why they use the Multi-Head Latent Attention (MLA) mechanism from V2 and V3 together with the DeepSeek Sparse Attention (DSA) mechanism, which they added in V3.2. In fact, the paper says that “DeepSeek-V3.2 uses exactly the same architecture as DeepSeek-V3.2-Exp,” which we discussed in an earlier section.
 
-![](https://substackcdn.com/image/fetch/$s_!dm8C!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F08cd373b-6a67-429e-82ba-dc5758841b38_809x1336.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_cbc25f6ebf28.png)
 
 
 Figure 18: The DeepSeek V3.2 architecture.
 
 As I mentioned earlier the DeepSeek V3.2-Exp release was likely intended to get the ecosystem and inference infrastructure ready to host the just-released V3.2 model.
 
-![](https://substackcdn.com/image/fetch/$s_!j_TQ!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F67afa7ab-07b8-4e78-afb6-136ae0b6fa54_1445x804.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_05bf176022a6.png)
 
 Figure 19: Inference cost savings thanks to DeepSeek Sparse Attention (DSA). Annotated figure from the [DeepSeek V3.2 report](https://huggingface.co/deepseek-ai/DeepSeek-V3.2/resolve/main/assets/paper.pdf).
 
@@ -445,7 +445,7 @@ DeepSeek V3.2 also comes in an extreme, extended-thinking variant called DeepSee
 
 Generating longer responses is a form of inference scaling, where responses become more expensive due to the increased length, in return for better results.
 
-![](https://substackcdn.com/image/fetch/$s_!QaOn!,w_1456,c_limit,f_auto,q_auto:good,fl_progressive:steep/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Ff87eee11-3aaa-41c4-b45a-51b5c865a5ae_1131x574.png)
+![](images/https_3A_2F_2Fsubstack-post-media.s3.amazonaws.com_c1acfefe679c.png)
 
 
 Figure 20: The “extended-thinking” Speciale model achieves higher accuracy but also generates more tokens.
