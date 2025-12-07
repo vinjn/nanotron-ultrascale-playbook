@@ -14,7 +14,7 @@ DeepSeek 从 2024 年 01 月到 2025 年 01 月发布了一系列模型，其中
 
 如下图所示，图中我们汇集了 DeepSeek V1、MoE、V2、V3、R1 系列模型中的关键技术点；此外，也补充了 DeepSeek A100 和 H800 GPU 集群的关键配置。其中，红色表示在对应模型中新增的关键技术：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzWqcNl9VD9aUN2Kh9ITj9UVcSu6F924rapMgQ6kThDRCfLbCdLIgrjVeCYG1BfFxic4DDCklcPHg/640?wx_fmt=png&from=appmsg#imgIndex=0)
+![Image](images/640_c7ee2fd282b6.png)
 
 **DeepSeek 也从 2025.02.24 到 2025.02.28 开源了其中涉及的一系列工作，我们也会在文中进行关联介绍，包括：**
 
@@ -50,7 +50,7 @@ DeepSeek 在 A100 Infra 的 Paper（[2408.14158] Fire-Flyer AI-HPC: A Cost-Effec
 
 上面提到，DeepSeek 采用的 PCIe A100，节点内没有使用 NVLink + NVSwitch 全互联。为了缓解 GPU 间数据传输的瓶颈，DeepSeek 采用折衷方案，每两个 GPU 通过 NVLink Bridge 实现高速互联。如下图所示，8 个 GPU 共分为 4 组，每组 2 个 GPU 通过 NVLink Bridge 连接。（PS：需要说明的是，DeepSeek 早期服务器没有 NVLink Bridge，而是后期为了适应 LLM 的需求新增加的）
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzWqcNl9VD9aUN2Kh9ITj9QxKLBajCujXPzI78DYwhrzVPh7oTXh5juJnETVByAVRe8dZu5gzJxQ/640?wx_fmt=png&from=appmsg#imgIndex=1)
+![Image](images/640_f8ab5fe69d0d.png)
 
 此外，单个节点内只配备一个 200Gbps 的 Mellanox CX6 IB 网卡，并且直连到 CPU，没有经过 PCIe Switch。
 
@@ -68,7 +68,7 @@ DeepSeek 在 A100 Infra 的 Paper（[2408.14158] Fire-Flyer AI-HPC: A Cost-Effec
 - 15 或 16 个 Port 连接 GPU Node，也就是每个 Zone 有 [40*15=600, 40*16=640] 个 GPU Node。（PS：论文中只说总共大约 1250 GPU Node，每个 Zone 大约 600 GPU Node，因此这里只能推测）
 - 2 或 4 个 Port 连接 Storage Node。（PS：论文中提到两个 Zone 总共大约 200 个 Storage Node，但又介绍每个 Zone 800 个 Node。后文还提到包含 180 个 Storage Node，平均来看每个 Leaf Switch 会连接 2-3 个 Storage Node，Storage Node 包含 2 个 200 Gbps 的 NIC，不确定是否会将一个 Storage Node 连接到不同的 Leaf Switch）
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzWqcNl9VD9aUN2Kh9ITj9vk2rAnRVhtmdYfnBEPh5APWBsbqk0wwyqCPxJXaHUMWnaxcKv4vH5Q/640?wx_fmt=png&from=appmsg#imgIndex=2)
+![Image](images/640_c7f426c31629.png)
 
 ### 2.4 HFReduce：软硬协同网络设计
 
@@ -78,7 +78,7 @@ DeepSeek 在 A100 Infra 的 Paper（[2408.14158] Fire-Flyer AI-HPC: A Cost-Effec
 - 第二步：节点间在 CPU 上进行 Reduce 操作。
 - 第三步：将 CPU 上 Reduce 后的数据传输回 GPU。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzWqcNl9VD9aUN2Kh9ITj9epvmicR7iaL7UqRRuhrsKSbhbyB3MkMBxMIEk33s8fvau1Lwpkn13ong/640?wx_fmt=png&from=appmsg#imgIndex=3)
+![Image](images/640_ec8bca3abe4f.png)
 
 其中涉及的关键技术包括：
 
@@ -120,15 +120,15 @@ PS：DeepSeek 在 DeepEP 代码库中也提到了流量隔离（Traffic isolatio
 - 总共 2880 NVMe SSD，可以提供 20 PiB 的存储（有1个额外的存储副本）。
 - 总共可以提供 180*2*200 Gbps = 72 Gbps = 9 TB/s 的理论带宽，实测可以达到 8 TB/s。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzWqcNl9VD9aUN2Kh9ITj9KOMjkuae9n0Lksktom0QUxdicWyVssfAiaPr9T3QovF8MGS9kx6ia52jg/640?wx_fmt=png&from=appmsg#imgIndex=4)
+![Image](images/640_0f1077bcc12c.png)
 
 PS：该配置与 3FS 代码库中的配置能对应上：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzWqcNl9VD9aUN2Kh9ITj9bzI0cicGRlk9heyibzesUEKJic8lcef1Wk70VIdcRJ5VN7EePrBtAGuFQ/640?wx_fmt=png&from=appmsg#imgIndex=5)
+![Image](images/640_3b44452f34ad.png)
 
 在该配置下，最终的聚合读吞吐可以达到 6.6TB/s：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzWqcNl9VD9aUN2Kh9ITj9hbFSEVplCSE0fFholwdEkYwlic7PKqhI0MPNGY1iaHx9qYxJzPmiaXpnw/640?wx_fmt=png&from=appmsg#imgIndex=6)
+![Image](images/640_bd6947388ba2.png)
 
 PS：然而，其在 3FS 代码库中进行 GraySort 评估的配置又与上述配置不同：
 
@@ -149,9 +149,9 @@ PS：上述 Paper 中的介绍与 3FS 代码库中的设计相关介绍能对应
 
 DeepSeek 在 3FS 代码库中也提供了对针对 Inference 场景的 3FS-KV，如下图所示，上图展示了所有 KV Cache Client 的读取吞吐量，其峰值吞吐可达 40 GiB/s。下图则展示了同一时间段内垃圾回收（GC）过程中删除操作的操作次数（IOPS）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzWqcNl9VD9aUN2Kh9ITj9sN5XU1IleKibh5H209XOxqP21xLl0Ffibr1d157R2zmheml86wjRwNyw/640?wx_fmt=png&from=appmsg#imgIndex=7)
+![Image](images/640_1cc3e0ffa6fd.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzWqcNl9VD9aUN2Kh9ITj9cNicZ5gsJWiakjuMgpx61eicqQlmt2js9MRcsGbibicFvcjgeib1j5Of1C1w/640?wx_fmt=png&from=appmsg#imgIndex=8)
+![Image](images/640_919a2189dc7d.png)
 
 ### 2.8 HAI Platform
 
@@ -163,7 +163,7 @@ DeepSeek 并没有详细的报告来介绍 H800 集群，只是在几个报告�
 
 在上述 A100 集群的 Paper 中提到，也在准备构建下一代的 PCIe 架构集群来支持 MoE LLM 的训练，其包含大量的 All2All 通信，因此下一代架构中 GPU 和 NIC 会采用 1:1 配比，也就是每个 GPU 都有一个对应的 NIC，也考虑采用多平面网络。此外，会使用 RoCE 替代 IB Switch 以降低成本。使用 128 Port 的 400 Gbps RoCE Switch，4 平面的 2 层 Fat-Tree 网络可以支持 32,768 个 GPU。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzWqcNl9VD9aUN2Kh9ITj9PoiaPvEeehk4rFMVHT5cg5wiaFnooOiav3YkhX0V9789bKZjdHdE3uPBw/640?wx_fmt=png&from=appmsg#imgIndex=9)
+![Image](images/640_4247556e7d9c.png)
 
 PS：然而，根据后续 DeepSeek V3 等技术报告，DeepSeek 在构建上述集群时有些变动：
 
@@ -179,13 +179,13 @@ DeepSeek V1（[2401.02954] DeepSeek LLM: Scaling Open-Source Language Models wit
 
 DeepSeek V1 模型也没有太特殊的地方，和 LLaMA 2 类似，都是 Dense 模型。并且只在 67B 的大模型采用 GQA，7B 模型依然采用 MHA。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzWqcNl9VD9aUN2Kh9ITj9s43hRdnaYUBng7uw0dKP7JdkBuicnONmJJ5GlueNVpjOATrcxdBibY4g/640?wx_fmt=png&from=appmsg#imgIndex=10)
+![Image](images/640_ad908cd0954a.png)
 
 ### 4.2 预训练
 
 采用了 Multi-Step Learning Rate 调度策略（80%+10%+10%），精度与 Cosine Learning Rate Decay 相近。好处是比较容易从第一个 Stage 的 Checkpoint 进行 Continuous Training。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzWqcNl9VD9aUN2Kh9ITj9Hw4HvvHk0kib5ZZmBI6G7Gb8AwmpVJH3IpEpmEnRMq4sBPGv0EnqbiaQ/640?wx_fmt=png&from=appmsg#imgIndex=11)
+![Image](images/640_9b0d14fe42c0.png)
 
 其他技术点包括：
 
@@ -224,11 +224,11 @@ DeepSeek MoE 模型主要有两点改进，如下图 Figure 2 所示：
 - 细粒度专家（Routed Expert）：常见的 MoE 模型中通常是 8 或 16 个专家，而这里会将一个大专家切分为 M 个小专家。比如原来从 16 个专家中选择 Top 2 大概有 120 中可能；而同样计算量的 64 个专家（M=4）中选择 8 个，对应了 4,426,165,368 中可能。
 - 共享专家（Shared Expert）：额外增加了 1 个或多个共享专家，用于捕获通用知识，每个 Token 都会经过这些专家。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzWqcNl9VD9aUN2Kh9ITj9Hkw5pYNIaJb3ntgAJtog03vvRuQI4UTxSuv1DNEcEF7rT9zPMuaOmw/640?wx_fmt=png&from=appmsg#imgIndex=12)
+![Image](images/640_b3dddeb22441.png)
 
 3 个模型的具体配置如下所示，需要说明的是，3 个模型中都未使用 GQA，而是使用的 MHA：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzWqcNl9VD9aUN2Kh9ITj9iaMV7VsGibh9qzTjbPlPDKBcfTkiaiczdxexC8QNXvUw4mT2C5q7JEG97w/640?wx_fmt=png&from=appmsg#imgIndex=13)
+![Image](images/640_67a0b90c11a7.png)
 
 ### 5.3 预训练
 
@@ -254,23 +254,23 @@ DeepSeek V2（[2405.04434] DeepSeek-V2: A Strong, Economical, and Efficient Mixt
 - DeepSeek-V2（236B，21B 激活），8.1T Token 预训练；包含 2 个 Shared Expert 和 160 个 Routed Expert，每个 Token 激活 2+4=6 个 Expert。
 - DeepSeek-V2-Lite（15.7B，2.4B 激活），5.7T Token 预训练。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzWqcNl9VD9aUN2Kh9ITj98FaES4icjTxfC9rHuDBKianx8UTaDVia6ekV757OK8VUUm0Bjnt9A7H6A/640?wx_fmt=png&from=appmsg#imgIndex=14)
+![Image](images/640_974dfde0f65c.png)
 
 ### 6.2 MLA
 
 如下图 Figure 3 所示，MLA 的核心思路是：使用低秩分解，并共享隐空间投影矩阵来降低 KV Cache 的存储需求。由于每个 Head 都有独立的参数，因此可以恢复出相应的 K 和 V，进而避免对效果的影响。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzWqcNl9VD9aUN2Kh9ITj9MXe8UpypM782J8EqJq0AciaxDFMxicfpuAl1z2Ktdqs5Fq1SoOqYgqdA/640?wx_fmt=png&from=appmsg#imgIndex=15)
+![Image](images/640_e9ab3b5811bc.png)
 
 如下图 Table 1 可以看出，MLA 的 KV Cache 需求虽然依然大于 MQA，但明显优于 MHA 和 GQA，同时效果更好：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzWqcNl9VD9aUN2Kh9ITj9LXfDRafjDMDlwONE05XUZ0eflruZ3TIuicn3bX8MVicQdIrDMCtbdZ8w/640?wx_fmt=png&from=appmsg#imgIndex=16)
+![Image](images/640_de2a57ce421e.png)
 
 与此同时，常用的位置编码 RoPE 也需要相应的调整，以便能与 MLA 兼容。
 
 PS：DeepSeek 在 FlashMLA 代码库中开源了高效的 MLA Kernel 实现。如下图所示，vLLM 在初步集成 FlashMLA 后推理性能提升了 3%-17%，具体可以参考这个 PR（https://github.com/vllm-project/vllm/pull/13747 [15]）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzWqcNl9VD9aUN2Kh9ITj9icE8iavTo4w4z0MrLbOMicibF2U91zGXibibEbkHf2Ccm4ZEAcp2Tic8xcONw/640?wx_fmt=png&from=appmsg#imgIndex=17)
+![Image](images/640_914e6d25dd0b.png)
 
 ### 6.3 预训练
 
@@ -329,7 +329,7 @@ DeepSeek-V2 预训练每 T Token 需要 172.8K H800 GPU 小时，则可以估算
 
 其中最引人注目的地方在于：取得 Top 效果的同时只用了非常低的成本。14.8 Token，在 2048 H800 上训练不到 2 个月，假设每个 H800 每小时成本为 2 美元，则总成本为 558 万美元。（PS：需要说明的是，这只是按照租赁成本 x 训练时间得到的单次训练的成本，不包含集群采购以及实验和探索的成本。）
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzWqcNl9VD9aUN2Kh9ITj9WYy5VicWWWOE78iaiaO1P40VibQ4NgWQffM2KjAp2hD4era0M2KtdiaTh8Q/640?wx_fmt=png&from=appmsg#imgIndex=18)
+![Image](images/640_7127871baba7.png)
 
 ### 7.2 模型结构
 
@@ -341,7 +341,7 @@ DeepSeek V3 模型同样采用 MLA 以及细粒度专家+共享专家的 MoE 结
 - MTP Module 1 用于预测下下一个 Token，MTP Module 2 用于预测下下下一个 Token（与 LLM 推理中常见的多头投机采样思路一致）。
 - MTP Module 中的输入都包含两个部分，一个是上一个 Module 的 Output Head 的输入，以及上一个输入 Token，并且其中的 Embedding Layer 和 Output Head 都是共享自 Main Model，只有新增的 RMSNorm + Linear Projection 和一个 Transformer Block。由于这里有两个输入分别经过 RMSNorm 后 Concat 到一起，因此需要一个额外的 Linear Projection 进行降维，保持维度一致。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzWqcNl9VD9aUN2Kh9ITj9k8ScK3gzAuMgPvX33shpRVvjwUA7b4GefXqtBZfYBnbaeHia90kMAVw/640?wx_fmt=png&from=appmsg#imgIndex=19)
+![Image](images/640_2bf64895907d.png)
 
 MTP 策略主要用于提升 Main Model 的性能，因此在推理阶段，可以直接舍弃 MTP Module，Main Model 仍能独立且正常运行。此外，还可将这些 MTP Module 用于投机解码，以进一步降低生成延迟。
 
@@ -351,9 +351,9 @@ DeepSeek V3 中的 MoE 部分的模型结构没有调整，更多的是训练策
 
 无需辅助损失的负载均衡策略（Auxiliary-Loss-Free Load Balancing Strategy）：同样来自 DeepSeek 2024 年的论文，具体来说，其通过动态更新每个专家的偏置（b）来维持专家的负载均衡，而不会引入额外的干扰梯度。如下图公式 16 和 Figure 1 所示：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzWqcNl9VD9aUN2Kh9ITj9x6Zz0DGfkeumRoK5SDOBbOqFbevZTM2tibxlr3l2Nxiae6JBPGdMvZdQ/640?wx_fmt=png&from=appmsg#imgIndex=20)
+![Image](images/640_68818cf875c4.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzWqcNl9VD9aUN2Kh9ITj9H1KUa2ic5DCjN1t2rI7icJtJ6OH1N93Oyrlx5xw2EJMXNnexpCYVjrvg/640?wx_fmt=png&from=appmsg#imgIndex=21)
+![Image](images/640_c7b81fc962ef.png)
 
 补充的序列级辅助损失（Complementary Sequence-Wise Auxiliary Loss）：尽管 DeepSeek-V3 主要依赖于无辅助损失的策略来实现负载平衡，但为了防止在任何单一序列中出现极端的不平衡，作者采用一种补充的序列级均衡损失。这种序列级均衡损失的目的是鼓励每个序列中的专家负载更加均衡，避免负载集中在少数专家上，从而提高模型的效率和公平性。
 
@@ -387,7 +387,7 @@ DualPipe 的核心思想是：将一对独立的 Forward 与 Backward Chunk 内�
 - 紫色表示 PP 通信
 - 红色表示 Barrier 同步
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzWqcNl9VD9aUN2Kh9ITj9nf0mNBfqfRiaWaia9wIx1KODjmyaO92dC2oHEiaO9pU2cmyVxhFIk5Tkw/640?wx_fmt=png&from=appmsg#imgIndex=22)
+![Image](images/640_48980daae34f.png)
 
 完整的 DualPipe 调度如下图 Figure 5 所示，其采用双向 PP 调度，同时从流水线两端输入 Micro Batch，使得大部分通信得以完全 Overlap（PS：8PP，双向 20 Micro Batch，反方向 10-19 的 10 个 Micro Batch 并没有列出来，因此我们用红色 10-19 补充了部分 Micro Batch）。这种 Overlap 还确保了随着模型进一步扩展，只要保持恒定的计算与通信比，仍可在跨节点部署细粒度专家的同时，实现近乎零的 All2All 通信开销。
 
@@ -405,11 +405,11 @@ PS：正常来说是无法实现双向 PP 调度的，主要是因为 Forward �
 - Stage 7 上有 Layer 14, 15 以及 Layer 0, 1 的权重
 - 相当于有 2 份相同的模型副本，Forward 的顺序可以从 Stage 0 到 7，也可以从 Stage 7 到 0。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzWqcNl9VD9aUN2Kh9ITj9TMyKzoHHJKUcKTnibTomlUNWZeOm6ql3WyAyicWyKib0mCJhibrZWn2rfg/640?wx_fmt=png&from=appmsg#imgIndex=23)
+![Image](images/640_1503005336e7.png)
 
 PS：DeepSeek 在 DualPipe 代码库中开源了相关代码，其实现了 Forward 和 Backward 阶段充分的 Overlap。如下图所示为其 Training 的 Profiling 示例，Computation 使用 112 SM，Communication 使用 20 个 SM。每个 Chunk 包含 4 个 MoE Layer。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzWqcNl9VD9aUN2Kh9ITj9VV04icR5UkiaCZvQuUFHXuaNnWwcqnxNn3VMqAsaGHiaP45Df9AQkSVcw/640?wx_fmt=png&from=appmsg#imgIndex=24)
+![Image](images/640_6aee91b285cc.png)
 
 #### 7.3.3 高效跨节点 All2All 通信
 
@@ -428,11 +428,11 @@ PS：DeepSeek 在 DualPipe 代码库中开源了相关代码，其实现了 Forw
 
 PS：DeepSeek 在 DeepEP 的代码库中开源了高效的 All2All 实现。其在 Dispatch 函数内部可能无法预知当前 Rank 将接收多少个 Token，因此将涉及一个隐式的 CPU 等待 GPU 接收计数信号的过程，如下图所示：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzWqcNl9VD9aUN2Kh9ITj9tDOpw3TY93UmKibLwu29ydEI1kOUibUPMV0ZLc9GX91ZDCodicXp3tHlw/640?wx_fmt=png&from=appmsg#imgIndex=25)
+![Image](images/640_173e79e26094.png)
 
 DeepEP 针对 Training 和 Inference Prefill 的高吞吐需求场景，提供了高吞吐的 All2All 通信方案，采用节点内 NVLink + 节点间 RDMA 通信的方式，并分配特定数量的 SM 给 Communication（24），剩余 SM 给 Computation（108），实现通信和计算尽可能的 Overlap，几乎无 Bubble。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzWqcNl9VD9aUN2Kh9ITj9Rk8CPXFs0JDsWQGbZd6aFF0oTjHh4ibuxFsBCh5qM2GFhfboHCEtHsw/640?wx_fmt=png&from=appmsg#imgIndex=26)
+![Image](images/640_7b52aac9605d.png)
 
 #### 7.3.4 降低内存开销
 
@@ -450,7 +450,7 @@ MTP 的共享 Embedding 与输出 Head。采用 DualPipe 策略，将模型的�
 
 DeepSeek V3 中引入了 FP8 混合精度训练框架，大多数计算密集型操作以 FP8 执行，而少数关键操作则保留其原始数据格式，以平衡训练效率与数值稳定性。整体框架如下图 Figure 6 所示，与线性算子相关的三个 GEMM 操作，包括 Forward（Fprop）、激活 Backward（Dgrad）和权重 Backward（Wgrad），接受 FP8 Tensor 作为输入，并输出 BF16 或 FP32 格式的结果，理论上使计算速度较原 BF16 方法提升一倍。此外，FP8 Wgrad GEMM 允许激活值以 FP8 存储，供 Backward 使用，从而显著降低内存消耗。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzWqcNl9VD9aUN2Kh9ITj9AU0sT7EZtJqdrjfzhXb56kvkSf9cYFPqhdFowia9qJFfRcaOrXESYFA/640?wx_fmt=png&from=appmsg#imgIndex=27)
+![Image](images/640_f68f19a3ab32.png)
 
 尽管 FP8 格式具有效率优势，但某些算子因对低精度计算比较敏感仍需更高精度。同时，一些低成本算子也可采用更高精度，对整体训练性能的影响微乎其微。因此，对以下组件保持原始精度（如 BF16 或 FP32）：Embedding Module、输出 Head、MoE 门控模块、归一化算子及 Attention 算子，确保 DeepSeek-V3 的训练动态稳定性。为进一步保证数值稳定性，将主权重、权重梯度和优化器状态以更高精度存储。
 
@@ -464,13 +464,13 @@ DeepSeek V3 中引入了 FP8 混合精度训练框架，大多数计算密集型
 - 对于权重，以 128x128 的 Block 为单位（即，每 128 输入 Channel 每 128 输出 Channel）进行分组与缩放。
 - 此方法通过更小的元素组调整缩放比例，确保量化过程能更好地适应异常值。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzWqcNl9VD9aUN2Kh9ITj9m3xTbpCWtfGVdx9uA0CtChnGv6YJJdNDGxOvkODW2BBatpSk1qWTtw/640?wx_fmt=png&from=appmsg#imgIndex=28)
+![Image](images/640_d4624776e1fc.png)
 
 提升累加精度。低精度的 GEMM 操作常面临下溢问题，其准确性很大程度上依赖于高精度的累加，通常采用 FP32 进行。然而，在 NVIDIA H800 GPU 上，FP8 GEMM 的累加精度仅能保留约 14 位，远低于 FP32 的累加精度。当内部维度 K 较大时，这一问题更加突出，这在大规模模型训练中尤为常见。为解决此问题，作者采用 Cutlass 中的方案，借助 CUDA Core 以获取更高精度。具体来说，该过程如上图 7b 所示，在 Tensor Core 上执行 MMA，中间结果以有限位宽累加。一旦达到 Nc 间隔，这些中间结果将被复制到 CUDA Core 的 FP32 寄存器中，进行全精度的 FP32 累加。然后可以结合前面的细粒度量化，沿内部维度 K 应用每组的缩放因子。这些缩放因子在 CUDA Core 上高效地作为反量化过程进行乘法运算，额外计算成本极低。
 
 PS：有意思的是，清华大学的 [2411.10958] SageAttention2: Efficient Attention with Thorough Outlier Smoothing and Per-thread INT4 Quantization [17] 中提到，Ada 和 Hopper 架构 Tensor Core FP8 乘法中，FP32 累加的精度实际只有 FP22，对应 1 个符号位，8 个指数位，13 的尾数位，与上述 14 位精度基本对应。不过从其他地方几乎没有再看到相关资料。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzWqcNl9VD9aUN2Kh9ITj9NZL1Cj4YkEe6ibOJR22znUuPkUNsKg6J376KjG0NjPGWSaiaQhBELibQw/640?wx_fmt=png&from=appmsg#imgIndex=29)
+![Image](images/640_49e2edfa5afa.png)
 
 尾数优先于指数。与先前研究采用的混合 FP8 格式不同，该格式在前向传播中使用 E4M3（4 位指数和 3 位尾数），在数据梯度和权重梯度中使用 E5M2（5 位指数和 2 位尾数）。DeepSeek V3 中则对所有 Tensor 采用 E4M3 格式以追求更高精度。此方法可行主要是使用了细粒度的量化策略，通过对更小的元素组进行操作，可以有效地在这些分组元素间共享指数位，从而缓解了有限动态范围的影响。
 
@@ -478,7 +478,7 @@ PS：有意思的是，清华大学的 [2411.10958] SageAttention2: Efficient At
 
 如下图为 NVIDIA Transformer Engine 中的 Delayed Scaling 实现方案，其 amax history 最多可以存储 1024 个 history。在进行当前 Tensor 的 Scaling 操作时，会使用当前 Tensor 之前的 amax history 来预测当前的 amax（比如之前 history 的最大值），然后进行 Scaling 操作；Scaling 操作的同时会计算当前的 amax，并更新 amax history。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzWqcNl9VD9aUN2Kh9ITj960u79TDics0QQQ9fumguGNjCicsATuZ26iaYjUQRPV3U84ibGdicCUXOh4g/640?wx_fmt=png&from=appmsg#imgIndex=30)
+![Image](images/640_1cd537437b32.png)
 
 #### 7.4.3 低精度存储和通信
 
@@ -510,7 +510,7 @@ PS：DeepSeek 在 DeepGEMM 代码库中开源了高效的 FP8 GEMM 实现，其�
 - 通过脚本来修改编译后的二进制文件中的 FFMA SASS 指令，修改了 yield bit 并翻转了 reuse bit，为 MMA 指令和 FFMA 指令的 Overlap 执行提供了更多机会，从而提升了细粒度量化的性能，在某些情况下提升超过 10%。
 - 充分利用 Persistent warp-specialization 以及 Hopper TMA 特性等。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzWqcNl9VD9aUN2Kh9ITj9dmkmK0MTtR6mDfBBjXJ5Vfm9hTxxMRGnedmASznGbdT6ibTsf3AAhDg/640?wx_fmt=png&from=appmsg#imgIndex=31)
+![Image](images/640_ac187f2149dd.png)
 
 ### 7.5 推理部署
 
@@ -540,7 +540,7 @@ Prefill 阶段的最小部署单元由 4 个节点组成，共 32 个 H800 GPU�
 
 DeepSeek 在 DeepEP 代码库中，还提供了针对 Inference Decoding 阶段 Low Latency 场景的 All2All 优化方案，借助 NVIDIA 的 IBGDA 技术，可以在保证低时延的情况下获得很高的吞吐。借助 Receiving Hook 接口，RDMA 网络流量可以在后台执行（低时延 Kernel 采用纯 RDMA 通信，可以异步执行，不过只是为了简化，实际也可以使用 NVLink），对应 Communication SM 个数为 0，不会占用计算部分的任何 SM。因为有两个 Micro-Batch，因此可以把一个 Micro Batch 的异步数据传输藏在另一个 Micro-Batch 的计算之后。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzWqcNl9VD9aUN2Kh9ITj9icrbofxW4SHTH1EdPd2RHDJ9iaicoFa3a8PIolmbmfWCPczYMerVVvYcg/640?wx_fmt=png&from=appmsg#imgIndex=32)
+![Image](images/640_23ac64c5c860.png)
 
 #### 7.5.3 专家并行负载均衡器
 
@@ -558,11 +558,11 @@ DeepSeek V3 和 DeepSeek R1 模型都已经开源，其 671B 参数量为部署�
 
 针对上述问题，可以充分利用 MTP 机制实现投机采样，如下所示，vLLM 在 https://github.com/vllm-project/vllm/pull/12755 [18] 中进行了简单评估，一个投机 Token（k=1）时，不同并发下可以实现 1.11x-1.64x 的加速：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzWqcNl9VD9aUN2Kh9ITj98hshVqC0rBm50hgmdx5qz5aGuygmNYicmPKlqtQMrGFW5QVeMu5oKZg/640?wx_fmt=png&from=appmsg#imgIndex=33)
+![Image](images/640_c28fdaeab9cf.png)
 
 同样的，NVIDIA 在 TensorRT-LLM 中也对 LLaMA 3 模型进行了投机采样加速测试，参考 TensorRT-LLM Speculative Decoding Boosts Inference Throughput by up to 3.6x | NVIDIA Technical Blog [19]，其 LLaMA 3.1 7B 模型实现了 3x 左右的加速（PS：这一般是序列比较长或者并发比较小的情况下实现的）。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzWqcNl9VD9aUN2Kh9ITj9AWbch39YZ4CAg3rsfethGIicb0aWy4B1jBakzuyibHY6EtWicoUicO3XwA/640?wx_fmt=png&from=appmsg#imgIndex=34)
+![Image](images/640_5b9a5c7ea699.png)
 
 ### 7.6 DeepSeek V3 MFU
 
@@ -590,35 +590,35 @@ DeepSeek-V3 预训练 14.8T Token，在 2048 H800 GPU 训练 2664K GPU 小时，
 
 即便不采用 SFT 作为冷启动，通过大规模 RL 也能显著增强模型的 Reasoning 能力。缺陷是可能存在可读性差和语言混杂等问题。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzWqcNl9VD9aUN2Kh9ITj9Fj8mFtMXdoNsdQm6eF2IJX7dTIicGEd5dB7RCGsKxV0Cjibr2ibxDoyog/640?wx_fmt=png&from=appmsg#imgIndex=35)
+![Image](images/640_4b9414ac541e.png)
 
 DeepSeek-R1-Zero 的思考时间在整个训练过程中持续提升（生成长度逐渐变长），相应 AIME Accuracy 指标也逐渐提升。DeepSeek-R1-Zero 通过利用更长的测试时间计算，自然而然地获得了解决日益复杂 Reasoning 任务的能力，比如反思的能力。（PS：Sea AI Lab 的文章表明基础模型也具备一定的反思能力）
 
 多数投票：通过应用多数投票法，DeepSeek-R1-Zero 的表现可得到进一步提升。例如，如下图 Table 2 所示，在 AIME 基准测试中采用多数投票后，其性能从 71.0% 跃升至 86.7%，从而超越 OpenAI-o1-0912。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzWqcNl9VD9aUN2Kh9ITj9icqWTnWP0nTCGykk6WYvBib3YFcDUTZkdha25Xe6KpfMz2gcn493velg/640?wx_fmt=png&from=appmsg#imgIndex=36)
+![Image](images/640_5bbd735dd9ec.png)
 
 ### 3.3 DeepSeek R1
 
 DeepSeek R1 经历了两轮的 SFT+RL。其中第一轮主要聚焦在提升 Reasoning 能力，特别是在编程、数学、科学及逻辑推理等具有明确解决方案的问题上。此外，在 RL 训练中引入了语言一致性奖励，以便解决 CoT 常出现语言混杂现象（尤其是在 RL 提示涉及多种语言时）。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzWqcNl9VD9aUN2Kh9ITj9oxBB3L7Bic2GYaZia7TsZc6s9dFUFW87VkDvLwrunur7prS3IjkgQoxQ/640?wx_fmt=png&from=appmsg#imgIndex=37)
+![Image](images/640_7053fff84f44.png)
 
 除了更好的 Reasoning 数据外，第二阶段还整合了来自其他领域的非 Reasoning 数据，以增强模型在写作、角色扮演及其他通用任务上的能力。此外，进一步提升模型的有益性与无害性，同时精进其 Reasoning 能力。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzWqcNl9VD9aUN2Kh9ITj92nUpkKX2RP6KbyLv4q4GViathtrgMdqGpGbKrhz98X6iaKqIwB1iaicoHg/640?wx_fmt=png&from=appmsg#imgIndex=38)
+![Image](images/640_11fa67d4aec7.png)
 
 ### 3.4 DeepSeek R1-Distill-xx
 
 直接蒸馏的方法（包含大模型生成的数据进行 SFT）也可以显著提升了小型模型的 Reasoning 能力。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzWqcNl9VD9aUN2Kh9ITj9efRiblRNcAOk0hwpT8xPq2zLojt0a8nwuQhR3HV80bEORNmialL7Giclg/640?wx_fmt=png&from=appmsg#imgIndex=39)
+![Image](images/640_f01ed434005b.png)
 
 如下图 Table 5 所示，蒸馏的 Qwen-32B 在 Reasoning 能力上优于 官方的 QwQ-32B-Preview。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzWqcNl9VD9aUN2Kh9ITj9YFibqWvm7pAhXN3ialrwPhWVvFJdog5kicDX11ol5KERx7fKbAo2dY15A/640?wx_fmt=png&from=appmsg#imgIndex=40)
+![Image](images/640_373ebdc77cef.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzWqcNl9VD9aUN2Kh9ITj9icSb3nehT6jVh8GtX3hIicXceocgUvicBxRhuLD4mICNySxlEDjn5E9eQ/640?wx_fmt=png&from=appmsg#imgIndex=41)
+![Image](images/640_e7c567717d4d.png)
 
 ### 3.5 蒸馏（Distill）与强化学习（RL）
 
@@ -627,7 +627,7 @@ DeepSeek R1 经历了两轮的 SFT+RL。其中第一轮主要聚焦在提升 Rea
 - 将更强大的模型蒸馏至较小规模能带来卓越效果，而依赖大规模 RL 的小型模型不仅需耗费巨大计算资源，且可能无法企及蒸馏所达到的性能水平。
 - 尽管蒸馏策略兼具经济性与高效性，但欲突破智能边界，仍需依赖更强大的基础模型与更大规模的 RL 训练。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgzWqcNl9VD9aUN2Kh9ITj94q7AJGafvnmIQuyZ4u1OvjNAJh3Qct8UIibXj0WxtUYfqMWiaAJvgyZA/640?wx_fmt=png&from=appmsg#imgIndex=42)
+![Image](images/640_a0f20d6a88f4.png)
 
 ## 九、相关链接
 

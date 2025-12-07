@@ -45,15 +45,15 @@
 - KV Cache 和 MQA 相当，明显少于 MHA 和 GQA，但效果还不错，和 MHA 相当。但是也会额外的增加一些计算量。DeepSeek 也开源了部分针对 MLA Inference 的代码实现（FlashMLA: Efficient MLA decoding kernels）。
 - 当前主要是 DeepSeek V2、V3 以及最新开源的Kimi K2 模型（Kimi-K2 - a moonshotai Collection）中使用，其他模型并没有跟进。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd64GptTSOaRo2I8O0lnzYVNicxw0qg9Y7f8rlWUJI61TkzWRL3AF0voImg/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=0)
+![Image](images/640_268c80b955bb.png)
 
 如下图 Table 1 可以看出，MLA 的 KV Cache 需求虽然依然大于 MQA，但明显优于 MHA 和 GQA，同时效果更好：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd649fYQKiazV4vL5Eu2j6m353egtqGfhiaaAKx0ZciaBPuCsKx25ibhrqJvMg/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=1)
+![Image](images/640_bea6e1cc01b2.png)
 
 如下图 Table 8 和 Table 9 所示，DeepSeek 团队在 DeepSeek V2 的技术报告中进行过一些消融实验，MLA 的效果优于 GQA，甚至优于 MHA：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd64wWica9Mvc2JrYgwFG4p1dPX82s4zS9XSqFJzh4CicqQ6ibiamrsS6ribEXA/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=2)
+![Image](images/640_8aed827e1c36.png)
 
 #### **#### 2.2.2 MHA -> GQA/MLA**
 
@@ -65,7 +65,7 @@
 - LLaMA2 模型预训练数据比较少，模型训练不够充分，有效性有待商榷。
 - 当前的 LLM 基本至少会默认采用 GQA，因此相应场景也就更少。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd64ickTfCh96P5zcuDVzF4LDXI5HuZe2YJBRkIJTOjnKdUQib0g1gk1brSA/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=3)
+![Image](images/640_73171bc96900.png)
 
 如下图 Table 1 所示，在 [2502.14837] Towards Economical Inference: Enabling DeepSeek's Multi-Head Latent Attention in Any Transformer-based LLMs 中，作者进一步探索了 MHA/GQA 到 MLA 的转换（PS：其实 GQA 可以看做 MHA 的特例，因此如果支持 MHA 转 MLA，就很容易支持 GQA 转 MLA）。
 
@@ -74,7 +74,7 @@
 - LLaMA2 模型没有充分训练，Baseline 比较低。
 - LLaMA2 里面的评估任务中 OBQA 提升比较明显拉升了整体得分，在更多任务上的有效性有待商榷。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd64wLzUkwiavceTrMqVNLfyA070b8P0H0mfCKqAG4CzsKWSIdHfffHKqBA/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=4)
+![Image](images/640_44e1ac2c5b65.png)
 
 如下图 Table 1 所示，在 [2502.07864] TransMLA: Multi-Head Latent Attention Is All You Need 中，作者同样提出了 MHA 到 MLA 的转换方案 TransMLA：
 
@@ -82,7 +82,7 @@
 - 和 MHA2MLA 有同样问题，评测任务中考 OBQA 拉高得分，另外模型是 LLaMA2MLA。
 - 如果与直接将 GQA 转为 MLA 的消融实验会更有说服力。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd64icSXmiaRdaX8QNK1gBRFKgBRt1tE0qfBGkwoI4iclvLDVMEKHzh5dz0wQ/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=5)
+![Image](images/640_fd2c3c372fbb.png)
 
 #### **#### 2.2.3 Linear Attention**
 
@@ -93,7 +93,7 @@
 - 针对小规模模型，基于 Linear Attention 的 RWKV7 模型确实能获得与基于 Softmax Attention 相当的性能。
 - 主要实验聚焦在 3B 及以下模型，缺少 7B 及更大规模模型的实验。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd647YYoJa0SYddBXickhPby13sKDcLdrNgGic2gvE5H5HtcaQoCDMsjsm6g/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=6)
+![Image](images/640_7c062d337d62.png)
 
 #### 2.2.4 Hybrid Linear Attention
 
@@ -101,7 +101,7 @@
 
 这类工作中规模最大，影响力最大的是 MiniMax 的开源大模型 MiniMax-01 系列模型（[2501.08313] MiniMax-01: Scaling Foundation Models with Lightning Attention）。如下图 Figure 3 所示，其最大的 MiniMax-01 W456A46 模型包含 80 个 Transformer Block，其中每 7 个 Linear Attention 接一个 Softmax Attention（也就是下图中的 M=7）。并且 Softmax Attention 采用了 GQA，而 Linear Attention 也采用了定制化的高性能实现 Lighting Attention。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd64wevbiaRpxRpjagrvJH8c4vnD82pNQhBd6kNRXjwvvtmO56gbmZfGRRw/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=7)
+![Image](images/640_dcea1eaf1f52.png)
 
 如下图 Figure 8 所示，作者也对比了不同机制的训练吞吐。可以看出，随着序列长度增加：
 
@@ -109,26 +109,26 @@
 - Linear Attention 的 Lightning、HGRN2、Mamba2 几乎都能维持性能不降。（PS：也可以看出，对于 LLM 预训练常见的 4K、8K 训练长度，Linear Attention 没有特别明显的优势）
 - Hybrid-Lightning 虽然也会出现性能下降的问题，但是明显好于 Softmax Attention。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd645DneJoyZTGCKthiasjZgic5EJXk08d6znKTtibwSXKkfZyGBumib1YwEdA/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=8)
+![Image](images/640_354d314ca1d9.png)
 
 腾讯同样也提出了混合结构的 Hunyuan-TurboS W560A56 模型（[2505.15431] Hunyuan-TurboS: Advancing Large Language Models through Mamba-Transformer Synergy and Adaptive Chain-of-Thought），其中 Softmax Attention 与 Mamba2 Layer 的比例大约为 1:8（7 vs 57）。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd646Ra0uwaSPOJmosNraVs1G8AyyqrmO5wWI08fNfWp2Fs0y88HTFvwWw/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=9)
+![Image](images/640_77cd660125c4.png)
 
 如下图 Table 2 所示，其效果也还不错，与 DeepSeek-V3、Qwen3-235B-A22B 相当：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd64WhWQgVjwhz6QlkTAuyn4ZlCiav02tgECibVEm4Aicgz7MSYiaicnEiaiaXmKQ/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=10)
+![Image](images/640_a79ac1624549.png)
 
 除了 MiniMax 和 Hunyuan 外，NVIDIA 也发表过基于 Mamba 的混合模型 Mamba-2-Hybrid 8B（[2406.07887] An Empirical Study of Mamba-based Language Models），其混合结构如下图 Table 6 所示，共 28 个 Attention Layer，其中：
 
 - 24 个是 Mamba2 的 Linear Attention
 - 4 个是 Softmax Attention，并且采用了 GQA。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd644F8Bibt5dPbjSdqsjRN5Ax6sXmDXcfFl3N8RUEbAQic1siaBWic08jEaVA/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=11)
+![Image](images/640_4a1be326c7b3.png)
 
 如下图 Table 7 所示，在一些常见的任务上确实可以获得还不错的效果：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd64jeqCfbVMcOeo2M2LPicjzkGldJI0ScZbw1NUlZ9dzIDqgJo7LndJcibA/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=12)
+![Image](images/640_5aa5f48da17a.png)
 
 #### **#### 2.2.5 Sparse Attention**
 
@@ -136,7 +136,7 @@
 
 Sparse Attention 在长序列 Inference 场景使用非常多，而预训练场景序列长度比较小，比较少使用。这里面比较早的工作是 Mistral 7B（[2310.06825] Mistral 7B）中使用的 Sliding Window Attention，是 Sparse Attention 的一种特例。如下图 Figure 1 所示，其相当于每个 Token 只关注附近的 Token。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd64ic1uyOx6I9wI8nKTtmIJE5JnchSRHS2qOQvA1wM6ZU0ITWN5yaxF0pw/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=13)
+![Image](images/640_8f65c8977a0f.png)
 
 在这个领域，今年比较火的有两个工作（PS：都是针对长序列场景），一个是 Moonshot AI 的 [2502.13189] MoBA: Mixture of Block Attention for Long-Context LLMs，另外一个是 DeepSeek 的 Hardware-Aligned and Natively Trainable Sparse Attention。它们在某些方面都促进了一些共识：
 
@@ -149,11 +149,11 @@ Sparse Attention 在长序列 Inference 场景使用非常多，而预训练场�
 
 如下图 Figure 1 所示为 Moonshot AI MoBA 的主要原理：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd64xb5GfOltBNQPktbQvq6h5ibaDyzf3Pkj1yBdVadgKPmvu3UOXY2fPxw/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=14)
+![Image](images/640_09271028c3c7.png)
 
 如下图 Figure 2 所示是 DeepSeek NSA 的主要原理：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd64RJ6pXghrfeSu8WLrdHicndZGKbH3zib6Z5k5n7kdXAkRhwFWVH2BpDXg/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=15)
+![Image](images/640_f20f942eb5c4.png)
 
 ### 2.3 MoE
 
@@ -161,7 +161,7 @@ Sparse Attention 在长序列 Inference 场景使用非常多，而预训练场�
 
 2023 年的大语言模型还以 Dense 模型为主，2024 年初 Mistral AI 发布 Mixtral 8x7B MoE 模型（[2401.04088] Mixtral of Experts），引发了 MoE LLM 的热潮。不过早期的 MoE 还是比较粗粒度的专家，比如 Mixtral 8x7B 只有 8 个专家，后续的 Mixtral 8x22B 也是只有 8 个专家。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd649ncJtCVgWCCzRobqQSkLdX3V3LSdRsdzVNqico6ZKSD0PXQOYkgB0DQ/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=16)
+![Image](images/640_3395e24dbf65.png)
 
 早期的 MoE 模型训练都比较保守，往往采用先训练 Dense 模型，然后通过 Upcycling 的方式扩展到 MoE 模型，比如上述的 Mixtral 8x7B 是由 Mistral 7B Upcycling 而来。在昆仑万维的 Skywork-MoE（[2406.06563] Skywork-MoE: A Deep Dive into Training Techniques for Mixture-of-Experts Language Models）中也对相应方案有所探讨，并将 Skywork 13B Dense 模型扩展为 Skywork 146B 的 MoE 模型（16 个专家）。
 
@@ -172,11 +172,11 @@ DeepSeek 团队在 DeepSeek MoE 的技术报告（[2401.06066] DeepSeekMoE: Towa
 - 细粒度专家（Routed Expert）：常见的 MoE 模型中通常是 8 或 16 个专家，而这里会将一个大专家切分为 M 个小专家。比如原来从 16 个专家中选择 Top 2 大概有 120 种可能；而同样计算量的 64 个专家（M=4）中选择 8 个，对应了 4,426,165,368 种可能。
 - 共享专家（Shared Expert）：额外增加了 1 个或多个共享专家，用于捕获通用知识，每个 Token 都会经过这些共享专家。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd64dazF3JvHvuFibibqVOAcxNNNXwyU5UzciakPIzjKaUWkUhv75Lr7zBrRQ/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=17)
+![Image](images/640_3433bee77b72.png)
 
 3 个模型的具体配置如下所示，需要说明的是，3 个模型中都未使用 GQA，而是使用的 MHA（PS：这个应该是 23 年的工作，正好是 MHA 往 GQA 过渡的阶段）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd6479YvqFqic9MicJibQ5E3cNqib4OJ0QRVCcqLk8bmO1va5iaaUqRc6InkbAg/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=18)
+![Image](images/640_8207ce78fa7b.png)
 
 在 DeepSeek MoE 阶段（24 年 1 月），细粒度 MoE 还没被广泛接受（当模型规模不大时，细粒度 MoE 对训练性能影响较大）。直到 DeepSeek V2（DeepSeek-V2: A Strong, Economical, and Efficient Mixture-of-Experts Language Model）甚至是后续的 DeepSeek V3（[2412.19437] DeepSeek-V3 Technical Report），这种细粒度专家和共享专家的方式的方式才被广泛接受并得到大规模使用。
 
@@ -184,11 +184,11 @@ DeepSeek 团队在 DeepSeek MoE 的技术报告（[2401.06066] DeepSeekMoE: Towa
 
 除了 Softmax Attention 与 Linear Attention 的混合架构外，也有一些 Dense 模型和 MoE 模型的混合架构。这种方式最早出现在 Google 经典的 Switch Transformer模型中（[2101.03961] Switch Transformers: Scaling to Trillion Parameter Models with Simple and Efficient Sparsity），其同样是 MoE 相关工作中非常经典的 Paper。如下图 Figure 2 所示，单看架构图很容易误解为是一个纯粹的 MoE 模型（每一个 Transformer Layer 都包含 MoE Block），一些非官方的代码实现中也是如此。然而，实际上该模型是一个混合架构模型。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd64vcxySOXrWmwia4J0tUR7h6oFVjP7zfcQTZGPrKuWQnh4DwGOOhCdkPw/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=19)
+![Image](images/640_66c7b41426d7.png)
 
 如下图 Table 9 所示，其中提到 Expert Freq 为 1/2，表明 MoE Transformer Layer 和 Dense Transformer Layer 各占 1/2：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd64sD0flVviaQNO6Sz03B8fEV6GSO20HkyBvbibHzscCSrR3yWnnLTn2LEQ/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=20)
+![Image](images/640_e4923a1659cb.png)
 
 Google 在此后的 GLaM 模型（[2112.06905] GLaM: Efficient Scaling of Language Models with Mixture-of-Experts）和 ST-MoE 模型（[2202.08906] ST-MoE: Designing Stable and Transferable Sparse Expert Models）中都沿袭了这种方式。不过这些都是在 ChatGPT 之前的工作。
 
@@ -216,7 +216,7 @@ DeepSeek V3 模型同样采用了 DeepSeek V2 的 MLA 以及细粒度专家+共�
 - MTP Module 1 用于预测下下一个 Token，MTP Module 2 用于预测下下下一个 Token（与 LLM 推理中常见的多头投机采样思路一致）。
 - MTP Module 中的输入都包含两个部分，一个是上一个 Module 的 Output Head 的输入，以及上一个输入 Token，并且其中的 Embedding Layer 和 Output Head 都是共享自 Main Model，只有新增的 RMSNorm + Linear Projection 和一个 Transformer Block。由于这里有两个输入分别经过 RMSNorm 后 Concat 到一起，因此需要一个额外的 Linear Projection 进行降维，保持维度一致。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd64fIl0h0ClKaBkicvIHebibRxwkfcxfQ90ubDRyCicZbP79Mcd5wAhG9RPw/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=21)
+![Image](images/640_22279d970fc6.png)
 
 MTP 策略主要用于提升 Main Model 的性能，因此在推理阶段，可以直接舍弃 MTP Module，Main Model 仍能独立且正常运行。此外，还可将这些 MTP Module 用于投机解码，以进一步降低生成延迟。
 
@@ -240,13 +240,13 @@ DP 是最常用的并行策略，因为它与其他并行策略正交，实现�
 - ZeRO-2（Pos+g）：在 ZeRO-1 的基础上进一步切分梯度，切分梯度也不影响 Forward 过程。
 - ZeRO-3（Pos+g+p）：在 ZeRO-2 的基础上进一步切分模型参数，会影响 Forward 阶段，需要 AllGather 所有参数才能计算，会引入更多通信。采用 ZeRO-3 几乎可以将内存需求降低到 1/N，其中 N 表示设备数，这里是 64。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd64PftlYRclIVyge5SCiaoTBSDcUFZ2kRphOdERZNtmyWqOXN7Vun8HWCA/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=22)
+![Image](images/640_62bda57a137a.png)
 
 #### 3.2.3 PyTorch FSDP
 
 与 DeepSpeed 的 ZeRO 优化方案类似，Meta 也提供了 PyTorch 原生支持的 FSDP V1（[2304.11277] PyTorch FSDP: Experiences on Scaling Fully Sharded Data Parallel）和 FSDP V2（[2411.00284] SimpleFSDP: Simpler Fully Sharded Data Parallel with torch.compile） 方案。早期的 Megatron-LM 框架不支持 FSDP，限制了 FSDP 的发展，最近半年 NVIDIA 在 Megatron-Core 里实现了相应的能力并进行了一系列优化，也能获得很不错的吞吐。随着后续集群 Scale-Up 域的扩展（比如 NVL72），FSDP 也许会有更大的空间。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd64RCxgFC1jibAwB5HVZyNlv4xyzBIckeoicj4YyEzJ7OMpYzoAMn3sejtA/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=23)
+![Image](images/640_2fc6ff1fa179.png)
 
 ### 3.3 TP
 
@@ -254,11 +254,11 @@ DP 是最常用的并行策略，因为它与其他并行策略正交，实现�
 
 如下图 （a）所示，MLP 层的两个 FC 采用先列切（A，Column Parallelism），然后行切（B，Row Parallelism）的方案，这样两个 FC 之间不用通信：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd640dknuokfWZFL2Dflc3oSzv8khkK8DF7xibTa0NKGuVTLVj08QAXxaPA/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=24)
+![Image](images/640_a092fc3afd5d.png)
 
 如下图（b）所示，由于每个 Head 的 Attention，Softmax 都是独立的，因此可以采用按照 Head 的方式切分（等价于 Column Parallelism），然后对之后的 FC 采用行切分（B，Row Parallelism），这样 Self-Attention 中间也不用通信：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd64jZnW3rz8yiaZ7DLyVLGPFM98XKF01n4Bh8iba2GVtAny25BYztcXEYGw/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=25)
+![Image](images/640_a72c5fa6dcf5.png)
 
 然而，由于每个 Transformer Layer 的 Forward 和 Backward 都需要 2 次 AllReduce 操作，并且通信量大，为了避免 TP 通信成为瓶颈，通常会将 TP 切分到一个节点内，因为节点内的 8 个 GPU 可以充分利用 NVLink + NVSwitch 的高带宽（PS：这也是为什么 TP 通常不会大于 8）。
 
@@ -267,7 +267,7 @@ DP 是最常用的并行策略，因为它与其他并行策略正交，实现�
 - 每台机器的 8 个 GPU 组成一个 Model Parallelism Group（TP），共 64 个 TP Group；每个 TP Group 内的 GPU 包含不同的模型参数，并且使用相同的训练数据。
 - 所有设备的同号 GPU（比如 GPU 1，9，...，505）组成一个 Data Parallelism Group（DP），共 8 个 DP Group；每个 DP Group 内的 GPU 都有相同的模型参数，但是使用不同的训练数据。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd64qMegLWjQz5ycJezo3Ilc7ZqtTibKywFsibaExciaDWxj524aegM35snNw/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=26)
+![Image](images/640_1afe0ecc419e.png)
 
 当然，TP 也存在明显的问题：TP 会对 Tensor 进行切分，从而可能降低矩阵计算的算术强度。对于比较大的 Dense LLM，由于 TP 通常不会很大，基本还能接受；但是对于比较小的模型，或者细粒度的 MoE 模型，其矩阵乘法的 Shape 本身比较小，TP 切分后对算术强度的影响比较大，会导致吞吐的明显下降，无法充分发挥 GPU 的性能，因此在细粒度 MoE 模型的专家部分比较少采用 TP 并行。
 
@@ -279,7 +279,7 @@ PP 是另一种常见的模型并行策略，其同样是将模型切分成不�
 
 如下图 Figure 3 所示为使用 4 个设备进行 PP 训练的执行过程。其每一行代表一个设备，蓝色表示 Forward，绿色表示 Backward，Forward 和 Backward 中的数字指的是 Mini Batch 的 ID。由于是按层切分，并且同一时间只有 1 个 Mini Batch，每个设备都必须等待之前的设备执行完才能执行对应的 Stage，导致存在大量的 Bubble。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd64wLxRCNHWmrOzp7FKwCLU9tawSNu9n5mZicYlpfsutltj2xLspibjDUJw/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=27)
+![Image](images/640_15ca2b7660c0.png)
 
 #### **#### 3.3.2 1F1B**
 
@@ -292,7 +292,7 @@ PP 是另一种常见的模型并行策略，其同样是将模型切分成不�
 
 为了避免上述问题，1F1B （1次 Forward，1次 Backward，[1806.03377] PipeDream: Fast and Efficient Pipeline Parallel DNN Training）调度机制应运而生。如下图 Figure 8 所示，4 个设备，分成 4 个 Stage。在起始阶段允许执行多个 Mini Batch 的 Forward，稳定后就保持 Forward 和 Backward 的交替执行，这样可以保证 GPU 在稳定状态下没有空闲，并且始终继续学习。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd64bcicPicfgMiaOnsIc6OzGVW8tgUO24KX87kpelBPg1OOzemGcUaqQT59w/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=28)
+![Image](images/640_fb78f9bc4f6f.png)
 
 上述的 1F1B 过程并不需要 Forward 和 Backward 一样长，实际上，Backward 总是大于 Forward（大约 2 倍），此时 1F1B 依然是有效的调度机制。
 
@@ -313,7 +313,7 @@ NVIDIA 在 [2104.04473] Efficient Large-Scale Language Model Training on GPU Clu
 - 与标准 1F1B 的主要不同是层的切分方式。
 - 模型被分为 8 个 Stage，Device 1 包含 Layer (0,1,8,9)，Device 2 包含 Layer (2,3,10,11)，Device 3 包含 Layer(4,5,12,13)，Device 4 包含 Layer(6,7,14,15)。可以看出，相当于将模型切分为 8 个 Stage，但是交替放在 4 个 Device 上，下图中深色代表前 4 个 Stage（Layer 0-7），浅色代表后 4 个 Stage（Layer 8-15）。以此就可以实现更细力度的调度，减少 Bubble。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd64ibpN0M2H4iclI2yM2p5ggqcXBkondq9EnHEictywkPP8WgX3u1fJLp9dQ/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=29)
+![Image](images/640_c3469692d376.png)
 
 #### 3.3.4 ZeroBubble
 
@@ -321,7 +321,7 @@ Sea AI-Lab 团队在 [2401.10241] Zero Bubble Pipeline Parallelism 中进一步�
 
 如下图 Figure 1 所示，ZeroBubble 中将 Backward 分成两个部分，一部分计算输入的梯度，一部分计算权重的梯度。这里计算输入的梯度有明确的依赖关系，也是链式法则不断传递的基础；而计算权重的梯度却没有明确的依赖，甚至可以滞后很多。此外，三个红色部分计算量相当，这也就是为什么之前 1F1B 或者 Interleaved-1F1B 中 Backward 的长度为 Forward 的 2 倍。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd649oK4MHpbEKmgsOfr9pgkbNjBRocDics5ZFJXIbyKf0CwAz5hv13oQnw/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=30)
+![Image](images/640_7979e7879adc.png)
 
 可以看出，ZeroBubble 的方式为降低 Bubble 率提供了更多的可能，然而也有一定局限性。首先，当梯度累积次数比较多时，Bubble 率本身不大，提升的空间也就比较有限；此外，通常优化方案中会将上述两个梯度的计算放在一个 Kernel 里，ZeroBubble 会将其变成两个 Kernel，有可能导致效率的降低。
 
@@ -351,7 +351,7 @@ DualPipe 的核心思想是：将一对独立的 Forward 与 Backward Chunk 内�
 - 紫色表示 PP 通信
 - 红色表示 Barrier 同步
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd64lExm2ialZdDxiaAS35sfX7NoNeUnpZpCnibxiauTSquZ0Z8SgXcyI6QouA/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=31)
+![Image](images/640_577c0c6bea3f.png)
 
 完整的 DualPipe 调度如下图 Figure 5 所示，其采用双向 PP 调度，同时从流水线两端输入 Micro Batch，使得大部分通信得以完全 Overlap（PS：8PP，双向 20 Micro Batch，反方向 10-19 的 10 个 Micro Batch 并没有列出来，因此我们用红色 10-19 补充了部分 Micro Batch）。这种 Overlap 还确保了随着模型进一步扩展，只要保持恒定的计算与通信比，仍可在跨节点部署细粒度专家的同时，实现近乎零的 All2All 通信开销。
 
@@ -369,13 +369,13 @@ PS：正常来说是无法实现双向 PP 调度的，主要是因为 Forward �
 - Stage 7 上有 Layer 14, 15 以及 Layer 0, 1 的权重
 - 相当于有 2 份相同的模型副本，Forward 的顺序可以从 Stage 0 到 7，也可以从 Stage 7 到 0。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd64Re4ibliaxxmXJhxeQITtEwtmfR9OprU4gYLTKUCawiatFDBgIia6UwYBrA/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=32)
+![Image](images/640_bba838c05edc.png)
 
 #### 3.3.7 NVIDIA Merged FWD-BWD
 
 DeepSeek 的 DualPipe 会导致静态显存翻倍，此外仍然存在较高的 Bubble 率。针对上述问题，NVIDIA 也提出利用奇&偶 Micro-Batch 实现 Overlap 的方案，已在 Megatron-LM 中集成，如下图所示：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd64iagWGibXNhibVkcAhywJIzrbspiaAjy7aar0XlhiahzaGn4sUnic74a43LHA/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=33)
+![Image](images/640_86ed51387946.png)
 
 此外，华为在 [2505.04519] Pangu Ultra MoE: How to Train Your Big MoE on Ascend NPUs 中提出了和 NVIDIA 类似的方案，核心思路也是利用 Micro Batch 间的独立性，以 Forward 计算掩盖 Backward 通信（反之亦然）。
 
@@ -389,7 +389,7 @@ DeepSeek 的 DualPipe 会导致静态显存翻倍，此外仍然存在较高的 
 - Dispatch 和 Combine 处存在比较多小的 Kernel，效率比较低。
 - EP 中不同设备可能存在负载不均的问题。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd64agcPaqQdN2DN7icclAJ6qLv3MnSibPgYpibiarQTRaJx9CWgISho0jfWKw/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=34)
+![Image](images/640_1ac58d90d04f.png)
 
 #### 3.4.2 DeepEP
 
@@ -450,11 +450,11 @@ Grouped GEMM 有几种常见的解法，在不同 Shape 下它们的性能也会
 - Batched GEMM：对于同 Shape 的多个 GEMM 计算，cuBLAS 提供了 BatchedGEMM 的 API（cublasgemmgroupedbatchedex），可以直接使用，通常能获得很不错的性能。
 - Grouped GEMM：对于不同 Shape 的多个 GEMM 计算，CUTLASS 和 DeepSeek 开源的 DeepEP（DeepGEMM: clean and efficient FP8 GEMM kernels with fine-grained scaling）也提供了相应方案。这种方式通常能获得很不错的性能。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd64ZtJicdwbVMrXNtl9amfHrjYRgERN8ich0n7PABdpficWejYwSLO5vlrWA/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=35)
+![Image](images/640_950d35275796.png)
 
 如下图 Table 1 所示，小红书团队在 [2506.05767] dots.llm1 Technical Report 中也提到了相关优化方案，通过优化 GroupedGEMM 获得相应算子 Forward 14%，Backward 8% 的提升：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd64mSgvN4067lgHxhB6epQR8VlxcUrmgDfBrj5OGWYhT4nRyU68H2tVWA/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=36)
+![Image](images/640_3bbf2c96f6a1.png)
 
 #### 3.4.5 MoE 负载优化 —— 设备间
 
@@ -462,11 +462,11 @@ MoE 负载均衡损失可以尽可能的降低负载不均的问题，但是依�
 
 针对上述问题，华为在 Pangu Ultra MoE（[2505.04519] Pangu Ultra MoE: How to Train Your Big MoE on Ascend NPUs）中提出了动态重排的方案。如下图 Figure 11 所示，如果某个 Device 上被路由到的 Token 数都比较少（Device 0），则相较于路由到比较多 Token 的 Device 会出现计算的 Bubble（Device 1）。通过 Planner 和 Executor 的协同合作，动态调整 Device 上 Expert 的排布，可以让不同 Device 上的负载尽可能均衡，从而提升整体的利用率。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd64rts1fNmFEGSwq0iaSko83xvia9uuVhTEZxWSl0WYwxXub3hUm80DfOaw/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=37)
+![Image](images/640_fde3b0420c8f.png)
 
 华为在 Pangu Pro MoE（[2505.21411] Pangu Pro MoE: Mixture of Grouped Experts for Efficient Sparsity）中还采用了专家分组的方式，在专家选择时，让每个组都选择固定数量的专家，这样可以保证每组的负载是均衡的，但会降低专家的可组合数，也就是降低专家组合的空间。（DeepSeek 中也有类似的方案）
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd64wtu4sicUKKibq8ny4tibhFFJrB3poyLdkNOVjnnicS8AMSes2hp6JHgfzw/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=38)
+![Image](images/640_27658de90926.png)
 
 其实 DeepSeek V3 在 Inference 阶段也会采用类似但稍有不同的负载均衡方案，比如针对共享专家、高负载专家采用冗余部署，并动态重排的方案来尽可能的实现负载的均衡。
 
@@ -474,9 +474,9 @@ MoE 负载均衡损失可以尽可能的降低负载不均的问题，但是依�
 
 在 MoE 模型中另外一个容易影响吞吐的地方就是 MoE 相关的 Permute 和 Unpermute 操作，此处会存在很多较小的 Kernel，如果不进行优化也会一定程度上影响性能。NVIDIA 在 GitHub - NVIDIA/TransformerEngine 中也提供了相应 Kernel 融合的优化，具体可以搜索 moe_permute 和 moe_unpermute 相关实现。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd64EESwAzyXyF0B0a0iaXIQM9MLnDS0vnHqGf6GYEwXkZfib4dKiao88iaQqQ/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=39)
+![Image](images/640_d86e6dc2386e.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd64FbWDmEbSRNapNgiaibhtPLxDDvZE7riadvsIute2lo1hlicSDKCm5OjWjA/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=40)
+![Image](images/640_587c6899ce51.png)
 
 ### 3.5 CP & SP
 
@@ -504,13 +504,13 @@ NVIDIA GPU 从 Hopper/Ada Lovelace 开始支持 FP8 计算，其 FP8 算力通�
 
 为了解决上述问题，零一万物在 零一万物面向万卡集群的 AI Infra 建设 中提到了一个 Trick 的方法。如下图所示，每隔一段时间就会 Load FP8 的 Checkpoint 并使用 BF16 进行训练，验证 Loss 是否和 FP8 训练的 Loss 一致（PS：Loss 对齐就真的表示下游任务也能对齐吗？）。如果出现不一致的情况，就会使用 BF16 的训练代替 FP8，并在一段时间后继续使用 FP8 训练。最终获得了 1.3x 的吞吐提升，不过并没有说明这个提升是纯粹的 FP8 相比 BF16 还是也包含了 BF16 的校验预算。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd64k0b2mVicD1j7SWVL2ZXlAHVSFNtlpZ6PMjXycdV3QYH9rgibFOZYfeSQ/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=41)
+![Image](images/640_357bf405ad75.png)
 
 #### **#### 4.1.2 DeepSeek FP8**
 
 DeepSeek V3 中另一个比较大的优化是 FP8 混合精度训练，也是业内首个宣称使用 FP8 进行端到端预训练并进行了大量优化的工作。在 DeepSeek V3 的训练中，大多数计算密集型操作以 FP8 执行，而少数关键操作则保留原始数据格式，以平衡训练效率与数值稳定性。整体框架如下图 Figure 6 所示，与线性算子相关的三个 GEMM 操作，包括 Forward（Fprop）、激活 Backward（Dgrad）和权重 Backward（Wgrad），接受 FP8 Tensor 作为输入，并输出 BF16 或 FP32 格式的结果，理论上使计算速度较原 BF16 方法提升一倍。此外，FP8 Wgrad GEMM 允许激活值以 FP8 存储，供 Backward 使用，从而显著降低内存消耗。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd64MNktErO1MpaJUP0uAf21qb3YGFBDR7jLibav28sJjoNLsktb0RwCQrA/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=42)
+![Image](images/640_e10c3387e715.png)
 
 尽管 FP8 格式具有效率优势，但某些算子对低精度计算比较敏感，仍需更高精度。同时，一些低成本算子也可采用更高精度，对整体训练性能的影响较小。因此，对以下组件保持原始精度（如 BF16 或 FP32）：Embedding Module、输出 Head、MoE 门控模块、归一化算子及 Attention 算子。为进一步保证数值稳定性，将主权重、权重梯度和优化器状态以更高精度存储。
 
@@ -531,7 +531,7 @@ CUDA Graph 首次出现在 CUDA 10 中，是 NVIDIA 在 CUDA 编程模型中引�
 
 如下图所示，Launch Graph 的时间远小于 A、B、C、D、E 这 5 个 Kernel 总的 Launch 时间。也就是在多个小 Kernel 按顺序执行的场景中，用单次 Graph Launch 替代多次小 Kernel Launch，可以显著减少 GPU 闲置等待时间，提高整体吞吐率。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd64LVaP4rDJFHa1dXbaWoWMrKia50lr0iaeFuiaib3ZZlgZUJkvt8DmhTKwMA/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=43)
+![Image](images/640_cc1806e23e25.png)
 
 实践中，当 Kernel 执行时间较短（微秒级）时，Graph 可显著减少调度开销并提升性能。此外，CUDA Graph 将完整的计算流程呈现给驱动程序，使得驱动能够针对整个流程进行优化（如更高效的线程块调度），这是逐次提交无法轻易做到的。
 
@@ -545,7 +545,7 @@ DeepSeek V3 中的通信、计算细粒度 Overlap 也是其软硬协同设计�
 
 24 年北大提出过 Centauri 框架（[ASPLOS 24.04] Centauri: Enabling Efficient Scheduling for Communication-Computation Overlap in Large Model Training via Communication Partitioning），其构建了一个由三个固有抽象维度组成的切分空间：原语替换、拓扑感知组切分及工作负载切分。这些维度共同构成了一个全面的优化空间，用于高效 Overlap。为确定通信与计算的高效 Overlap，将混合并行训练中的调度任务分解为 OP、Layer 和模型三个层次。如下图 Figure 3 所示，通过通信切分和层次调度实现通信和计算的细粒度 Overlap。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd64vNZnzPQZiboYWibt65UDxUk36ibPFroab2tnyqbiaoAQ88SIic3d9rW4nvQ/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=44)
+![Image](images/640_733ccc47bd84.png)
 
 字节也相应提出了 Flux（[2406.06858] FLUX: Fast Software-based Communication Overlap On GPUs Through Kernel Fusion），旨在通过依赖计算隐藏 GPU 间的通信时延。Flux 将通信和计算操作分解为更细粒度的操作，并进一步融合成更大的 Kernel，从而在不损害 Kernel 效率的前提下有效隐藏通信。
 
@@ -571,7 +571,7 @@ DeepSeek V3 中的通信、计算细粒度 Overlap 也是其软硬协同设计�
 - （9）Prefix LM Cache Mask：一些多模态场景会用的 Mask。
 - （12）Random Eviction Mask：有点类似 Tree Attention Mask，在投机采样，推荐等场景比较常见。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd64Uxcgn5JrP8SzUErIHPxYlfzyD8qE0xANuicvV10XoibyHMrBicuzOTc6Q/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=45)
+![Image](images/640_a09be3686101.png)
 
 Attention 部分最经典的优化就是 FlashAttention 系列工作，包括 V1、V2、V3，随后也有其他相关优化，比如：
 
@@ -598,17 +598,17 @@ Meta LLaMA 3.1 405B（[2407.21783] The Llama 3 Herd of Models）是开源的最�
 - 始终使用 16 PP。
 - 根据预算 GPU 数调整相应的 DP 数和 Batch Size。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd64xqINGmLapzfLyeic8kGwLAic2o48HM576bJphVcZCYpZAEucibicePpvOw/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=46)
+![Image](images/640_acfe2849eff9.png)
 
 主要提到的优化就是对 VPP 的一些改进，以便解决内存和计算的不均衡，比如首尾 Stage 都少一层，主动释放一些不需要的 Tensor 等：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd64LjtWwFncmbPSibibxgR1pp4VZcD3OLgjfb9IjdnY49Kiben7dWICice3lw/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=47)
+![Image](images/640_f353f2e323c1.png)
 
 ### 5.2 DeepSeek
 
 如下图所示，今年上半年我们曾总结过 DeepSeek 相关工作中的关键技术点，这里不再赘述，详细内容可以参考： [综述：DeepSeek Infra/V1/MoE/V2/V3/R1 & 开源关键技术](https://mp.weixin.qq.com/s?__biz=Mzk0ODU3MjcxNA==&mid=2247489358&idx=1&sn=bda66cd5ffc40d6dd653d0bc076c7c09&scene=21#wechat_redirect)。其中 DeepSeek V3 预训练 MFU 预估在 38.2% 左右。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd64YV1xzoibmWQjT5tVVZwRrHe2xFJSEpJbN5JfriaVV5CrIzdeic5IU9ibiag/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=48)
+![Image](images/640_0519e55e105b.png)
 
 ### 5.3 阿里 Qwen3 MoE
 
@@ -666,7 +666,7 @@ Qwen2.5 72B：(1T*72B*6) / (340K*989T*3600) = 35.69%
 
 dots.llm1 W142A14：(1T*14B*6) / (130K*989T*3600) = 18.15%
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd64ueWiaOSVZMYOvGdLXgiaZEOpeiaAWj3OPH7IehXnuJULdzogoQJFQ7F5Q/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=49)
+![Image](images/640_9b222391ec4a.png)
 
 ### 5.6 百度 ERNIE 4.5
 
@@ -689,11 +689,11 @@ W300A47 LLM 预训练的分布式策略为 21DP（ZeRO-1）、8EP（Attention 8T
 
 All2All 内存优化：如下图 Figure 9a，传统 MoE 实现在第二次 All2All 后应用 Gating 概率乘法算子。该方法需保留第二次 All2All 的输出 Tensor 以供 Backward，造成显著内存压力。如下图 Figure 9b，作者提出将 Gating 概率乘法算子重新放于专家计算模块内部。这一架构改进使得第二次 All2All 输出 Tensor 在使用后可立即释放。尽管通过概率置换和额外轻量级 All2All 操作引入了微小开销，但该优化显著降低了峰值内存使用量，并消除了 Backward 过程中的大量重计算。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd64uxiczX5OLuBeUrBdYL6FD9wRh48SqzbXm3eHWZ1eicvVq1UmLy6tYHmQ/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=50)
+![Image](images/640_c117f7848103.png)
 
 VPP 优化：至于 PP 方案，当梯度累积比较少时，比如小于 PP-Degree 时，采用 1F1B；当梯度累积比较大时，采用 VPP（Interleaved 1F1B）。考虑到最后一个 PP Stage 还包含损失函数相关计算，也会占用较高内存，因此对其进行优化，一旦最后一个 PP Stage 的 Forward 完成，立即启动 Backward 计算并释放损失函数的激活内存，这样最后一个 PP Stage 最多只保留单个 VPP 阶段的激活内存。如下图 Figure 11 中的红框所示。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd64tuLicTGztoKibdlIrKs51OPgTW0cAEx1qWeGdy4xsbZliaia5WTuY2sDicA/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=51)
+![Image](images/640_9a75741ad09c.png)
 
 FP8 混合精度训练：采用和 DeepSeek V3 类似的量化策略，使用 E4M3 FP8 数据格式及在线量化方法，对权重实施 Block-wise 量化，对激活实施 Tile-wise 量化。如下图 Figure 12 所示为 ERNIE 4.5 的 FP8 混合精度训练策略。
 
@@ -703,7 +703,7 @@ FP8 混合精度训练：采用和 DeepSeek V3 类似的量化策略，使用 E4
 - FP8 算子融合优化：通过算子融合降低数据移动开销并提升计算强度，具体包括：(1) Forward 中 Permutation 操作与 FP8 量化的融合；(2) Forward 与 Backward 中 SwiGLU、Gate 概率乘法及 FP8 量化的三重融合。
 - FP8 通信优化与 Overlap：Forward 阶段采用 FP8 精度执行第一个 All2All 以降低 BF16 通信成本；Backward 阶段将第二次 All2All 与 Up-gate Linear 权重梯度计算进行 Overlap。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd6410vjsOBvib3TuZhkeROCxib2nKnABSniaJEXpY3ljAJ89r042oHhibV3yQ/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=52)
+![Image](images/640_5fec751f0b86.png)
 
 **重计算优化：为了制定最优的重计算策略，对模型中的每个算子进行精细化分析，系统评估了内存占用与计算时间的权衡。选择性的对性价比最高的算子（能以最小运行时代价换取显著内存节省的算子）实施算子级重计算，最终设计出能最大化训练效率的最优重计算方案。**
 
@@ -714,7 +714,7 @@ Paddle 框架原生容错系统：为了实现快速识别硬件故障等异常�
 - Parallelized Warmup：PP Warmup 阶段存在数据依赖性，因而初始化导致的性能退化被放大 P 倍（PP Stage 数量）。因此，采用了跨 PP Stage 的并行同步 Warmup 方案，将首个训练 Step 的延迟降低到 1/P。
 - Zero Cost Checkpoint (ZCC)：支持在每个训练步骤保存检查点，且不会对训练吞吐量产生任何开销，从而确保训练中断时不会丢失任何进度。首先是训练中异步保存，其次是将异常节点 Checkpoint 通过 RDMA P2P 操作快速传输到健康节点，并与初始化 Overlap；如果异常节点内存不可访问，则从持久化 Checkpoint 恢复。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd64F7uFUgibUPtVxR7jibYpm1jHact5IC9b9Y9lbgjfo35Vn2wlib1PnuU4g/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=53)
+![Image](images/640_613b665f4f04.png)
 
 ### **### 5.7 Kimi K2**
 
@@ -722,9 +722,9 @@ Paddle 框架原生容错系统：为了实现快速识别硬件故障等异常�
 
 Kimi K2 是 Moonshot AI 在 2025.07.11 新发布的模型（Kimi K2: Open Agentic Intelligence），其采用了和 DeepSeek V3 类似的模型，也获得了很不错的效果。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd64E7icgURLk82OIkm9SK4ria81Ed8gzOwvbGQltlKLFfFoultTuvcswSmg/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=54)
+![Image](images/640_acde12ce1a2f.png)
 
-**如下图（https://x.com/rasbt/status/1944056316424577525/photo/1）所示为 Kimi K2 与 DeepSeek V3 模型的主要区别：**![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd64B9XAC9BlF2hFSTYeo1icujqav9gjRSmX6ic2h7COd74qMcicwTW8JQCLQ/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=55)
+**如下图（https://x.com/rasbt/status/1944056316424577525/photo/1）所示为 Kimi K2 与 DeepSeek V3 模型的主要区别：**![Image](images/640_6b75ac82b1c7.png)
 
 除此之外还有些需要关注的地方：
 
@@ -734,7 +734,7 @@ Kimi K2 是 Moonshot AI 在 2025.07.11 新发布的模型（Kimi K2: Open Agenti
 
 2025.07.22 Moonshot 发布了 Kimi K2 的技术报告（https://github.com/MoonshotAI/Kimi-K2/blob/main/tech_report.pdf），模型配置与上述一致：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd64IEMA4iaJ8NnQ2E5kXViceJtdzl90JfcK0SRGgWuslo7V9aBibvU47LjiaA/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=56)
+![Image](images/640_9fb4484e2f88.png)
 
 #### 5.7.2 预训练优化
 
@@ -744,7 +744,7 @@ Kimi K2 在 H800 GPU 集群训练，每个节点包含 8 个 H800 GPU，2T 内�
 
 通信和计算 Overlap：通过增加 Warmup Micro Batch 数量，实现 EP 中 All2All 与 Interleaved 1F1B 的计算 Overlap。不过 Interleaved 1F1B 把 PP 切的更碎，会引入更多的通信开销，为了降低这一成本，同样解耦了权重梯度重计算，使其能与 PP 并行通信 Overlap。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTgSA05QPEibIUwicGbY4uMd64vHr2TI02XIlvZ0jlYKlFhoCCFVDJEiaoVqLXqNwFqbjkKwstMqNXfJg/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=57)
+![Image](images/640_b9b32fa20d84.png)
 
 **最小化 EP 并行：由于 Attention Head 减半，Attention 计算时间变少，为了更好的实现计算和通信的 Overlap，需要最小化 EP 耗时，因此采用了 16EP 的最小化 EP 并行策略，这也放宽了负载均衡约束。**
 

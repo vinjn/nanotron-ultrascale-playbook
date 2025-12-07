@@ -8,7 +8,7 @@
 
 之前的文章中详细介绍过 NVIDIA GPU 系列以及 AMD GPU 系列，本文借着 Google TPUv7 Ironwood 发布的契机，详细梳理一下 Google TPU 系列的发展历程以及关键指标。相应的参数对比如下表所示：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjzaibia3zNbSKXgoSYPEP3UGib6q1pQhYjk4icssHE2VvRh6OZkiccfTHIzEVU6DLlRjQ8jpOGWznKJwA/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=0)
+![Image](images/640_c07f832db32a.png)
 
 NVIDIA GPU 和 AMD GPU 相关介绍可以参考笔者之前文章：
 
@@ -25,7 +25,7 @@ NVIDIA GPU 和 AMD GPU 相关介绍可以参考笔者之前文章：
 
 如下图 Figure 1 和 Figure 2 所示为 TPUv1 的架构。考虑到 TPUv1 比较特殊（比如这里还是用的 DDR3 DRAM），从 TPUv2 开始才逐渐统一，本文中不再具体介绍 TPUv1，详细内容可以参考 [1704.04760] In-Datacenter Performance Analysis of a Tensor Processing Unit [1]。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjzaibia3zNbSKXgoSYPEP3UGzdpxlN0FWKFkciaib3TAwWyyicDn9cSG5qGx2xTjfXRDzMzQ6bSHfb0ibQ/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=1)
+![Image](images/640_f5483024ed0d.png)
 
 ### 2.1 TPU Chip 基础架构
 
@@ -35,7 +35,7 @@ NVIDIA GPU 和 AMD GPU 相关介绍可以参考笔者之前文章：
 - HBM：高速存储单元。
 - ICI：芯片之间高速互联单元。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjzaibia3zNbSKXgoSYPEP3UGus0GVAK9UqT1FK7EeJsuj6tP1IM02nbRmj1oRib2PIBuZXfppXfyM3A/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=2)
+![Image](images/640_02fcb7178d5e.png)
 
 TPU 在演进中的主要变化集中在：
 
@@ -75,7 +75,7 @@ MXU 采用脉冲阵列（Systolic Array）架构，其每个处理单元（Proce
 - 中下为第四次执行（7 个 PE 有效，计算量为 (2+3+2)*2）
 - 中下为第五次执行（6 个 PE 有效，计算量为 (3+2+1)*2）
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjzaibia3zNbSKXgoSYPEP3UGq8RNib8ia8yoZTmO2e6wVRI8nRkFq9lQFDXtjG9UGF7pd8Uxhye5FpPQ/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=3)
+![Image](images/640_76aed0ddbbf5.png)
 
 #### 2.2.3 Systolic Array - Bubble
 
@@ -90,7 +90,7 @@ MXU 采用脉冲阵列（Systolic Array）架构，其每个处理单元（Proce
 - PE00 = a00*b00 + a10*b10 + a20*b20 + a30*b30 + a40*b50 + a50*b50。
 - PE12 = a01*b02 + a11*b12 + a21*b22 + a31*b32 + a41*b42 + a51*b52。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjzaibia3zNbSKXgoSYPEP3UGAndBjN4ibgibX030GIID6P8Q9G3nu2zIOGOnuOv2v22ElnQmyFmnB0AA/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=4)
+![Image](images/640_ea69b308b9e7.png)
 
 当 K 远大于 N 时，上述计算大概可以分为 5 个阶段，共 K + 2N - 2 个 Step：
 
@@ -105,7 +105,7 @@ MXU 采用脉冲阵列（Systolic Array）架构，其每个处理单元（Proce
 - 第 1 和 K+2N-2 个 Step 中仅使用 1 个 PE。
 - 从第 Step 2N-1 开始使用所有的 N*N 个 PE。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjzaibia3zNbSKXgoSYPEP3UGp470BVx7yRaicfhRibA4D3R6iaNn7npPvwK7Z6T3QQz1fK2qibnmunyFRg/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=5)
+![Image](images/640_5481e117ed40.png)
 
 综上，可以得出，K 越大，阶段 3 越长，有效计算越多。当 K 远大于 N 时，浪费的 PE 算力几乎可以忽略。
 
@@ -117,7 +117,7 @@ MXU 采用脉冲阵列（Systolic Array）架构，其每个处理单元（Proce
 - 权重驻留（WS）：如下图 Figure 5b 所示，权重 W 在计算前预先填充在 PE 中，并在 PE 里驻留。
 - 输入驻留（IS）：如下图 Figure 5c 所示，预先将输入 I 填充到 PE 中，并在 PE 里驻留。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjzaibia3zNbSKXgoSYPEP3UGeOzNZndm3jk7rvyakPFr1qdGKnM7ZxIuL8CjDFA2WtwSndG1icpKr0A/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=6)
+![Image](images/640_060dc0af8969.png)
 
 #### 2.2.5 Systolic Array - 优劣势
 
@@ -138,7 +138,7 @@ Scalar Unit 是计算的起点，它从本地指令存储器（instruction memor
 - 数据随后流入 32 个 32-bit 的 Scalar 寄存器。
 - 最终输送到右上方的双发射 ALU。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjzaibia3zNbSKXgoSYPEP3UGu2zTGJhdKcfHQlNPAA4RO4f4PwHc1IugzEVbiaT5gIRZmENlG7J4XOw/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=7)
+![Image](images/640_525e03a0ff0a.png)
 
 ### 2.4 Vector Unit
 
@@ -169,9 +169,9 @@ Scalar Unit 是计算的起点，它从本地指令存储器（instruction memor
 - 1 个 MXU，一次可以完成 128x128 个 16-bit 的乘加操作。
 - 总的算力为：700M * (128*128 * 2) * 2 = 45.9 TFLOPs。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjzaibia3zNbSKXgoSYPEP3UGbObbRDOtO4iaqF7ibkQlx28oBEuGRCnjT6y4cMIViajofTV9ticBdNjKXg/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=8)
+![Image](images/640_7cd0fc06d6e9.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjzaibia3zNbSKXgoSYPEP3UGAm7oAuQHBWcaBfBwKUcP9DB90Q7vbZQkvFxqq7lh2fqXRrqWCnsh8A/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=9)
+![Image](images/640_246af24f43e3.png)
 
 ### 3.2 TPUv2 Board
 
@@ -183,13 +183,13 @@ Scalar Unit 是计算的起点，它从本地指令存储器（instruction memor
 - D：Board 电源连接器。
 - E：可能是网络交换机。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjzaibia3zNbSKXgoSYPEP3UGV5iaiasxPuf3kdia1zLEJ1Ar7lEEOWBTScoY6McW79xFxEXwNexP3t6AQ/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=10)
+![Image](images/640_484713930bf5.png)
 
 ### 3.3 TPUv2 Supercomputer
 
 TPUv2 提供 4 条定制化的 ICI（Inter-Core Interconnect）Link，每条 Link 的传输速率达到 62GB/s（496 Gb/s）。ICI 技术使得芯片间能够直接互联构建 Supercomputer。如下图 Figure 1 所示，对应一个 16x16 的 2D Torus 互联架构，任何一个 TPUv2 都和上、下、左、右 TPU 通过 ICI 互联。每个芯片的互联带宽为 4x62=248 GB/s。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjzaibia3zNbSKXgoSYPEP3UGy1eA7deYN2wZmpZhaMicD5cDJZdrxGrQMK5ia6diaeR63YeEvN0vCD8og/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=11)
+![Image](images/640_05076b9e9361.png)
 
 如下图所示为 TPUv2 Rack 配置，每个 Rack 都包含 32 个计算单元，其中：
 
@@ -197,7 +197,7 @@ TPUv2 提供 4 条定制化的 ICI（Inter-Core Interconnect）Link，每条 Lin
 - B 和 C 为 GPU Rack，每个 Rack 包含 128 个 TPUv2。
 - 4 个 Rack 最多 64 个 CPU，256 个 TPUv2，对应上述的 16x16 2D Torus。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjzaibia3zNbSKXgoSYPEP3UGC61P6A8FlKbQbBBbBlgTcnG0GrHN9kiby7FTWDpY5fXy7jxPic2aibVGw/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=12)
+![Image](images/640_4f323fa0ea43.png)
 
 ## 四、TPUv3
 
@@ -211,13 +211,13 @@ TPUv2 提供 4 条定制化的 ICI（Inter-Core Interconnect）Link，每条 Lin
 - HBM 升级到 32GB，带宽升级到 900 GB/s。
 - ICI 带宽提升到 82GB/s（656 Gb/s），4 Link 总带宽 328GB/s。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjzaibia3zNbSKXgoSYPEP3UGSe0Nhs8URabNYqh7JXIuQqJRjsJtBOkshwibeMpCxWGkZelBlwSGb5g/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=13)
+![Image](images/640_b72a60662119.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjzaibia3zNbSKXgoSYPEP3UGeRP4s83sNdOLRp7rDfzR3W3eicAUzbRXMaSVfdjR9ox99nZtBHFgeNg/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=14)
+![Image](images/640_897ba2ea7917.png)
 
 详细参数对比如下图 Table 3 所示，其功耗只增加到 1.6x（280 -> 450），而算力增加到 2.67x（46 -> 123）。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjzaibia3zNbSKXgoSYPEP3UGgJULJP0W2xQvYyK9S6fFvTgQ6lVLnnSUzCSBphJe6ib2pItDtYJ99ug/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=15)
+![Image](images/640_9d96c0976e78.png)
 
 ### 4.2 TPUv3 Board
 
@@ -226,13 +226,13 @@ TPUv2 提供 4 条定制化的 ICI（Inter-Core Interconnect）Link，每条 Lin
 - 同样是 4 个 Chip。
 - 从 TPUv3 开始采用液冷散热。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjzaibia3zNbSKXgoSYPEP3UGfPECaKfpaR4nRMMSRU448rDCfBQVBaQeJYiaGdicSvsEKictfJhSq9d1g/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=16)
+![Image](images/640_0eb87b25cf57.png)
 
 ### 4.3 TPUv3 Supercomputer
 
 如下图所示，TPUv3 Supercomputer 共 8 个 TPU Rack，每个 Rack 依然 128 个 TPU 芯片，共 1024 个 TPUv3 芯片。依然是 2D Torus 拓扑互联，也许是 32x32=1024。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjzaibia3zNbSKXgoSYPEP3UGbvfct2qrh3osHMUa58oQhNeYFjevHp5ZvGqlHw4ubwK27SPnicO0WCA/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=17)
+![Image](images/640_268cb2e37766.png)
 
 ## 五、TPUv4
 
@@ -251,19 +251,19 @@ TPUv2 提供 4 条定制化的 ICI（Inter-Core Interconnect）Link，每条 Lin
 - ICI Link 从 4 个提升到 6 个，不过带宽下降，从每 Link 70GB/s 下降到 50GB/s（PS：之前的介绍中提到 TPUv3 的 ICI Link 带宽为 82GB/s？）。
 - 其中 OCI 表示 On-Chip Interconnect。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjzaibia3zNbSKXgoSYPEP3UG4j2Hgmq7OcQaRLTKkfPNiajQwEpw8Q0UCeNtwMH6iaf2lDSsGRvkQwDg/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=18)
+![Image](images/640_99ddbced5e7f.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjzaibia3zNbSKXgoSYPEP3UGklcMqHsuARWiad5YpsEN0VlZPAGASFJWjWfpnRza48VtCLmhCvxdYUQ/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=19)
+![Image](images/640_48290924cbda.png)
 
 详细参数对比如下图 Table 3 所示（来自：[2304.01433] TPU v4: An Optically Reconfigurable Supercomputer for Machine Learning with Hardware Support for Embeddings [4]）：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjzaibia3zNbSKXgoSYPEP3UGoKDoFibrtdgQALeibXsohxmGzj125OquA0b9qBo501UCNNz2w0UicrEow/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=20)
+![Image](images/640_6c3b3efccf76.png)
 
 ### 5.2 TPUv4 Board
 
 如下图所示为 TPUv4 Board，包含 4 个芯片，使用液冷散热。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjzaibia3zNbSKXgoSYPEP3UGziaqBmhqXmaTLT8iawicLcrGhR1wuh7jdShwPZia3YO0icwMbPVrTPCPwdA/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=21)
+![Image](images/640_0ae9650d5112.png)
 
 ### 5.3 TPUv4 Supercomputer
 
@@ -274,7 +274,7 @@ TPUv2 提供 4 条定制化的 ICI（Inter-Core Interconnect）Link，每条 Lin
 - 立方体内部的 TPUv4 通过 6 个 ICI Link 分别连接上、下、左、右、前、后的 6 个 TPUv4。
 - 6 个平面，每个平面都会空余 4x4=16 个 ICI Link。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjzaibia3zNbSKXgoSYPEP3UGRAwia1Yk0LYXuSVs3LTQkwdB2x49S1Z4ORDsSdSCpt4G1adibmJUdA0g/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=22)
+![Image](images/640_2bb8607f21cb.png)
 
 #### 5.3.2 Palomar OCS
 
@@ -286,7 +286,7 @@ TPUv2 提供 4 条定制化的 ICI（Inter-Core Interconnect）Link，每条 Lin
 - 整个端到端光路具备带宽互易特性，支持与数据速率无关的双向通信。
 - 该系统最终形成双向、无阻塞、全互联的 136x136 OCS（对应 136 个 Port，每个 Port 都有一个 input 和 一个 output，任何一个 Port 的 Input/Output 都可用和其他 Port Output/Input 通信 ）。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjzaibia3zNbSKXgoSYPEP3UGqdY2VcXhKgANyLh3V6GoIAshT57oicOVCYSSwCUASppInMoH7emUH6w/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=23)
+![Image](images/640_0fdbb0b69633.png)
 
 #### 5.3.3 Supercomputer
 
@@ -296,11 +296,11 @@ TPUv2 提供 4 条定制化的 ICI（Inter-Core Interconnect）Link，每条 Lin
 - 一个 OCI 最多连 128/2=64 个 3D Torus。
 - 最多对应 64 个 4x4x4 的 3D Torus，也就是 4096 个 TPUv4 芯片。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjzaibia3zNbSKXgoSYPEP3UGVpRuDYnDmTxjNTibX52ibxEuWYpEZl7fZI1jibVWHJzmibtmkJT5ja3DIQ/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=24)
+![Image](images/640_e3fbba5d6fcc.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjzaibia3zNbSKXgoSYPEP3UGUgzMsPLGowxMVhIfrkWpLt1n5hicrG9iaNJuv2HEPkv4TUb4EAkAgwqg/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=25)
+![Image](images/640_5c87e3d815c5.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjzaibia3zNbSKXgoSYPEP3UGKhXibZyEXomBUQF6ABcWPBu7rf0psUqUZiacPWbR0B5yHfhsWFLTzXLw/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=26)
+![Image](images/640_a2254ba862a1.png)
 
 PS：这种 OCS 的拓扑结构是实现容错的关键。直接互联的方式容易因为单个节点故障影响整个集群，因此规模不会特别大；而通过 OCS 可以动态调整网络拓扑，绕过故障单元，实现更加灵活的分组，提升系统可用性。对于芯片规模达数十万量级的超大规模系统，多个 Supercomputer 模块可通过 DCN（Data Center Network）实现互联。
 
@@ -317,23 +317,23 @@ PS：这种 OCS 的拓扑结构是实现容错的关键。直接互联的方式�
 
 如下图是小于 64 个 TPUv4 切片时支持的切片方式，这里的 V4-64 表示 64 个 TensorCore，对应 32 个 TPUv4 芯片：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjzaibia3zNbSKXgoSYPEP3UGicIfY4I27iaXFutvvhgEANBpCS9SgW8jWsTwAySS6T7jtqcflzjhAX1Q/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=27)
+![Image](images/640_eee1f8efb0d5.png)
 
 如下图是大于等于 64 个 TPUv4 切片时支持的切片方式：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjzaibia3zNbSKXgoSYPEP3UGryqYibqO2ePrkgUaCya9Eib3dAiaXxdswlxT5HConmPwg01zuJib4Kc3qg/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=28)
+![Image](images/640_f16d0b171d31.png)
 
 #### 5.4.2 Twisted Torus
 
 相比如下图 Fig.1 和 Fig.2 这种标准的 2D Torus 和 3D Torus 拓扑，Twisted Torus（Twisted Torus Topologies for Enhanced Interconnection Networks [6]）可通过重构部分链路，以实现无需增加 Switch 硬件的情况下降低最坏情况的时延。在 TPUv4 的实现中，可以通过 OCS 的路由重编程实现。Google 在 TPUv4 集群实验，对于 All2All 通信，在 4x4x8 和 4x8xx8 切片配置中，Twisted Torus 相比标准的环状拓扑可以实现 1.63x 和 1.31x 的 All2All 吞吐提升。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjzaibia3zNbSKXgoSYPEP3UG3lfp5gubN2lx4WMxR3RC7pCgT9S67GKjGvyvAJ0muzKK3nqibicpZ69Q/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=29)
+![Image](images/640_5feb60598f55.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjzaibia3zNbSKXgoSYPEP3UG5exzzFjPJ5iczHNrERic6ibgPcQGP0SIb02iaobcm5MNSWC5ZRhdtEg0eg/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=30)
+![Image](images/640_0a453072ed13.png)
 
 其他对比数据如下图所示：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjzaibia3zNbSKXgoSYPEP3UG93pOx3MFZn3x9D9S8YhljOBqjsU5yMkTKftvqKPIG6mOAWfxJ5ibFnA/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=31)
+![Image](images/640_b90cc588ff2f.png)
 
 ## 六、TPUv5
 
@@ -351,21 +351,21 @@ PS：这种 OCS 的拓扑结构是实现容错的关键。直接互联的方式�
 - 16GB HBM，带宽为 819GB/s。
 - 4 个 ICI Link，总带宽 4x50GB/s = 200GB/s（1600 Gb/s）。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjzaibia3zNbSKXgoSYPEP3UGAJRRNiahFFRAFBnicZlFSeJxqEia76KSAHtY6hdjNaQkmAk7utCDjPSZg/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=32)
+![Image](images/640_fd3eba8248d3.png)
 
 #### 6.1.2 TPUv5e Supercomputer
 
 TPUv5e Supercomputer 由 2D Torus 互联（只有 4 个 ICI Link），最大支持 16x16 = 256 个芯片。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjzaibia3zNbSKXgoSYPEP3UGkPsGbFoVYAVWHPy4yBP4OlOnjBgIBia3uYiardydYwiabEcrBkzUvEqoQ/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=33)
+![Image](images/640_f66c05631e48.png)
 
 上述 256 TPUv5e 芯片对应 4 个 TPU Rack，如下图所示。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjzaibia3zNbSKXgoSYPEP3UGkRQjfNS6Tm3M8Z0ZLpB890grrlic3zHUdzIM4B3h5c8pLeRIWmVrgoQ/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=34)
+![Image](images/640_31222dc0008a.png)
 
 支持如下的 2D 切片方式：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjzaibia3zNbSKXgoSYPEP3UGowvFRsxZ3QZNaTuibo0NgsOvUB48fmm4tCfXzxAGpUh0gkxYtCVjEpw/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=35)
+![Image](images/640_36361a6ef1b1.png)
 
 ### 6.2 TPUv5p
 
@@ -384,7 +384,7 @@ TPUv5p Chip（TPU v5p | Google Cloud Documentation [8]）与 TPUv5e 略有不同
 
 TPUv5e 有 6 个 ICI Link，因此其 Supercomputer 可以构建 3D Torus 互联，包括 140 个 Rack，共 140*(4*4*4) = 8960 TPUv5e 芯片。不过，最大支持 16x16x24 = 6144 个芯片（96 个 4x4x4 立方体）。支持的切片方式如下图所示：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjzaibia3zNbSKXgoSYPEP3UGyxrGzCm3B65z9XRsFpDgxmIwQKhlPcVySw0ib0p80ZEYCZ3CWWYnQvg/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=36)
+![Image](images/640_3c5a595537cd.png)
 
 ## 七、TPUv6e
 
@@ -401,13 +401,13 @@ TPUv6e Chip（TPU v6e | Google Cloud Documentation [9]）主要是对标 TPUv5e�
 
 TPUv6e 与 TPUv5e 的详细对比如下图所示：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjzaibia3zNbSKXgoSYPEP3UGHbDgqg0WVG1AGicXribMJwuUMA5M9xMWZ30SC9mAbegJhxOrS2u20K2A/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=37)
+![Image](images/640_a72cce37fde7.png)
 
 ### 7.2 TPUv6e Supercompute
 
 TPUv6e Supercomputer 同样由 2D Torus 互联（只有 4 个 ICI Link），最大支持 16x16 = 256 个芯片。对应的切片方式如下图所示：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjzaibia3zNbSKXgoSYPEP3UGchyBCatPlAicKorfSYzuJ0nTxJbicXtAf0wtOPPgGQ58licwUQq9gC0Ig/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=38)
+![Image](images/640_9d3d0a672c83.png)
 
 ## 八、TPUv7
 
@@ -423,9 +423,9 @@ TPUv6e Supercomputer 同样由 2D Torus 互联（只有 4 个 ICI Link），最�
 - 6 个 ICI Link Stack：200GB/s * 6 = 1.2TB/s。
 - 4 个 SparseCores：可用于 embedding lookup。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjzaibia3zNbSKXgoSYPEP3UGVvCnI9XJJO2M2SfvfSWVTDoustAnF8dLicSicXqqL8znFSgyCrGl4NtA/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=39)
+![Image](images/640_1cb7ff504aac.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjzaibia3zNbSKXgoSYPEP3UGf48ZicoN90zQ2QHkLLSrMH2H2WdGtTuJSqeAAKic9GOibsZ8j1rwxOtwQ/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=40)
+![Image](images/640_890da5ae2769.png)
 
 PS：这里有个疑问，2307 TFLOPs 算力是如何得到的？按照 Google 的介绍，虽然 TPUv7 有 2 个 TensorCore，但是每个芯片上总的 MXU 数量与 TPUv6e 相同，都是 4 个；并且都是 256x256 的大小，那是如何实现将近 2317 / 918 ≈ 2.5x 的算力提？
 
@@ -442,7 +442,7 @@ PS：这里有个疑问，2307 TFLOPs 算力是如何得到的？按照 Google �
 - 使用液冷散热。
 - 18 个 OSFP 连接器，16 个位于图中的上部。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjzaibia3zNbSKXgoSYPEP3UGW6JR2oibAvibCEyotVGzAqpZ4dvibEWZwXD4ciaAVZ9UBcq9DLZ6hbms3A/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=41)
+![Image](images/640_959f3e5b8407.png)
 
 ### 8.3 TPUv7 Ironwood Rack
 
@@ -452,7 +452,7 @@ PS：这里有个疑问，2307 TFLOPs 算力是如何得到的？按照 Google �
 - 16 个 CPU Host Tray。
 - 左侧为 DCN 连接，用于 Pod 间互联；右侧是 ICI Link，用于 Pod 内互联。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjzaibia3zNbSKXgoSYPEP3UG2q01RYpXRtkDbYy51duqOGiaBYcGTjtaoAbzHHSfFHmwAD1MO2KibUIA/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=42)
+![Image](images/640_0e8b227ea06f.png)
 
 ### 8.4 TPUv7 Ironwood Supercomputer
 
@@ -464,13 +464,13 @@ Google 并没有介绍其 Supercomputer 的拓扑：
 - 由于每个 Rack 相对的 Port 要连接一个 OCS，因此同样需要 48 个 OCS。
 - 也就是 96*144=13824 个 Port 要连接到 48 个 OCS，每个 OCS 对应 13824/48=288 个 Port（PS：也许是如下图所示的 300x300 OCS，有 300 个 Port，剩余 12 个作为备份）。
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjzaibia3zNbSKXgoSYPEP3UG3qrD3hEVvz8r0H6F7ia83o8NBe5LjdMiaDhuMK8HEIOfNVmak8zwPXqA/640?wx_fmt=other&from=appmsg&watermark=1#imgIndex=43)
+![Image](images/640_7c207c52880c.png)
 
 上述方式对应的集群互联拓扑如下图所示：
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjzaibia3zNbSKXgoSYPEP3UGdiaaOZg0PThc2V8zXxOydFiaLQXo2qR7LGDOQh931FoUibDyZs6uUg5mQ/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=44)
+![Image](images/640_ceb1df235300.png)
 
-![Image](https://mmbiz.qpic.cn/sz_mmbiz_png/zhVlwj96tTjzaibia3zNbSKXgoSYPEP3UGDvKP6icrUiaG5uuX8MLr8iau4gL8A5AvggCFnZQEaDx3bem5SjC5VsZfw/640?wx_fmt=png&from=appmsg&watermark=1#imgIndex=45)
+![Image](images/640_125488c6e407.png)
 
 ## 九、参考链接
 
